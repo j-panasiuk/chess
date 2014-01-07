@@ -1,0 +1,87 @@
+$square-size: 65px;
+
+
+
+body {
+    background: #bbb;
+}
+.control-panel {
+    padding: 5px;
+}
+
+#board-container {
+	position: relative;
+    padding: 20px;
+}
+
+.chessboard {
+    position: relative;
+    width: 8 * $square-size;
+    height: 8 * $square-size;
+    background: #ddd;
+
+    .square {
+		position: absolute;
+	    width: $square-size;
+	    height: $square-size;
+
+	    &.light { background: #ffe; }
+	    &.dark { background: #88f; }
+	}
+
+	@for $i from 0 through 7 {
+		.square.rank-#{$i} {
+			bottom: $i * $square-size;
+		}
+	}
+
+	@for $i from 0 through 7 {
+		.square.file-#{$i} {
+			left: $i * $square-size;
+		}
+	}
+
+	.piece {
+		position: absolute;
+		width: $square-size;
+		height: $square-size;
+		background-repeat: no-repeat;
+		background-size: cover;
+
+		&.white.pawn { background-image: url('../img/pieces/white-pawn.png'); }
+		&.white.knight { background-image: url('../img/pieces/white-knight.png'); }
+		&.white.bishop { background-image: url('../img/pieces/white-bishop.png'); }
+		&.white.rook { background-image: url('../img/pieces/white-rook.png'); }
+		&.white.queen { background-image: url('../img/pieces/white-queen.png'); }
+		&.white.king { background-image: url('../img/pieces/white-king.png'); }
+		&.black.pawn { background-image: url('../img/pieces/black-pawn.png'); }
+		&.black.knight { background-image: url('../img/pieces/black-knight.png'); }
+		&.black.bishop { background-image: url('../img/pieces/black-bishop.png'); }
+		&.black.rook { background-image: url('../img/pieces/black-rook.png'); }
+		&.black.queen { background-image: url('../img/pieces/black-queen.png'); }
+		&.black.king { background-image: url('../img/pieces/black-king.png'); }
+
+		&.invisible { visibility: hidden; }
+	}
+}
+
+
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* HIGHLIGHTS */
+.ui-state-highlight { 
+	background: rgba(120,250,80,.45); 
+	outline: 2px solid rgba(255,255,255,.5);
+}
+.drag-hover { 
+	background: rgba(255,235,90,.7);
+	outline: 2px dashed orange; 
+}

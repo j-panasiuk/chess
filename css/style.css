@@ -1,0 +1,174 @@
+﻿body {
+    background: #ccc;
+}
+.control-panel {
+    padding-bottom: 5px;
+    background: #bbb;
+}
+
+#body-container {
+    padding: 5px;
+}
+#board-container {
+	display: block;
+	float: left;
+	width: 620px;
+	height: 620px;
+	background: #ccc;
+}
+#board { 
+    position: relative; 
+    float: left;
+    width: 600px; 
+    height: 600px;
+    margin: 10px;
+    outline: 1px solid rgba(0,0,0,.3);
+    background: url('../img/board.jpg');
+}
+.square { 
+    position: relative; 
+    display: block; 
+    float: right;
+    width: 75px; 
+    height: 75px; 
+}
+.piece {
+    position: absolute;
+    display: inline-block;
+    width: 75px; 
+    height: 75px;
+	z-index: 1;
+}
+.piece.black.king   { background-image: url('../images/pieces2.png'); background-position: 0 0; }
+.piece.black.queen  { background-image: url('../images/pieces2.png'); background-position: -75px 0; }
+.piece.black.rook   { background-image: url('../images/pieces2.png'); background-position: -150px 0; }
+.piece.black.bishop { background-image: url('../images/pieces2.png'); background-position: -225px 0; }
+.piece.black.knight { background-image: url('../images/pieces2.png'); background-position: -300px 0; }
+.piece.black.pawn   { background-image: url('../images/pieces2.png'); background-position: -375px 0; }
+.piece.white.king   { background-image: url('../images/pieces2.png'); background-position: -450px 0; }
+.piece.white.queen  { background-image: url('../images/pieces2.png'); background-position: -525px 0; }
+.piece.white.rook   { background-image: url('../images/pieces2.png'); background-position: -600px 0; }
+.piece.white.bishop { background-image: url('../images/pieces2.png'); background-position: -675px 0; }
+.piece.white.knight { background-image: url('../images/pieces2.png'); background-position: -750px 0; }
+.piece.white.pawn   { background-image: url('../images/pieces2.png'); background-position: -825px 0; }
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* UI Highlights */
+.ui-state-highlight { background: rgba(120,250,80,.45); }
+.drag-hover { background: rgba(255,235,90,.7); }
+.last-highlight { background: rgba(135,240,230,.4); outline: 1px solid rgba(0,0,0,.65) }
+
+/* Highlights */
+.selected { 
+    background: rgba(0,0,0,.95);
+    outline: 1px solid rgba(255,255,255,0.3);
+}
+
+.outline {
+    position: absolute;
+    left: 0;
+    top: 0;    
+}
+.outline.check {
+    margin: 3px;
+    width: 69px;
+    height: 69px;
+    border: 2px dashed #fa0;    
+}
+.outline.pin {
+    margin: 1px;
+    width: 73px;
+    height: 73px;
+    border: 2px dashed #333;    
+}
+
+/* Testing Tools */
+.gui-debug {
+
+}
+
+.subscript.square-id {
+    position: absolute;
+    bottom: 1px;
+    right: 3px;
+    font-size: 11px;
+    color: rgba(0,0,0,.4);
+}
+.subscript.data {
+    position: absolute;
+    bottom: 1px;
+    left: 2px;
+    font-size: 11px;
+    color: #333;
+}
+.mark {
+    position: absolute;
+    padding: 0px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #555;
+    line-height: 10px;
+    font-size: 11px;
+    text-align: center;
+}
+.mark.left {
+    left: 3px;
+}
+.mark.right {
+    left: 14px;
+    visibility: hidden;
+    opacity: 0; /* 1 */
+}
+.mark.white {
+    top: 14px;
+}
+.mark.black {
+    top: 3px;
+}
+.mark.white.left {
+    background: #e33;
+    color: #fff;
+}
+.mark.black.left {
+    background: #333;
+    color: #fff;
+}
+.mark.white.right {
+    background: #fff;
+    color: #e33;
+}
+.mark.black.right {
+    background: #fff;
+    color: #333;
+}
+.mark:empty {
+    background: transparent;
+    opacity: 0.08;
+}
+
+
+/* Testing / Debugging */
+#board-container {
+    padding: 20px;
+}
+
+.square {
+    width: 65px;
+    height: 65px;
+    outline: 1px solid black;
+}
+
+.chessboard {
+    position: relative;
+    width: 520px;
+    height: 520px;
+    background: #ddd;
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pl" dir="ltr" ng-app="chessApp">
+<head>
+	<title>Chess</title>
+	<meta content="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link href="lib/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+	<link href="sassc/style.css" rel="stylesheet"/>
+</head>
+<body>
+    
+<!-- Template: chessboard -->
+<script type="text/ng-template" id="template-chessboard.html">
+<div class="chessboard" id="chessboard">
+    <div ng-repeat="square in rules.SQUARES" class="square rank-{{square.rank}} file-{{square.file}} {{squareColor(square)}} unselectable" id={{square}}></div>
+    <div ng-repeat="piece in ui.position.pieceLists[0]" class="piece white {{piece.name}} invisible"></div>
+    <div ng-repeat="piece in ui.position.pieceLists[1]" class="piece black {{piece.name}} invisible"></div>
+</div>
+</script>
+
+<div id="body-container">   
+
+	<div class="control-panel">
+	<button class="btn btn-primary" data-toggle="modal" href="#newGameSettings">New Game</button>	
+	<button class="btn btn-default" data-toggle="modal" href="#gameOptions"><span class="glyphicon glyphicon-cog"></span> Options</button>
+	<button class="btn btn-default" id="debug-toggle"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
+	</div>
+
+    <div id="board-container" ng-controller="boardController">
+		<!--<div id="board"></div>-->
+        <div chessboard></div>
+	</div>
+
+</div>
+<!-- Vendor Libraries -->
+<script src="lib/js/jquery-2.0.2-min.js" defer></script>
+<script src="lib/js/jquery-ui-1.10.3.custom.min.js" defer></script>
+<script src="lib/js/lodash.min.js" defer></script>
+<script src="lib/js/angular.min.js" defer></script>
+<script src="lib/js/angular-bootstrap.min.js" defer></script>
+<!-- Chess App -->
+<script src="js/scripts.js" defer></script>
+<script src="js/app.js" defer></script>
+<script src="js/services/settings.js" defer></script>
+<script src="js/services/rules.js" defer></script>
+<script src="js/services/ui.js" defer></script>
+<script src="js/services/game.js" defer></script>
+<script src="js/directives/chessboard.js" defer></script>
+<script src="js/controllers/controllers.js" defer></script>
+</body>
+</html>
