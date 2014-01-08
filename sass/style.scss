@@ -19,14 +19,17 @@ body {
     width: 8 * $square-size;
     height: 8 * $square-size;
     background: #ddd;
+    background: url('../img/board.jpg') no-repeat center center;
+    background-size: cover;
 
     .square {
 		position: absolute;
 	    width: $square-size;
 	    height: $square-size;
-
+	    /*
 	    &.light { background: #ffe; }
 	    &.dark { background: #88f; }
+	    */
 	}
 
 	@for $i from 0 through 7 {
@@ -79,9 +82,7 @@ body {
 /* HIGHLIGHTS */
 .ui-state-highlight { 
 	background: rgba(120,250,80,.45); 
-	outline: 2px solid rgba(255,255,255,.5);
 }
 .drag-hover { 
 	background: rgba(255,235,90,.7);
-	outline: 2px dashed orange; 
 }
