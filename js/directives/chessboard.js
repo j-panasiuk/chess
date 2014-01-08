@@ -1,9 +1,9 @@
 'use strict';
 
-app.directive('chessboard', function(rules, ui) {
+app.directive('chessboard', function(rules, game) {
 	function linkChessboard(scope, element, attributes) {
 		scope.rules = rules;
-		scope.ui = ui;
+		scope.game = game;
 		scope.squareColor = function(square) {
 			return ((square.rank + square.file) % 2) ? 'light' : 'dark';
 		};
@@ -122,12 +122,7 @@ app.directive('chessboard', function(rules, ui) {
 				$('.piece').draggable('disable');
 				$('.square').droppable('disable');
 			}
-		}
-
-		setTimeout(function() {
-			scope.displayPieces(scope.ui.position);
-			scope.enableDragDrop();
-		}, 1000);
+		};
 
 		console.log('Chessboard directive linked.', element);
 	}
@@ -135,7 +130,7 @@ app.directive('chessboard', function(rules, ui) {
 		restrict: 'A',
 		replace: true,
 		templateUrl: 'template-chessboard.html',
-		scope: {},
 		link: linkChessboard
+		//scope: {}
 	};
 });
