@@ -112,7 +112,7 @@ app.factory('game', function(settings, rules) {
 	});
 	Object.preventExtensions(_history);
 	game.history = _history;
-
+/*
 //	Starting the game.
 	Object.defineProperty(game, 'start', {
 		value: function() {
@@ -128,7 +128,8 @@ app.factory('game', function(settings, rules) {
 			}
 		}
 	});
-
+*/
+/*
 //	Proceeding to next turn.
 	Object.defineProperty(game, 'nextTurn', {
 		value: function nextTurn() { 
@@ -139,7 +140,8 @@ app.factory('game', function(settings, rules) {
 		}
 	});	
 	Object.preventExtensions(game);
-
+*/
+/*
 	function selectMoveUser() {
 		console.log('User selects a move...', game.players[this.color]);
 	//	Enable selecting pieces (drag & drop).
@@ -153,7 +155,8 @@ app.factory('game', function(settings, rules) {
 		//gui.validateMovesHash();
 		//gui.enableSelect(color);
 	}
-
+*/
+/*
 	function selectMoveAI() {
 		console.log('AI selects a move...', game.players[this.color]);
 	//	Select the legal move with the highest value.
@@ -178,7 +181,7 @@ app.factory('game', function(settings, rules) {
 			}
 		}, delay);
 	}
-
+*/
 
 	console.log('`game` service ready.');
 	return game;
