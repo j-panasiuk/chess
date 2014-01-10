@@ -3,7 +3,43 @@
 app.controller('chessboardController', function($scope, settings, rules, game) {
 
 	$scope.legalTargets = [];
-	$scope.legalMoves = [];
+	$scope.legalMoves = {};
+	$scope.checkSquares = [];
+	$scope.pinSquares = [];
+
+	$scope.updateCheckSquares = function() {
+	//	For chess rules there is no difference between `checked` and `attacked` squares,
+	//	but the distinction is made for user interface purposes.
+		var squares,
+			checks = game.currentPosition.checks;
+
+		if (!checks.length) {
+			squares = [];
+		} else {
+			squares = checks.map(function(check) {
+				return check.ray;
+			});
+			squares = _.flatten(squares);
+		}
+		$scope.checkSquares = squares;
+		console.debug('Check squares:', squares);
+	};
+
+	$scope.updatePinSquares = function() {
+		var squares,
+			pins = game.currentPosition.pinLists.all;
+
+		if (!pins.length) {
+			squares = [];
+		} else {
+			squares = pins.map(function(pin) {
+				return pin.ray;
+			});
+			squares = _.flatten(squares);
+		}
+		$scope.pinSquares = squares;
+		console.debug('Pin squares:', squares);
+	};
 
 	$scope.updateMovesHash = function(color) {
 		console.time('Update legal moves hash');
@@ -13,8 +49,8 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	//	legalTargets[1] = [32, 34]			legalMoves[1][32] = Move{}
 		var selectableSquares, 
 			position = game.currentPosition, 
-			legalTargets = [], 
-			legalMoves = [];
+			legalTargets = [],
+			legalMoves = {};
 
 	//	Allow to select all pieces matching given color.
 		selectableSquares = position.pieceLists[color].map(function(piece) {
@@ -45,7 +81,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 
 	$scope.selectMoveUser = function(color) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
-		console.log('User selects a move...', game.players[color]);
+		console.log('User selects a move...', color, game.players[color]);
 	//	Enable selecting pieces for user (drag & drop).
 	//	Compute moves hash table for quicker access to moves.
 	//	Before allowing move selection, assert data compability.
@@ -58,7 +94,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 
 	$scope.selectMoveAI = function(color) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
-		console.log('AI selects a move...', game.players[color]);
+		console.log('AI selects a move...', color, game.players[color]);
 	//	Select the legal move with the highest value.
 	//	Since AI choses moves based on game logic and not on legalMoves
 	//	hash table, there is no need to check their compability.
@@ -96,8 +132,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	//	C. 	Any move from non-local source has to be fully displayed.
 	//	Finally, determine game result after the move.
 	//
-		var result,
-			fullDisplayRequired;
+		var fullDisplayRequired;
 		console.log('%cSELECTED MOVE:', "color:DarkViolet;font-weight:bold", move.notation, '\n');
 
 	//	Display direct move of a piece (if not moved by the player).
@@ -119,29 +154,32 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	//	Wait for all animations to complete. Finish the turn.
 		$('.piece').promise().done(function() {
 			console.log('%cAnimations complete.', "color: red");
-		//	Wait until all piece animations are done.
-		//	Finish the turn.
-		//
-			$scope.validatePieceData();
-
-			result = game.currentPosition.gameOver;
-			if (result) {
-			//	Game over!
-				console.log('Game over:', result);
-			} else {				
-				//if (gui.debug.isOn) {
-				//	console.time('Updating debugging artifacts');
-				//	gui.purge();
-				//	gui.debug.squareIds();
-				//	gui.debug.attacked();
-				//	gui.debug.pieceData();
-				//	gui.debug.checks();
-				//	gui.debug.pins();
-				//	console.timeEnd('Updating debugging artifacts');
-				//}
-				$scope.nextTurn();
-			}	
+			$scope.endTurn();
 		});
+	};
+
+	$scope.endTurn = function() {
+	//	Validate piece positions.
+	//	Update debugging interace, if necessary.
+	//	Check game result.
+		var result;
+
+		$scope.validatePieceData();
+
+		$scope.updateCheckSquares();
+		$scope.updatePinSquares();
+		$scope.$broadcast('updateTokens');
+
+		result = game.currentPosition.gameOver;
+		if (result) {
+
+			$scope.endGame(result);
+
+		} else {
+
+			$scope.nextTurn(true);
+
+		}
 	};
 
 	$scope.validateMovesHash = function() {
@@ -155,8 +193,9 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 		var data, 
 			validMoves = true;
 
-		data = _.flatten($scope.legalMoves);
-		data = data.map(function(dict) { return _.toArray(dict); });
+		data = _.toArray($scope.legalMoves).map(function(targets) {
+			return _.toArray(targets);
+		});
 		data = _.flatten(data);
 		for (var move in data) {
 			move = data[move];
@@ -166,7 +205,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 			}
 		}
 
-		console.assert(validMoves, 'Incompatible legal moves.', data, game.currentPosition.moves);		
+		console.assert(validMoves, 'Incompatible legal moves.', validMoves, data, game.currentPosition.moves);
 		console.log('%cData successfully verified.', "color:LimeGreen");
 		console.timeEnd('Data Validation');
 	};
@@ -200,24 +239,32 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	$scope.startGame = function() {
 		$scope.displayPieces(game.currentPosition);
 		$scope.enableDragDrop();
-		//$scope.enableSelect(0);
-		$scope.nextTurn();
+		$scope.nextTurn(false);
 		console.log('Starting game!');
 	};
 
-	$scope.nextTurn = function() {
-		var activeColor = game.currentPosition.activeColor,
-			activePlayer = game.players[activeColor];
-
-		if (activePlayer.isUser) {
-			$scope.selectMoveUser(activeColor);
-		} else if (activePlayer.isAI) {
-			$scope.selectMoveAI(activeColor);
+	$scope.nextTurn = function(switchActive) {
+		console.assert((switchActive === true) || (switchActive === false), 'Attribute `switchActive` missing.');
+	//	Select next player to choose a move.
+	//	If the game is in progress (switchActive == true), always select opposite player.
+	//	On game's first move don't switch active player (switchActive == false). 
+		if (switchActive) {
+			game.switchActive();
+		}
+		if (game.activePlayer.isUser) {
+			$scope.selectMoveUser(game.activeColor);
+		} else if (game.activePlayer.isAI) {
+			$scope.selectMoveAI(game.activeColor);
 		}
 	};
 
-	setTimeout(function init() {
+	$scope.endGame = function(result) {
+		console.log('Game Over.', result);
+	}
+
+	$scope.$on('start', function() {
+		console.log('Starting the game...');
 		$scope.startGame();
-	}, 500);
+	});
 
 });

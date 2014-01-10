@@ -218,6 +218,62 @@ app.directive('chessboard', function(settings, rules, game) {
 			})
 			.data('square', square);
 		};
+		/*
+		scope.createDebugSubscripts = function() {
+			var subscript;
+		//	Create SquareId subscripts.
+			$('.square').each(function() {
+				subscript = "<div class='gui-debug unselectable subscript square-id'>" + this.id + "</div>";
+				$(this).append(subscript);
+			});
+		//	Create piece .data('square') subscripts.
+			$('.piece').each(function() {
+				subscript = "<div class='gui-debug unselectable subscript data'>" + $(this).data('square') + "</div>";
+				$(this).append(subscript);
+			});
+		};
+		*/
+		/*
+		scope.createOutlineElements = function(squares, className) {
+			console.assert(Array.isArray(squares), 'Invalid set of squares.');
+		// 	Outlines (css) squares from given array. 
+		//	squares: 			array of square ids:		['2','17','21']
+		//	className: 			additional class name: 		'check', 'pin'...
+		//
+			var element;
+			for (var square in squares) {
+				$('#' + squares[square]).each(function() {
+					element = "<div class='gui-debug outline";
+					element += (className) ? (" " + className) : ""; 
+					element += "'></div>";
+					$(this).append(element);
+					$(this).children('.gui-debug.outline.' + className).show();
+				});		
+			}			
+		};
+		*/
+		scope.displaySubscripts = function(show) {
+		//	Show or hide debugging subscripts.
+		//	Shows subscripts unless explicitly provided with show === false.
+		//	show: 		true | false
+			var show = (show !== false) ? true: false;
+			if (show) {
+				$('.debug.subscript').show();
+			} else {
+				$('.debug.subscript').hide();
+			}
+		};
+		scope.displayOutlines = function(show) {
+		//	Show or hide debugging square outlines.
+		//	Shows outlines unless explicitly provided with show === false.
+		// 	show: 		true | false
+			var show = (show !== false) ? true : false;
+			if (show) {
+				$('.debug.square-outline').show();
+			} else {
+				$('.debug.square-outline').hide();
+			}
+		};
 
 		console.log('Chessboard directive linked.', element);
 	}
@@ -227,5 +283,124 @@ app.directive('chessboard', function(settings, rules, game) {
 		templateUrl: 'template-chessboard.html',
 		link: linkChessboard
 		//scope: {}
+	};
+});
+
+/* DEBUG TOOLS */
+app.directive('subscript.square', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		//require: '^chessboard',
+		priority: 1,
+		template: '<div class="debug subscript square-id unselectable">{{code}}</div>',
+		scope: {
+			code: '@'
+		},
+		controller: function($scope) {
+			$scope.$on('setDebug', function(event, show) {
+				if (show) {
+					$scope.show();
+				} else {
+					$scope.hide();
+				}
+			});
+		},
+		link: function(scope, element) {
+			scope.show = function() {
+				element.show();
+			};
+			scope.hide = function() {
+				element.hide();
+			};
+		}
+	};
+});
+
+app.directive('subscript.piece', function() {
+	return {
+		restrict: 'A',
+		replace: true,
+		//require: '^chessboard',
+		priority: 1,
+		template: '<div class="debug subscript data unselectable">{{square || data}}</div>',
+		scope: {
+			data: '@'
+		},
+		controller: function($scope) {
+			$scope.$on('updateTokens', function() {
+				$scope.update();
+			});
+			$scope.$on('setDebug', function(event, show) {
+				if (show) {
+					$scope.show();
+				} else {
+					$scope.hide();
+				}
+			});
+		},
+		link: function(scope, element) {
+			scope.piece = element.parent();
+			scope.square = scope.piece.data('square');
+			scope.update = function() {
+				scope.square = scope.piece.data('square');
+				scope.$digest();
+			};
+			scope.show = function() {
+				element.show();
+			};
+			scope.hide = function() {
+				element.hide();
+			};
+		}
+	};
+});
+
+app.directive('outline.square', function(game) {
+	return {
+		restrict: 'A',
+		replace: true,
+		priority: 1,
+		template: '<div class="debug square-outline {{state}}"></div>',
+		scope: {
+			code: '@'
+		},
+		controller: function($scope) {
+			$scope.$on('updateTokens', function() {
+				var code = +($scope.code);
+			//	$scope.$parent: `chessboardController` scope
+			//	$scope.$parent.checkSquares: [2,3,4,5] (rook check)
+			//	$scope.$parent.pinSquares: [] (no pins)
+				if (_.contains($scope.$parent.checkSquares, code)) { 
+					$scope.update('check');
+				} else if (_.contains($scope.$parent.pinSquares, code)) {
+					$scope.update('pin');
+				} else {
+					$scope.update('');
+				}
+			});
+			$scope.$on('setDebug', function(event, show) {
+				if (show) {
+					$scope.show();
+				} else {
+					$scope.hide();
+				}
+			});
+		},
+		link: function(scope, element) {			
+			scope.state = '';
+			scope.checkSquares = [];
+			scope.pinSquares = [];
+			scope.update = function(state) {
+				scope.state = state;
+				scope.$digest();
+			};
+			scope.show = function() {
+				element.show();
+			};
+			scope.hide = function() {
+				element.hide();
+			};			
+		}
 	};
 });

@@ -7,19 +7,31 @@ app.factory('game', function(settings, rules) {
 //	players 				Array[2] of player objects. [<white>, <black>]
 //	currentPosition 		position object representing current game state.
 //	history					Object containing two lists: fen positions and moves.
+//	activeColor 			(Quick Access) Active color value: 0 | 1
+//	activePlayer 			(Quick Access) Pointer to active player object.
 //
 //	player 					Factory function of player objects.
-//	start 					Function. Begins the game.
-//	nextTurn 				Function.
+//	switchActive 			Function. Changes active side to the opponent.
 
 //	Declare local variables.
-	var players, currentPosition,
+	var players, currentPosition, activeColor, activePlayer,
 		_player, _user, _ai, _history; // Prototypes.
 
 	Object.defineProperties(game, {
 		'players': 			{ writable: true, enumerable: true, configurable: true },
 		'currentPosition': 	{ writable: true, enumerable: true, configurable: true },
-		'history': 			{ writable: true, enumerable: true, configurable: true }			
+		'history': 			{ writable: true, enumerable: true, configurable: true },
+		'activeColor': 		{ writable: true, enumerable: true, configurable: true },
+		'activePlayer': 	{ writable: true, enumerable: true, configurable: true }			
+	});
+
+	Object.defineProperty(game, 'switchActive', {
+		value: function() {
+			activeColor = rules.opposite(activeColor);
+			activePlayer = players[activeColor];
+			this.activeColor = activeColor;
+			this.activePlayer = activePlayer;
+		}
 	});
 
 //	* Player Objects
@@ -102,6 +114,12 @@ app.factory('game', function(settings, rules) {
 	game.currentPosition = currentPosition;
 	console.timeEnd('Setting position');
 
+//	Creating Quick Access objects.
+	activeColor = currentPosition.activeColor;
+	activePlayer = players[activeColor];
+	game.activeColor = activeColor;
+	game.activePlayer = activePlayer;
+
 //	Creating game history.
 //	(Accessible through: game.history)
 	_history = {};
@@ -112,77 +130,6 @@ app.factory('game', function(settings, rules) {
 	});
 	Object.preventExtensions(_history);
 	game.history = _history;
-/*
-//	Starting the game.
-	Object.defineProperty(game, 'start', {
-		value: function() {
-		//	Start playing!
-		//	Define rules for selecting moves (depending on player control flag).
-		//	Prevent further extensions for game objects.
-			for (var p in this.players) {
-				p = this.players[p];
-				if (p.isLocal) {
-					p.selectMove = (p.isUser) ? selectMoveUser : selectMoveAI;
-					Object.freeze(p);
-				}
-			}
-		}
-	});
-*/
-/*
-//	Proceeding to next turn.
-	Object.defineProperty(game, 'nextTurn', {
-		value: function nextTurn() { 
-			console.debug('NEXT TURN');
-		//	The board is ready to continue playing.
-		//	Allow active side to select new move.			
-			this.players[this.currentPosition.activeColor].selectMove();
-		}
-	});	
-	Object.preventExtensions(game);
-*/
-/*
-	function selectMoveUser() {
-		console.log('User selects a move...', game.players[this.color]);
-	//	Enable selecting pieces (drag & drop).
-	//	Compute moves hash table for quicker access to moves.
-	//	Before allowing move selection, assert data compability.
-	//	Moves available for user (gui.legalMoves) must match the set 
-	//	of legal moves based on game logic (game.currentPosition.moves).
-		var move, 
-			color = this.color;
-		//gui.updateMovesHash(color);
-		//gui.validateMovesHash();
-		//gui.enableSelect(color);
-	}
-*/
-/*
-	function selectMoveAI() {
-		console.log('AI selects a move...', game.players[this.color]);
-	//	Select the legal move with the highest value.
-	//	Since AI choses moves based on game logic and not on legalMoves
-	//	hash table, there is no need to check their compability.
-		var move, 
-			fullDisplay = true, 
-			delay = 200,
-			position = game.currentPosition;
 
-		setTimeout(function() {
-			try {
-				move = getBestMove(position);
-			} catch (error) {
-				console.log('Error in AI move generation.', move, error.message);
-			//	Problems encountered in move generating script.
-			//	Fallback to basic move selection method (based on move value).				
-				move = position.moves.sort(function(x, y) { return y.value - x.value; })[0];
-			} finally {
-				console.debug('Finally...');
-				//gui.handleMove(move, fullDisplay);
-			}
-		}, delay);
-	}
-*/
-
-	console.log('`game` service ready.');
 	return game;
 });

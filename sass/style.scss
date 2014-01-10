@@ -19,7 +19,7 @@ body {
     width: 8 * $square-size;
     height: 8 * $square-size;
     background: #ddd;
-    background: url('../img/board.jpg') no-repeat center center;
+    background: url('../img/chessboard.jpg') no-repeat center center;
     background-size: cover;
 
     .square {
@@ -86,3 +86,49 @@ body {
 .drag-hover { 
 	background: rgba(255,235,90,.7);
 }
+
+/* DEBUG TOOLS */
+.debug {
+	/*visibility: hidden;*/
+
+	&.subscript.square-id {
+	    position: absolute;
+	    bottom: 1px;
+	    right: 3px;
+	    font-size: 11px;
+	    color: rgba(0,0,0,.4);
+	}	
+	&.subscript.data {
+	    position: absolute;
+	    bottom: 1px;
+	    left: 2px;
+	    font-size: 11px;
+	    color: #333;
+	}
+
+	&.square-outline {
+		visibility: hidden;
+	    position: absolute;
+	    left: 0;
+	    top: 0;
+	    width: $square-size - 6px;
+		height: $square-size - 6px;
+	    margin: 1px;
+	    border-width: 2px;
+
+	  	&.check {
+	    	visibility: visible;
+	    	border-style: dashed;
+		    border-color: #f90;    
+		}
+		&.pin {
+			visibility: visible;
+			border-style: dashed;
+		    border-color: #333;    
+		}
+	}
+
+}
+
+
+

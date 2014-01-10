@@ -14,7 +14,7 @@ app.factory('settings', function() {
 		'mode': 0,
 		'timeLimit': 0,
 		'isReversed': false,
-		'debug': 0,
+		'debugMode': false,
 		'animationTime': 300
 	};
 	Object.freeze(defaults);
@@ -34,6 +34,12 @@ app.factory('settings', function() {
 	};
 	Object.freeze(settings.CONTROL_FLAGS);
 
-	console.log('`settings` service ready.');
+//	Create settings for Debug UI.
+	settings.debug = {
+		'displaySubscripts': true,
+		'displayOutlines': true
+		//'displayAttacked': false
+	};
+
 	return settings;
 });

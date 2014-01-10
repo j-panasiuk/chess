@@ -12,22 +12,28 @@
 <!-- Template: chessboard -->
 <script type="text/ng-template" id="template-chessboard.html">
 <div class="chessboard" id="chessboard">
-    <div ng-repeat="square in rules.SQUARES" class="square rank-{{square.rank}} file-{{square.file}} {{squareColor(square)}} unselectable" id={{square}}></div>
-    <div ng-repeat="piece in game.currentPosition.pieceLists[0]" class="piece white {{piece.name}} invisible"></div>
-    <div ng-repeat="piece in game.currentPosition.pieceLists[1]" class="piece black {{piece.name}} invisible"></div>
+    <div ng-repeat="square in rules.SQUARES" class="square rank-{{square.rank}} file-{{square.file}} {{squareColor(square)}} unselectable" id={{square}}>
+    	<div subscript.square code="{{square}}"></div>
+    	<div outline.square code="{{square}}"></div>
+    </div>
+    <div ng-repeat="piece in game.currentPosition.pieceLists[0]" class="piece white {{piece.name}} invisible">
+    	<div subscript.piece data="{{piece.square}}"></div>
+    </div>
+    <div ng-repeat="piece in game.currentPosition.pieceLists[1]" class="piece black {{piece.name}} invisible">
+    	<div subscript.piece data="{{piece.square}}"></div>
+    </div>
 </div>
 </script>
 
-<div id="body-container">   
+<div id="body-container" ng-controller="mainController">   
 
-	<div class="control-panel">
+	<div class="control-panel" ng-controller="debugController">
 	<button class="btn btn-primary" data-toggle="modal" href="#newGameSettings">New Game</button>	
 	<button class="btn btn-default" data-toggle="modal" href="#gameOptions"><span class="glyphicon glyphicon-cog"></span> Options</button>
-	<button class="btn btn-default" id="debug-toggle"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
+	<button ng-click="updateDebug(true)" class="btn btn-default" id="debug-toggle"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
 	</div>
 
     <div id="board-container" ng-controller="chessboardController">
-		<!--<div id="board"></div>-->
         <div chessboard></div>
 	</div>
 
@@ -44,7 +50,9 @@
 <script src="js/services/settings.js" defer></script>
 <script src="js/services/rules.js" defer></script>
 <script src="js/services/game.js" defer></script>
-<script src="js/controllers/controllers.js" defer></script>
+<script src="js/controllers/main.js" defer></script>
+<script src="js/controllers/chessboard.js" defer></script>
+<script src="js/controllers/debug.js" defer></script>
 <script src="js/directives/chessboard.js" defer></script>
 </body>
 </html>
