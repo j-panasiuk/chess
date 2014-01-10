@@ -1141,6 +1141,14 @@ app.factory('rules', function(settings) {
 				} else {
 				//	Single check. Pawn can shield the king (maybe).
 					squaresTo = _.intersection(squaresTo, position.checks[0].ray);
+				//	With double move check if shielding the king doesn't require the pawn
+				//	to pass through an occupied square. In that case, disallow the move.
+					if (squaresTo.length && (dist(from, squaresTo[0]) === 2)) {
+						if (position.pieces[from + this.passiveVectors[0]]) { 	
+						//	Pawn movement blocked. (+passiveVectors[0]: one square forward)
+							squaresTo = [];
+						}
+					}
 				}
 			}
 			if ((squaresTo.length > 0) && this.pin) {
@@ -1731,8 +1739,6 @@ app.factory('rules', function(settings) {
 		return Math.abs(ray[1] - ray[0]);
 	}
 
-
 	Object.freeze(rules);
-	console.log('`rules` service ready.');
 	return rules;
 });
