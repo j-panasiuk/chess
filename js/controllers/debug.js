@@ -1,7 +1,7 @@
 'use strict';
 
 app.controller('debugController', function($scope, settings) {
-	console.log('Debug Controller loaded.');
+	console.log('%cLoading debugController', LOG.action);
 
 //	** DEBUGGING TOOLS
 //	-----------------------------------------------------

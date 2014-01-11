@@ -1,6 +1,6 @@
 'use strict';
 
-app.controller('chessboardController', function($scope, settings, rules, game) {
+app.controller('chessboardController', function($scope, $timeout, settings, rules, game, engine) {
 
 	$scope.legalTargets = [];
 	$scope.legalMoves = {};
@@ -75,13 +75,13 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 		Object.freeze(legalTargets);
 		Object.freeze(legalMoves);
 
-		console.log('%cNumber of legal moves:', "color:DarkViolet", position.moves.length);
+		console.log('%cLegal move count...', LOG.action, position.moves.length);
 		console.timeEnd('Update legal moves hash');
 	};
 
 	$scope.selectMoveUser = function(color) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
-		console.log('User selects a move...', color, game.players[color]);
+		console.log('%cUser selects a move...', LOG.action, rules.COLOR_NAME[color]);
 	//	Enable selecting pieces for user (drag & drop).
 	//	Compute moves hash table for quicker access to moves.
 	//	Before allowing move selection, assert data compability.
@@ -94,24 +94,29 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 
 	$scope.selectMoveAI = function(color) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
-		console.log('AI selects a move...', color, game.players[color]);
+		console.log('%cAI selects a move...', LOG.action, rules.COLOR_NAME[color]);
 	//	Select the legal move with the highest value.
 	//	Since AI choses moves based on game logic and not on legalMoves
-	//	hash table, there is no need to check their compability.
+	//	hash table, there is no need to check their compatibility.
 		var move,
-			delay = 200,
+			delay = settings.delayAI || 100,
 			position = game.currentPosition;
 
-		setTimeout(function() {
+		engine.tree.plant(position);
+		console.log('%ctree:', LOG.state, engine.tree);
+
+		$timeout(function() {
 			try {
-				move = getBestMove(position);
+				move = engine.getMove(position);
 			} catch (error) {
-				console.log('Error in AI move generation.', move, error.message);
+				console.log('%cCaught error in AI move generation.', LOG.warn, error.message);
 			//	Problems encountered in move generating script.
 			//	Fallback to basic move selection method (based on move value).				
-				move = position.moves.sort(function(x, y) { return y.value - x.value; })[0];
+				move = position.moves.sort(function(x, y) {	
+					return y.value - x.value; 
+				})[0];
 			} finally {
-				console.debug('Finally...');
+				console.debug('%cAI selected move.', LOG.action, move.san);
 				$scope.handleMove(move);
 			}
 		}, delay);
@@ -133,7 +138,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	//	Finally, determine game result after the move.
 	//
 		var fullDisplayRequired;
-		console.log('%cSELECTED MOVE:', "color:DarkViolet;font-weight:bold", move.notation, '\n');
+		console.log('%cMove selected.', LOG.action, move.san);
 
 	//	Display direct move of a piece (if not moved by the player).
 		fullDisplayRequired = !game.players[game.currentPosition.activeColor].isUser;
@@ -153,7 +158,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 
 	//	Wait for all animations to complete. Finish the turn.
 		$('.piece').promise().done(function() {
-			console.log('%cAnimations complete.', "color: red");
+			console.log('%cAnimations complete.', LOG.promise);
 			$scope.endTurn();
 		});
 	};
@@ -184,7 +189,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 
 	$scope.validateMovesHash = function() {
 		console.time('Data Validation');
-		console.log('%cValidating data compability: Moves', "color:LimeGreen");
+		console.log('%cValidating data compability: Moves', LOG.valid);
 	//	Check if data across all representation types is compatible.
 	//	Position displayed on the user interface cannot differ from
 	//	internal position representation. Compare available moves:
@@ -206,13 +211,13 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 		}
 
 		console.assert(validMoves, 'Incompatible legal moves.', validMoves, data, game.currentPosition.moves);
-		console.log('%cData successfully verified.', "color:LimeGreen");
+		console.log('%cData successfully verified.', LOG.valid);
 		console.timeEnd('Data Validation');
 	};
 
 	$scope.validatePieceData = function() {
 		console.time('Data Validation');
-		console.log('%cValidating data compability: Pieces', "color:LimeGreen");
+		console.log('%cValidating data compability: Pieces', LOG.valid);
 	//	Check if data across all representation types is compatible.
 	//	Position displayed on the user interface cannot differ from
 	//	internal position representation. Compare pieces on the board:
@@ -232,7 +237,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 
 		console.assert(validCount, 'Incompatible pieces.', $('.piece').length, game.currentPosition.pieceLists.all.length);
 		console.assert(validSquares, 'Incompatible occupied squares.');	
-		console.log('%cData successfully verified.', "color:LimeGreen");
+		console.log('%cData successfully verified.', LOG.valid);
 		console.timeEnd('Data Validation');
 	};
 
@@ -240,7 +245,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 		$scope.displayPieces(game.currentPosition);
 		$scope.enableDragDrop();
 		$scope.nextTurn(false);
-		console.log('Starting game!');
+		console.log('%cChessboard control flow started.', LOG.action);
 	};
 
 	$scope.nextTurn = function(switchActive) {
@@ -249,6 +254,7 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	//	If the game is in progress (switchActive == true), always select opposite player.
 	//	On game's first move don't switch active player (switchActive == false). 
 		if (switchActive) {
+			console.log('%c\nNEXT TURN\n', LOG.action);
 			game.switchActive();
 		}
 		if (game.activePlayer.isUser) {
@@ -259,11 +265,10 @@ app.controller('chessboardController', function($scope, settings, rules, game) {
 	};
 
 	$scope.endGame = function(result) {
-		console.log('Game Over.', result);
+		console.log('%c\nGAME OVER\n', LOG.action, result);
 	}
 
 	$scope.$on('start', function() {
-		console.log('Starting the game...');
 		$scope.startGame();
 	});
 

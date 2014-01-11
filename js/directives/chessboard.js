@@ -157,7 +157,7 @@ app.directive('chessboard', function(settings, rules, game) {
 				if (!move.isEnpassant) {
 					$('.piece.' + enemy).each(function() {
 						if ($(this).data('square') === move.to) {
-							console.log('%cCAPTURE!\tGoodbye piece!', "color:red", this);
+							console.log('%cCAPTURE!\tGoodbye piece!', LOG.ui, this);
 							$(this).remove();
 							return false;
 						}
@@ -165,7 +165,7 @@ app.directive('chessboard', function(settings, rules, game) {
 				} else {
 					$('.piece.' + enemy + '.pawn').each(function() {
 						if ($(this).data('square') === rules.ENPASSANT_TARGET[move.to]) {
-							console.log('%cEN PASSANT!\tGoodbye pawn!', "color:red", this);
+							console.log('%cEN PASSANT!\tGoodbye pawn!', LOG.ui, this);
 							$(this).remove();
 							return false;
 						}
@@ -176,7 +176,7 @@ app.directive('chessboard', function(settings, rules, game) {
 				castle = rules.CASTLE_ROOKS[move.color][side];
 				$('.piece.' + color + '.rook').each(function() {
 					if ($(this).data('square') === castle.from) {
-						console.log('%cCASLTE!\tGo rook!', "color:red", side);
+						console.log('%cCASLTE!\tGo rook!', LOG.ui, side);
 						scope.movePiece($(this), castle.to);
 						return false;
 					}
@@ -193,7 +193,7 @@ app.directive('chessboard', function(settings, rules, game) {
 					});
 				});
 			}
-			console.log('%cDisplay cleanup complete...', "color:red");
+			console.log('%cDisplay cleanup complete.', LOG.ui);
 		};
 
 		scope.movePiece = function(pieceElement, square) {
@@ -275,7 +275,7 @@ app.directive('chessboard', function(settings, rules, game) {
 			}
 		};
 
-		console.log('Chessboard directive linked.', element);
+		console.log('%cChessboard linked.', LOG.ui);
 	}
 	return {
 		restrict: 'A',

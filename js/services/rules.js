@@ -2,7 +2,7 @@
 
 //	Define standard chess rules.
 app.factory('rules', function(settings) {
-	console.log('%cDefining basic data...', "color:DarkViolet");
+	console.log('%cDefining basic data...', LOG.action);
 //	Chess rules are precomputed and stored in `rules` object, which is a set of 
 //	(frozen) flags, arrays and hashtables. Anything regarding chess rules, move
 //	generation & validity etc, which may be of use to other modules is kept here.
@@ -338,7 +338,7 @@ app.factory('rules', function(settings) {
 // 	.yield(move)			Returns modified copy
 //	.evaluate() 			Returns position's value
 //
-	console.log('%cDefining positions...', "color:DarkViolet");
+	console.log('%cDefining positions...', LOG.action);
 
 //	validFen :: RegEx
 //	Create regular expression for validating FEN strings.	
@@ -555,7 +555,7 @@ app.factory('rules', function(settings) {
 						this.pieceLists[piece.color].push(piece);
 					}
 				}
-				console.log('%cpieceLists:', "color:DarkViolet;text-decoration:underline", this.pieceLists);
+				console.log('%cpieceLists:', LOG.state, this.pieceLists);
 			}
 		});
 		Object.defineProperty(position, 'updatePieceLists', {
@@ -578,9 +578,9 @@ app.factory('rules', function(settings) {
 						return !!((piece.type === PAWN) && (piece.square.rank === QUEENING_RANK_INDEX[move.color]));
 					});
 					this.pieceLists[move.color].push(this.pieces[move.to]);
-					console.log('%cRedirecting moveList pointer to...', "color:DarkViolet", _.last(this.pieceLists[move.color]).name);
+					console.log('%cRedirecting moveList pointer to...', LOG.action, _.last(this.pieceLists[move.color]).name);
 				}
-				console.log('%cpieceLists:', "color:DarkViolet;text-decoration:underline", this.pieceLists);
+				console.log('%cpieceLists:', LOG.state, this.pieceLists);
 			}
 		});
 
@@ -590,7 +590,7 @@ app.factory('rules', function(settings) {
 					piece = this.pieceLists.all[piece];
 					piece.updateAttacks(this);
 				}
-				console.log('%cSetting piece attacks...', "color:DarkViolet");
+				//console.log('%cSetting piece attacks...', LOG.action);
 			}
 		});
 		Object.defineProperty(position, 'updatePieceAttacks', {
@@ -705,7 +705,7 @@ app.factory('rules', function(settings) {
 				}
 				this.checks = checks;
 				this.pieces[kingSquare].checks = checks;
-				console.log('%cchecks:', "color:DarkViolet;text-decoration:underline", checks);
+				console.log('%cchecks:', LOG.state, checks);
 			}
 		});
 
@@ -796,7 +796,7 @@ app.factory('rules', function(settings) {
 			//	constructor / factory function.		
 				this.pinLists[WHITE] = pins[WHITE];
 				this.pinLists[BLACK] = pins[BLACK];
-				console.log('%cpins:', "color:DarkViolet;text-decoration:underline", this.pinLists);
+				console.log('%cpins:', LOG.state, this.pinLists);
 			}
 		});
 
@@ -829,7 +829,7 @@ app.factory('rules', function(settings) {
 
 				this.moves = moves;
 				console.timeEnd('Setting moves');
-				console.log('%cmoves:', "color:DarkViolet;text-decoration:underline", this.moves);
+				console.log('%cmoves:', LOG.state, this.moves);
 			}
 		});
 		Object.defineProperty(position, 'updateMoves', {
@@ -847,7 +847,7 @@ app.factory('rules', function(settings) {
 
 				this.moves = moves;
 				console.timeEnd('Updating moves');
-				console.log('%cmoves:', "color:DarkViolet;text-decoration:underline", this.moves);
+				console.log('%cmoves:', LOG.state, this.moves);
 			}
 		});
 
@@ -859,7 +859,7 @@ app.factory('rules', function(settings) {
 			//	1 		01 		Draw
 			//	2 		10 		White wins
 			//	3 		11 		Black win
-				console.log('%cChecking result. Legal moves:', "color:DarkViolet", this.moves.length);
+				console.log('%cChecking result. Legal moves:', LOG.action, this.moves.length);
 				if (this.moves.length) {
 					return 0;
 				}
@@ -884,7 +884,7 @@ app.factory('rules', function(settings) {
 				var from = move.from, to = move.to, special = move.special,
 					color = move.color, enemy = opposite(color);
 
-				console.log('%cNew move', "color:DarkViolet", move);
+				console.log('%cUpdating position after move...', LOG.action, move.san);
 
 			//	1. Update pieces (& piece 'square' properties)
 			//	Move piece to target square (occupying piece is lost). Empty initial square.
@@ -909,10 +909,10 @@ app.factory('rules', function(settings) {
 					} else if (move.isPromote) {
 					//	A pawn has promoted. Delete it and create new piece in its place.
 					//	!Important
-						console.log('%cPromoting to', "color:DarkViolet", move.promote, move.promote.pieceType);
+						console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
 						delete this.pieces[to];
 						this.pieces[to] = piece(move.promote, to);
-						console.log('%cNew piece', "color:DarkViolet;text-decoration:underline", this.pieces[to]);
+						console.log('%cNew piece:', LOG.state, this.pieces[to]);
 					}
 				}
 
@@ -941,7 +941,7 @@ app.factory('rules', function(settings) {
 						this.castleRights[enemy] &= 1;
 					}
 				}
-				console.log('%ccastleRights', "color:DarkViolet;text-decoration:underline", this.castleRights);
+				console.log('%ccastleRights', LOG.state, this.castleRights);
 
 			//	4. 	Update enpassantAt
 				if (move.isDouble) {
@@ -949,7 +949,7 @@ app.factory('rules', function(settings) {
 				} else {
 					this.enpassantAt = null;
 				}
-				console.log('%cenpassantAt', "color:DarkViolet;text-decoration:underline", this.enpassantAt);
+				console.log('%cenpassantAt', LOG.state, this.enpassantAt);
 
 			//	5. 	Update halfMoveClock
 				if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
@@ -1020,7 +1020,7 @@ app.factory('rules', function(settings) {
 		check.ray = ray;
 		Object.freeze(check);
 
-		console.log('%cCreated new check:', "color:DarkViolet;text-decoration:underline", check);
+		console.log('%cCreating new check...', LOG.action, check);
 		return check;
 	}
 
@@ -1050,7 +1050,7 @@ app.factory('rules', function(settings) {
 		pin.ray = ray;
 		Object.freeze(pin);
 
-		console.log('%cCreated new pin:', "color:DarkViolet;text-decoration:underline", pin);
+		console.log('%cCreating new pin...', LOG.action, pin);
 		return pin;
 	}
 
@@ -1097,7 +1097,7 @@ app.factory('rules', function(settings) {
 //	Instead, a new instance of Piece is created on the promotion square.
 //	In general, 'code' property of a piece is meant to be immutable, whereas
 //	'square', 'attacks' and 'moves' are updated every time position changes.
-	console.log('%cDefining pieces...', "color:DarkViolet");
+	console.log('%cDefining pieces...', LOG.action);
 
 //	Piece prototype.
 	_piece = {};
@@ -1530,7 +1530,7 @@ app.factory('rules', function(settings) {
 //
 // 	Move may also get an evaluation (value) during game tree analysis.
 //	* 	(value)
-	console.log('%cDefining moves...', "color:DarkViolet");
+	console.log('%cDefining moves...', LOG.action);
 
 	_move = {};
 	Object.defineProperties(_move, {
@@ -1610,25 +1610,41 @@ app.factory('rules', function(settings) {
 			'piece': 		{ get: function() { return pieceCode; } },
 			'type': 		{ get: function() { return pieceType; } },
 			'color': 		{ get: function() { return color; } },
-			'notation': 	{ get: 
-				function() {
-				//	Standart move notation (e4, Nxc3)
-					var notation = PIECE_TYPE_NOTATION[pieceType];
+			'san': { 
+				get: function() {
+				//	SAN: Standart Algebraic Notation.
+				//	[piece symbol][*disambiguation][*capture][to square][*promote to][**check(mate)]
+				//	Castle: O-O, O-O-O
+					var notation;
+					if (this.isCastle) {
+						notation = (this.castle === 0) ? 'O-O-O' : 'O-O';
+						return notation;
+					}
+				//	Piece symbol
+					notation = PIECE_TYPE_NOTATION[pieceType];
+				//	Disambiguation
+				//
+				//	Capture
 					if (this.isCapture) {
 						if (pieceCode.pieceType === PAWN) {
 							notation += FILE_NAMES[from.file];
 						}
 						notation += 'x';
 					}
+				//	Destination square
 					notation += SQUARE_NAME[to];
+				//	Promote
 					if (this.isPromote) {
 						notation += PIECE_TYPE_NOTATION[this.promote.pieceType];
 					}
+				//	Check / Checkmate
+				//	Requires position scan. Handled elsewhere.
+				//
 					return notation;
 				} 
 			},
-			'value': 		{ get: 
-				function() {
+			'value': { 
+				get: function() {
 				//	Move values allow for quick pre-sorting of moves, before doing
 				//	full evaluation. High value moves are evaluated first, the ones
 				//	with especially low values may get ignored (as, with large

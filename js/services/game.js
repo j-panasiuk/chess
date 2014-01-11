@@ -86,7 +86,7 @@ app.factory('game', function(settings, rules) {
 		player = new Player();
 		player.color = color;
 
-		console.log('Creating new player:', player);
+		console.log('%cCreating new player...', LOG.action, player);
 		return player;
 	}
 	game.player = player;
@@ -99,7 +99,7 @@ app.factory('game', function(settings, rules) {
 	players.push(player(1, settings.controlBlack));
 	Object.freeze(players);
 	game.players = players;
-	console.log('Players created', players);
+	console.log('%cplayers:', LOG.state, players);
 
 //	Creating starting position.
 //	(Accessible through: game.currentPosition)

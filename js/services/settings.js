@@ -3,7 +3,7 @@
 //	Define settings for game rules.
 //	Set default values.
 app.factory('settings', function() {
-	console.log('%cCreating settings...', "color:DarkViolet");
+	console.log('%cCreating settings...', LOG.action);
 	var defaults, settings;
 
 	defaults = {
@@ -15,7 +15,8 @@ app.factory('settings', function() {
 		'timeLimit': 0,
 		'isReversed': false,
 		'debugMode': false,
-		'animationTime': 300
+		'animationTime': 200,
+		'delayAI': 200
 	};
 	Object.freeze(defaults);
 

@@ -8,7 +8,16 @@ $(function adjustBoardSize() {
 });
 */
 
-console.log('%cExtending prototypes...', "color:DarkViolet;");
+var LOG = {
+	action: "color:SlateBlue",
+	state: "color:BlueViolet; font-style:italic",
+	ui: "color:SandyBrown",
+	valid: "color:LimeGreen",
+	promise: "color:CornflowerBlue",
+	warn: "color:DarkOrange"
+};
+
+console.log('%cExtending prototypes...', LOG.action);
 //	*** EXTEND PROTOTYPES
 //	-----------------------------------------------------------------
 //	Squares on the chessboard are represented by numbers (integers).
@@ -56,5 +65,3 @@ Object.defineProperty(Array.prototype, 'isDiagonal', {
 		return !!((vector === 15) || (vector === 17));
 	}
 });
-
-console.log('`scripts` loaded.');
