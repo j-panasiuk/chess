@@ -6,31 +6,63 @@ app.factory('game', function(settings, rules) {
 //	----------------------------------------------------------------------------
 //	players 				Array[2] of player objects. [<white>, <black>]
 //	currentPosition 		position object representing current game state.
-//	history					Object containing two lists: fen positions and moves.
 //	activeColor 			(Quick Access) Active color value: 0 | 1
 //	activePlayer 			(Quick Access) Pointer to active player object.
+//	history 				*TBI
 //
 //	player 					Factory function of player objects.
 //	switchActive 			Function. Changes active side to the opponent.
 
-//	Declare local variables.
-	var players, currentPosition, activeColor, activePlayer,
-		_player, _user, _ai, _history; // Prototypes.
+//	Declare local variables (for factories).
+	var _player, _user, _ai; // Prototypes.
 
 	Object.defineProperties(game, {
 		'players': 			{ writable: true, enumerable: true, configurable: true },
 		'currentPosition': 	{ writable: true, enumerable: true, configurable: true },
-		'history': 			{ writable: true, enumerable: true, configurable: true },
 		'activeColor': 		{ writable: true, enumerable: true, configurable: true },
-		'activePlayer': 	{ writable: true, enumerable: true, configurable: true }			
+		'activePlayer': 	{ writable: true, enumerable: true, configurable: true }	
+		//'history': 		{ writable: true, enumerable: true, configurable: true },		
 	});
 
 	Object.defineProperty(game, 'switchActive', {
 		value: function() {
-			activeColor = rules.opposite(activeColor);
-			activePlayer = players[activeColor];
-			this.activeColor = activeColor;
-			this.activePlayer = activePlayer;
+			this.activeColor = rules.opposite(this.activeColor);
+			this.activePlayer = this.players[this.activeColor];
+		}
+	});
+
+	Object.defineProperty(game, 'initialize', {
+		value: function(players, fen) {
+			console.assert((players === undefined) || (players.length === 2), 'Invalid players array.');
+			console.assert((fen === undefined) || fen.match(rules.validFen), 'Invalid FEN.');
+		//	Initialize game logic, based on supplied arguments and global settings.
+		//	Both arguments are optional; if not provided, fallback to default values.
+			var currentPosition;
+
+		//	Define players.
+			if (!players) {
+				players = [];
+				players.push(player(0, settings.controlWhite));
+				players.push(player(1, settings.controlBlack));				
+			}
+			Object.freeze(players);
+			this.players = players;
+
+		//	Create starting position.
+		//	Update all properties.
+			var fen = fen || settings.fen;
+			currentPosition = rules.position(fen);
+			currentPosition.setPieceLists();
+			currentPosition.setPieceAttacks();
+			currentPosition.setAttacked();
+			currentPosition.setChecks();
+			currentPosition.setPins();
+			currentPosition.setMoves();
+			this.currentPosition = currentPosition;
+
+		//	Creating quick access properties.
+			this.activeColor = this.currentPosition.activeColor;
+			this.activePlayer = this.players[this.activeColor];
 		}
 	});
 
@@ -91,37 +123,10 @@ app.factory('game', function(settings, rules) {
 	}
 	game.player = player;
 
-	//console.debug('Control flags (w, b):', settings.controlWhite, settings.controlBlack);
-//	Create player objects for white and black.
-//	Freeze to disable changing player settings during the game.
-	players = [];
-	players.push(player(0, settings.controlWhite));
-	players.push(player(1, settings.controlBlack));
-	Object.freeze(players);
-	game.players = players;
-	console.log('%cplayers:', LOG.state, players);
-
-//	Creating starting position.
-//	(Accessible through: game.currentPosition)
-	console.time('Setting position');
-	currentPosition = rules.position(settings.fen);
-	currentPosition.setPieceLists();
-	currentPosition.setPieceAttacks();
-	currentPosition.setAttacked();
-	currentPosition.setChecks();
-	currentPosition.setPins();
-	currentPosition.setMoves();
-	game.currentPosition = currentPosition;
-	console.timeEnd('Setting position');
-
-//	Creating Quick Access objects.
-	activeColor = currentPosition.activeColor;
-	activePlayer = players[activeColor];
-	game.activeColor = activeColor;
-	game.activePlayer = activePlayer;
-
-//	Creating game history.
-//	(Accessible through: game.history)
+//	* GAME HISTORY
+//	Property 				Description
+//	----------------------------------------------------------------------------
+/*
 	_history = {};
 	Object.defineProperties(_history, {
 		'fenList': 		{ value: [currentPosition.fen], writable: true, enumerable: true, configurable: true },
@@ -130,6 +135,10 @@ app.factory('game', function(settings, rules) {
 	});
 	Object.preventExtensions(_history);
 	game.history = _history;
+*/
+
+//	Initialize default game model.
+	game.initialize();
 
 	return game;
 });

@@ -96,14 +96,16 @@ body {
 	    bottom: 1px;
 	    right: 3px;
 	    font-size: 11px;
-	    color: rgba(0,0,0,.4);
+	    line-height: 100%;
+	    color: #999;
 	}	
 	&.subscript.data {
 	    position: absolute;
 	    bottom: 1px;
 	    left: 2px;
 	    font-size: 11px;
-	    color: #333;
+	    line-height: 100%;
+	    color: #444;
 	}
 
 	&.square-outline {

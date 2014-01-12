@@ -4,41 +4,46 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	$scope.legalTargets = [];
 	$scope.legalMoves = {};
-	$scope.checkSquares = [];
-	$scope.pinSquares = [];
+	
+	$scope.squaresState = {};
+	for (var square in rules.SQUARES) {
+		square = rules.SQUARES[square];
+		$scope.squaresState[square] = 0;
+	}
 
-	$scope.updateCheckSquares = function() {
-	//	For chess rules there is no difference between `checked` and `attacked` squares,
-	//	but the distinction is made for user interface purposes.
-		var squares,
-			checks = game.currentPosition.checks;
-
-		if (!checks.length) {
-			squares = [];
-		} else {
-			squares = checks.map(function(check) {
-				return check.ray;
-			});
-			squares = _.flatten(squares);
-		}
-		$scope.checkSquares = squares;
-		console.debug('Check squares:', squares);
-	};
-
-	$scope.updatePinSquares = function() {
-		var squares,
+	$scope.updateSquaresState = function() {
+		console.debug('UPDATING SQUARES_STATE');
+		var checkSquares, pinSquares, check, pin,
+			checks = game.currentPosition.checks,
 			pins = game.currentPosition.pinLists.all;
 
-		if (!pins.length) {
-			squares = [];
+		if (!checks.length) {
+			checkSquares = [];
 		} else {
-			squares = pins.map(function(pin) {
+			checkSquares = checks.map(function(check) {
+				return check.ray;
+			});
+			checkSquares = _.flatten(checkSquares);
+		}
+
+		if (!pins.length) {
+			pinSquares = [];
+		} else {
+			pinSquares = pins.map(function(pin) {
 				return pin.ray;
 			});
-			squares = _.flatten(squares);
+			pinSquares = _.flatten(pinSquares);
 		}
-		$scope.pinSquares = squares;
-		console.debug('Pin squares:', squares);
+
+		for (var square in rules.SQUARES) {
+			square = rules.SQUARES[square];
+			check = _.contains(checkSquares, square) ? 1 : 0;
+			pin = _.contains(pinSquares, square) ? 2 : 0;
+
+			$scope.squaresState[square] = 0 | check | pin;
+			if (check || pin) console.debug('Anomaly found:', square, check, pin);
+		}
+		console.debug('UPDATED SQUARES_STATE');
 	};
 
 	$scope.updateMovesHash = function(color) {
@@ -171,9 +176,8 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 		$scope.validatePieceData();
 
-		$scope.updateCheckSquares();
-		$scope.updatePinSquares();
-		$scope.$broadcast('updateTokens');
+		$scope.updateSquaresState();
+		$scope.$digest();
 
 		result = game.currentPosition.gameOver;
 		if (result) {
@@ -241,7 +245,13 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		console.timeEnd('Data Validation');
 	};
 
-	$scope.startGame = function() {
+	$scope.startGame = function(restart) {
+		if (restart) {
+		//	In case of restarting a game, $digest of chessboard scope is needed
+		//	to let HTML chessboard template catch up with refreshed model.
+			$scope.$digest(); //$scope.$apply();
+			//$scope.$broadcast('updateTokens');
+		}
 		$scope.displayPieces(game.currentPosition);
 		$scope.enableDragDrop();
 		$scope.nextTurn(false);
@@ -266,10 +276,11 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	$scope.endGame = function(result) {
 		console.log('%c\nGAME OVER\n', LOG.action, result);
+		$scope.$emit('gameOver', result);
 	}
 
-	$scope.$on('start', function() {
-		$scope.startGame();
+	$scope.$on('startGame', function(event, restart) {
+		$scope.startGame(restart || false);
 	});
 
 });

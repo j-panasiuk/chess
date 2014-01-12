@@ -37,7 +37,7 @@ app.factory('rules', function(settings) {
 		ATTACK_VECTORS, PASSIVE_VECTORS, ATTACK_RAYS, PASSIVE_RAYS, ATTACK_FIELDSET, // Piece attacks & movement.
 		QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, // Specific ranks.
 		CASTLE_ROOKS, CASTLE_KING_TO, ENPASSANT_TARGET, // Special moves & square-specific stuff.
-		validFen,
+		validFen, // Regular expression.
 		_check, _pin, _piece, _move, // Object prototypes.
 		_pawn, _knight, _bishop, _rook, _queen, _king, // Piece prototypes.
 		WHITE = 0, BLACK = 1, // Color codes.
