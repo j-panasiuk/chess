@@ -26,22 +26,6 @@ body {
 		position: absolute;
 	    width: $square-size;
 	    height: $square-size;
-	    /*
-	    &.light { background: #ffe; }
-	    &.dark { background: #88f; }
-	    */
-	}
-
-	@for $i from 0 through 7 {
-		.square.rank-#{$i} {
-			bottom: $i * $square-size;
-		}
-	}
-
-	@for $i from 0 through 7 {
-		.square.file-#{$i} {
-			left: $i * $square-size;
-		}
 	}
 
 	.piece {
@@ -65,6 +49,27 @@ body {
 		&.black.king { background-image: url('../img/pieces/black-king.png'); }
 
 		&.invisible { visibility: hidden; }
+	}
+
+	@for $i from 0 through 7 {
+		.rank-#{$i} {
+			bottom: $i * $square-size;
+		}
+	}
+
+	@for $i from 0 through 7 {
+		.file-#{$i} {
+			left: $i * $square-size;
+		}
+	}
+
+	@for $i from 0 through 7 {
+		@for $j from 0 through 7 {
+			.at-#{16*$i + $j} {
+				left: $j * $square-size;
+				bottom: $i * $square-size;
+			}
+		}
 	}
 }
 
