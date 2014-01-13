@@ -34,6 +34,9 @@ Object.defineProperties(Number.prototype, {
 							return !!((0 <= this.valueOf()) && (this.valueOf() < 16) && (this.valueOf()>>1)^3); } 
 						}
 });
+Object.defineProperty(Number.prototype, 'complex', {
+	get: function() { return (this.file + this.rank) % 2 ? 'light' : 'dark'; }
+});
 
 //	Arrays are frequently used to store rays and other sets of squares.
 //	Extend Array.prototype by addotional functionalities.

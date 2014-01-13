@@ -32,7 +32,7 @@ app.factory('rules', function(settings) {
 //	opposite 				Returns opposite color code.
 
 //	Declare local variables.
-	var COLORS, COLOR_NAME, SQUARES, FILE_NAMES, RANK_NAMES, SQUARE_NAME, RANKS, FILES,
+	var COLORS, COLOR_NAME, COLOR_MASK, SQUARES, FILE_NAMES, RANK_NAMES, SQUARE_NAME, RANKS, FILES,
 		PIECES, PIECE_TYPES, PIECE_NAME, FEN_TO_CODE, CODE_TO_FEN, PIECE_TYPE_NOTATION, // Pieces.
 		ATTACK_VECTORS, PASSIVE_VECTORS, ATTACK_RAYS, PASSIVE_RAYS, ATTACK_FIELDSET, // Piece attacks & movement.
 		QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, // Specific ranks.
@@ -51,6 +51,10 @@ app.factory('rules', function(settings) {
 	rules.COLOR_NAME = {};
 	rules.COLOR_NAME[0] = 'white';
 	rules.COLOR_NAME[1] = 'black';
+
+	COLOR_MASK = {};
+	COLOR_MASK[0] = W;
+	COLOR_MASK[1] = B;
 
 //	SQUARES :: Array[64]
 //	Stores all square values, starting from 0 = A1 up to 119 = H8.
@@ -819,7 +823,7 @@ app.factory('rules', function(settings) {
 			//	(Knights) 				Can't move when pinned.
 			// 	(Bishops) 				Can't move when pinned horizontally/vertically.
 			//	(Rooks) 				Can't move when pinned diagonally.
-				var pieces,	ownPieceList = this.pieceLists[this.activeColor],
+				var ownPieceList = this.pieceLists[this.activeColor],
 					moves = [];
 
 				for (var piece in ownPieceList) {
@@ -837,7 +841,8 @@ app.factory('rules', function(settings) {
 			value: function updateMoves(move) {
 				console.time('Updating moves');
 			//	*(Duplicate of setMoves() function, to be changed) 
-				var ownPieceList = this.pieceLists[this.activeColor],
+				var color = this.activeColor,
+					ownPieceList = this.pieceLists[color],
 					moves = [];
 
 				for (var piece in ownPieceList) {
@@ -848,7 +853,8 @@ app.factory('rules', function(settings) {
 
 			//	Update moves in current game context.
 			// 	Disambiguate move notation.
-				(function() {
+				(function eliminateCollisions() {
+					console.log('%cEliminating move collisions...', LOG.action);
 				//	Look for multiple:
 				//	+ Knights 
 				//	+ Opposite-color bishops
@@ -860,6 +866,82 @@ app.factory('rules', function(settings) {
 				//		Intersect results.
 				//		If result is non-empty, there is ambiguity.
 				//			Pass moves in question to disambiguate()
+				//
+					var pieces, types, collisions;
+
+				//	Exclude pawns and king from list of examined pieces.
+				//	(Pawns capture ambiguity is already handled by adding file letter,
+				//	while the king is obviously a singleton).
+					pieces = _.reject(ownPieceList, function exclude(piece) {					
+						return (piece.name === 'pawn') || (piece.name === 'king');
+					});
+					//	pieces == [
+					//		N, N, B, B, Q, Q, Q
+					//	]
+
+				//	Group own pieces by piece name. Result is a { <name>: <piece> } hash.
+				//	In case of bishops, split into 'dark' and 'light' complex groups.
+					types = _.groupBy(pieces, function groupByName(piece) {					
+						return (piece.name === 'bishop') ? piece.complex : piece.name; 
+					});
+					//	types == {
+					//		'knight': [N, N],
+					//		'dark': [B],
+					//		'light': [B],
+					//		'rook': [],
+					//		'queen': [Q, Q, Q],
+					//	}
+
+				//	Exclude singular and empty arrays, as these are not going to create collisions.
+					types = _.omit(types, function exclude(type) {					
+						return type.length < 2;
+					});
+					//	types == {
+					//		'knight': [N, N],
+					//		'queen': [Q, Q, Q]
+					//	}
+
+					for (var type in types) {
+						type = types[type];
+						collisions = type.map(function(piece) { return piece.moves; });
+						//	colisions == [
+						//		[Ae4*, Ae6**, Af7], 
+						//		[Bd3, Be4*],
+						//		[Ce4*, Ce6**]
+						//	]
+						collisions = _.flatten(collisions);
+						//	collsions = [
+						//		Ae4*, Ae6**, Af7, Bd3, Be4*, Ce4*, Ce6**
+						//	]
+						collisions = _.groupBy(collisions, function(move) { return move.to });
+						//	collisions = {
+						//		'e4': [Ae4, Be4, Ce4],
+						//		'e6': [Ae6, Ce6],
+						//		'f7': [Af7],
+						//		'd3': [Bd3]
+						//	}
+						collisions = _.omit(collisions, function exclude(collision) {
+							return collision.length < 2;
+						});
+						//	collisions = {
+						//		'e4': [Ae4, Be4, Ce4],
+						//		'e6': [Ae6, Ce6]
+						//	}
+						if (_.size(collisions) > 0) {
+							console.log('%ccollisions:', LOG.state, collisions);
+						} else {
+							console.log('%cNo collisions.', LOG.action);
+						}
+						
+
+
+						for (var collision in collisions) {
+							collision = collisions[collision];
+							disambiguate(collision);
+							console.log('%cSolved collision...', LOG.action, _.values(collision).map(function(move) { return move.san; }));
+						}
+					}
+
 				}());
 
 				this.moves = moves;
@@ -1257,7 +1339,8 @@ app.factory('rules', function(settings) {
 		'name': 			{ get: function() { return "bishop" } },
 		'range': 			{ get: function() { return 7; } },
 		'points': 			{ get: function() { return 3; } },
-		'attackVectors': 	{ get: function() { return [-17,-15,15,17]; } }
+		'attackVectors': 	{ get: function() { return [-17,-15,15,17]; } },
+		'complex': 			{ get: function() { return this.square.complex; } }
 	});
 	Object.defineProperty(_bishop, 'updateAttacks', {
 		value: function updateBishopAttacks(position) {
