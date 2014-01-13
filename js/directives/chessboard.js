@@ -6,7 +6,7 @@ app.directive('chessboard', function(settings, rules, game) {
 		scope.game = game;
 
 		scope.squareColor = function(square) {
-			return ((square.rank + square.file) % 2) ? 'light' : 'dark';
+			return square.complex;
 		};
 
 		scope.displayPieces = function(position) {
