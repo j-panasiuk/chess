@@ -1784,7 +1784,7 @@ app.factory('rules', function(settings) {
 					notation += SQUARE_NAME[to];
 				//	Promote
 					if (this.isPromote) {
-						notation += PIECE_TYPE_NOTATION[this.promote.pieceType];
+						notation += '=' + PIECE_TYPE_NOTATION[this.promote.pieceType];
 					}
 				//	Check / Checkmate
 				//	Requires position scan. Handled elsewhere.

@@ -12,7 +12,8 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	}
 
 	$scope.updateSquaresState = function() {
-		console.debug('UPDATING SQUARES_STATE');
+	//	`squaresState` hash tracks current status of each square on the board.
+	//	This includes keeping information about checks and pins.
 		var checkSquares, pinSquares, check, pin,
 			checks = game.currentPosition.checks,
 			pins = game.currentPosition.pinLists.all;
@@ -41,9 +42,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 			pin = _.contains(pinSquares, square) ? 2 : 0;
 
 			$scope.squaresState[square] = 0 | check | pin;
-			if (check || pin) console.debug('Anomaly found:', square, check, pin);
 		}
-		console.debug('UPDATED SQUARES_STATE');
 	};
 
 	$scope.updateMovesHash = function(color) {
@@ -116,10 +115,11 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 			} catch (error) {
 				console.log('%cCaught error in AI move generation.', LOG.warn, error.message);
 			//	Problems encountered in move generating script.
-			//	Fallback to basic move selection method (based on move value).				
-				move = position.moves.sort(function(x, y) {	
-					return y.value - x.value; 
-				})[0];
+			//	Fallback to basic move selection method (based on move value).
+				move = _.sample(position.moves);				
+				//move = position.moves.sort(function(x, y) {	
+				//	return y.value - x.value; 
+				//})[0];
 			} finally {
 				console.debug('%cAI selected move.', LOG.action, move.san);
 				$scope.handleMove(move);
@@ -234,6 +234,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		$('.piece').each(function() {
 			var square = $(this).data('square');
 			if (!game.currentPosition.pieces[square]) {
+				console.debug('BUG', this, $(this), square);
 				validSquares = false;
 				return false;
 			}
