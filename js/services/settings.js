@@ -14,7 +14,7 @@ app.factory('settings', function() {
 		'mode': 0,
 		'timeLimit': 0,
 		'isReversed': false,
-		'debugMode': false,
+		'debugMode': true,
 		'animationTime': 200,
 		'delayAI': 200
 	};

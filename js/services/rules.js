@@ -37,6 +37,7 @@ app.factory('rules', function(settings) {
 		ATTACK_VECTORS, PASSIVE_VECTORS, ATTACK_RAYS, PASSIVE_RAYS, ATTACK_FIELDSET, // Piece attacks & movement.
 		QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, // Specific ranks.
 		CASTLE_ROOKS, CASTLE_KING_TO, ENPASSANT_TARGET, // Special moves & square-specific stuff.
+		MOVE_SPECIAL_MASK, MOVE_SPECIAL, // Move special values.
 		validFen, // Regular expression.
 		_check, _pin, _piece, _move, // Object prototypes.
 		_pawn, _knight, _bishop, _rook, _queen, _king, // Piece prototypes.
@@ -836,7 +837,7 @@ app.factory('rules', function(settings) {
 			value: function updateMoves(move) {
 				console.time('Updating moves');
 			//	*(Duplicate of setMoves() function, to be changed) 
-				var pieces,	ownPieceList = this.pieceLists[this.activeColor],
+				var ownPieceList = this.pieceLists[this.activeColor],
 					moves = [];
 
 				for (var piece in ownPieceList) {
@@ -844,6 +845,22 @@ app.factory('rules', function(settings) {
 					piece.updateMoves(this);
 					moves = moves.concat(piece.moves);
 				}
+
+			//	Update moves in current game context.
+			// 	Disambiguate move notation.
+				(function() {
+				//	Look for multiple:
+				//	+ Knights 
+				//	+ Opposite-color bishops
+				//	+ Rooks
+				//	+ Queens
+				//	For each category:
+				//		For each piece:
+				//			Map available moves to destination squares.
+				//		Intersect results.
+				//		If result is non-empty, there is ambiguity.
+				//			Pass moves in question to disambiguate()
+				}());
 
 				this.moves = moves;
 				console.timeEnd('Updating moves');
@@ -893,17 +910,17 @@ app.factory('rules', function(settings) {
 				this.pieces[to].square = to;
 				this.pieces[from] = null;
 				if (special) {
-					if (special === 2) {
+					if (special === MOVE_SPECIAL.castles[0]) {
 					//	Kingside castle. Move the rook.
 						this.pieces[CASTLE_ROOKS[color][0].to] = this.pieces[CASTLE_ROOKS[color][0].from];
 						this.pieces[CASTLE_ROOKS[color][0].to].square = CASTLE_ROOKS[color][0].to;
 						this.pieces[CASTLE_ROOKS[color][0].from] = null;
-					} else if (special === 3) {
+					} else if (special === MOVE_SPECIAL.castles[1]) {
 					//	Queenside castle. Move the rook.
 						this.pieces[CASTLE_ROOKS[color][1].to] = this.pieces[CASTLE_ROOKS[color][1].from];
 						this.pieces[CASTLE_ROOKS[color][1].to].square = CASTLE_ROOKS[color][1].to;
 						this.pieces[CASTLE_ROOKS[color][1].from] = null;	
-					} else if (special === 5) {
+					} else if (special === MOVE_SPECIAL.enpassant) {
 					//	Enpassant. Om-nom-nom
 						this.pieces[ENPASSANT_TARGET[to]] = null;
 					} else if (move.isPromote) {
@@ -1132,7 +1149,7 @@ app.factory('rules', function(settings) {
 		//	March forawrd!
 		//	Account for pins and checks.
 		//	Look out for promotions.
-			promote = (from.rank === SEVENTH_RANK_INDEX[this.color]) ? (8+3) : 0;
+			promote = (from.rank === SEVENTH_RANK_INDEX[this.color]) ? (MOVE_SPECIAL_MASK.promote|MOVE_SPECIAL_MASK.queen) : 0;
 
 			squaresTo = _.flatten(PASSIVE_RAYS[from][this.code]);
 			if (checkCount) {
@@ -1160,7 +1177,7 @@ app.factory('rules', function(settings) {
 				//	Obstacle on the way. Can go no further.
 					break;
 				}
-				special = (i > 0) ? 1 : (0|promote);
+				special = (i > 0) ? MOVE_SPECIAL.double : (0|promote);
 				moves.push(move(position, from, to, special));
 			}
 		//	Pawn captures.
@@ -1524,22 +1541,64 @@ app.factory('rules', function(settings) {
 //		- capture 			- promote 			- castle
 // 		- enpassant 		- pawn double
 //
-//	The following properties of a move are only calculated once the move
-// 	has been made and new position has arisen:
-//	*	(double)Check 		(stale)Mate
+//	Special 	Move 			Mask Composition
+//	-----------------------------------------------------
+//	0 			Quiet
+//	1 			Double 			double
+//	2 			O-O-O 			castle|long
+//	3 			O-O 			castle|short
+//	4 			Capture 		capture
+//	5 			Enpassant 		capture|enpassant
+//	
+//	8 			Promote=N 		promote|knight
+//	9 			Promote=B 		promote|bishop
+//	10 			Promote=R 		promote|rook
+//	11 			Promote=Q 		promote|queen	
+//	12 			Capture=N 		promote|capture|knight
+//	13 			Capture=B 		promote|capture|bishop
+//	14 			Capture=R 		promote|capture|rook
+//	15 			Capture=Q 		promote|capture|queen			
 //
-// 	Move may also get an evaluation (value) during game tree analysis.
-//	* 	(value)
+//	Mask Values
+//	-----------------------------------------------------
+//	double 		1 				promote 	8
+// 	castle 		2 				knight 		0
+//	long 		0 				bishop 		1
+//	short 		1  				rook 		2
+//								queen 		3
+//	capture 	4
+//	enpassant 	1
+//
 	console.log('%cDefining moves...', LOG.action);
+
+	MOVE_SPECIAL_MASK = {
+		'double': 1,
+		'castle': 2, 		// 	*Not used (access via .castles[i])
+		'long': 0, 			//	*Not used
+		'short': 1,			//	*Not used
+		'capture': 4,
+		'enpassant': 1, 	//	*Not used
+		'promote': 8,
+		'knight': 0,
+		'bishop': 1,
+		'rook': 2,
+		'queen': 3
+	};
+	MOVE_SPECIAL = {
+		'double': 1,
+		'castles': [2, 3],
+		'capture': 4,
+		'enpassant': 5,
+	};
 
 	_move = {};
 	Object.defineProperties(_move, {
 		'special': 		{ writable: true },
-		'isCapture': 	{ get: function() { return !!(this.special & 4); } },
-		'isPromote': 	{ get: function() { return !!(this.special & 8); } },
-		'isCastle': 	{ get: function() { return this.special>>1 === 1; } },
-		'isEnpassant': 	{ get: function() { return !!(this.special === 5); } },
-		'isDouble': 	{ get: function() { return this.special === 1; } },
+		'isCapture': 	{ get: function() { return !!(this.special & MOVE_SPECIAL_MASK.capture); } },
+		'isPromote': 	{ get: function() { return !!(this.special & MOVE_SPECIAL_MASK.promote); } },
+		'isCastle': 	{ get: function() { return _.contains(MOVE_SPECIAL.castles, this.special); } },
+		'isEnpassant': 	{ get: function() { return !!(this.special === MOVE_SPECIAL.enpassant); } },
+		'isDouble': 	{ get: function() { return this.special === MOVE_SPECIAL.double; } },
 		'isQuiet': 		{ get: function() { return !this.special; } }
 	});
 	Object.defineProperty(_move, 'affectsOtherPieces', {
@@ -1571,26 +1630,31 @@ app.factory('rules', function(settings) {
 			special = (function getMoveSpecialValue() {
 				special = 0;
 				if (position.pieces[from].type !== PAWN) {
+				//	Non-pawn moves only have to take into account direct captures.
+				//	The only exception is king's castling.
 					if (position.pieces[to]) {
 					//	Normal capture.
-						return 4;
+						return MOVE_SPECIAL.capture;
 					}
 					if ((position.pieces[from].type === KING) && (dist(from, to) > 1)) {
 					//	Castle.
-						return (to.file < from.file) ? 3 : 2;
+						return (to.file > from.file) ? MOVE_SPECIAL.castles[1] : MOVE_SPECIAL.castles[0];
 					}
 				} else {
+				//	In case of pawn moves there are three additional possibilities:
+				//	Double moves, captures enpassant and promotions.
+				//	Direct captures can also combine with promoting.
 					if (dist(from, to) === 2) {
 					//	Double move forward.
-						return 1;
+						return MOVE_SPECIAL.double;
 					}
 					if (from.file !== to.file) {
 					//	Captue / Enpassant capture.
-						special = (position.pieces[to]) ? 4 : 5;	
+						special = (position.pieces[to]) ? MOVE_SPECIAL.capture : MOVE_SPECIAL.enpassant;	
 					}
 					if (to.rank === QUEENING_RANK_INDEX[color]) {
 					//	Promotion. Default piece: Queen.
-						special |= 11;	
+						special |= MOVE_SPECIAL_MASK.promote | MOVE_SPECIAL_MASK.queen;	
 					}
 				}
 				return special;
@@ -1607,6 +1671,7 @@ app.factory('rules', function(settings) {
 			'from': 		{ value: from, enumerable: true },
 			'to': 			{ value: to, enumerable: true },
 			'special': 		{ value: special, enumerable: true },
+			'origin': 		{ value: '', writable: true, configurable: true },
 			'piece': 		{ get: function() { return pieceCode; } },
 			'type': 		{ get: function() { return pieceType; } },
 			'color': 		{ get: function() { return color; } },
@@ -1623,10 +1688,11 @@ app.factory('rules', function(settings) {
 				//	Piece symbol
 					notation = PIECE_TYPE_NOTATION[pieceType];
 				//	Disambiguation
-				//
+					notation += this.origin;
 				//	Capture
 					if (this.isCapture) {
 						if (pieceCode.pieceType === PAWN) {
+						//	Pawn capture disambiguation.
 							notation += FILE_NAMES[from.file];
 						}
 						notation += 'x';
@@ -1718,10 +1784,10 @@ app.factory('rules', function(settings) {
 			(function() {
 				var promoteTo, own = (color) ? B : W;
 				switch (special % 4) {
-					case 0: 			promoteTo = own|KNIGHT; break;
-					case 1: 			promoteTo = own|BISHOP; break;
-					case 2: 			promoteTo = own|ROOK; break;
-					default: 			promoteTo = own|QUEEN; break;
+					case MOVE_SPECIAL_MASK.knight: 		promoteTo = own|KNIGHT; break;
+					case MOVE_SPECIAL_MASK.bishop: 		promoteTo = own|BISHOP; break;
+					case MOVE_SPECIAL_MASK.rook: 		promoteTo = own|ROOK; break;
+					default: 							promoteTo = own|QUEEN;
 				}				
 				Object.defineProperty(move, 'promote', {
 					value: promoteTo, enumerable: true
@@ -1753,6 +1819,40 @@ app.factory('rules', function(settings) {
 	//	1 	Horizontal 				15 	TopLeft-BottomRight diagonal
 	//	16 	Vertical 				17 	TopRight-BottomLeft diagonal
 		return Math.abs(ray[1] - ray[0]);
+	}
+
+	function disambiguate(moves) {
+		console.assert(_.isArray(moves) && (moves.length > 1), 'Invalid moves array.');
+	//	Assign unique origin tokens to each element in a set of ambiguous moves.
+	//	For example, two Knights with possible moves to 'f3' square, would share 'Nf3' notation.
+	//	Disambiguation would change their notations to 'Ndf3' and 'Ngf3'.
+	//
+	//	moves: 	Array[2+] of move objects.
+	//	(function directly modifies referenced objects)
+		var move;
+
+		if (moves.length > 2) {
+		//	For three or more pieces with the same destination, notation tokens take form
+		//	of origin square name ('e4').
+			for (var i = 0; i < moves.length; i++) {
+				move = moves[i];
+				move.origin = SQUARE_NAME[move.from]; 
+			}
+		} else {
+		//	For two pieces sharing move destination, try to distinguish them by file ('e').
+		//	If both occupy the same file, distinguish by rank ('4').
+			if (moves[0].from.file !== moves[1].from.file) {
+				for (var i = 0; i < 2; i++) {
+					move = moves[i];
+					move.origin = FILE_NAMES[move.from.file]; 
+				}
+			} else {
+				for (var i = 0; i < 2; i++) {
+					move = moves[i];
+					move.origin = FILE_NAMES[move.from.rank];
+				}
+			}
+		}
 	}
 
 	Object.freeze(rules);
