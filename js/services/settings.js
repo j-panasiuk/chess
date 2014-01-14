@@ -8,15 +8,15 @@ app.factory('settings', function() {
 
 	defaults = {
 		'fen': "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-		'controlWhite': 1, //chess.CONTROL_FLAGS.user,
-		'controlBlack': 2, //chess.CONTROL_FLAGS.ai,
+		'controlWhite': 1, 		// User
+		'controlBlack': 2,		// AI
 		'difficulty': 0,
 		'mode': 0,
 		'timeLimit': 0,
 		'isReversed': false,
 		'debugMode': true,
-		'animationTime': 200,
-		'delayAI': 200
+		'animationTime': 250,
+		'delayAI': 500
 	};
 	Object.freeze(defaults);
 

@@ -2,6 +2,12 @@
 
 app.controller('chessboardController', function($scope, $timeout, settings, rules, game, engine) {
 
+	$scope.squares = rules.SQUARES;
+	$scope.pieces = {
+		'white': [],
+		'black': []
+	};
+
 	$scope.legalTargets = [];
 	$scope.legalMoves = {};
 	
@@ -174,10 +180,9 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	//	Check game result.
 		var result;
 
-		$scope.validatePieceData();
-
 		$scope.updateSquaresState();
 		$scope.$digest();
+		$scope.validatePieceData();		
 
 		result = game.currentPosition.gameOver;
 		if (result) {
@@ -230,33 +235,43 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		var validCount = true, 
 			validSquares = true;
 
-		validCount = ($('.piece').length === game.currentPosition.pieceLists.all.length);
+
+		if ($('.piece.white').length !== $scope.pieces.white.length) {
+			validCount = false;
+		}
+		if ($('.piece.black').length !== $scope.pieces.black.length) {
+			validCount = false;
+		}
+
 		$('.piece').each(function() {
-			var square = $(this).data('square');
+			var square = +$(this).attr('at');
 			if (!game.currentPosition.pieces[square]) {
-				console.debug('BUG', this, $(this), square);
+				console.debug('PIECE PLACEMENT ERROR', this, square, game.currentPosition.pieces);
 				validSquares = false;
 				return false;
 			}
 		});
 
-		console.assert(validCount, 'Incompatible pieces.', $('.piece').length, game.currentPosition.pieceLists.all.length);
+		console.assert(validCount, 'Incompatible pieces.', $('.piece').length, $scope.pieces.white.length, $scope.pieces.black.length);
 		console.assert(validSquares, 'Incompatible occupied squares.');	
 		console.log('%cData successfully verified.', LOG.valid);
 		console.timeEnd('Data Validation');
 	};
 
 	$scope.startGame = function(restart) {
-		if (restart) {
-		//	In case of restarting a game, $digest of chessboard scope is needed
-		//	to let HTML chessboard template catch up with refreshed model.
-			$scope.$digest(); //$scope.$apply();
-			//$scope.$broadcast('updateTokens');
+	//	Begin tracking pieces, based on current game model.
+		$scope.pieces = {
+			'white': game.currentPosition.pieceLists[0],
+			'black': game.currentPosition.pieceLists[1]
+		};
+	//	In case of restarting a game, $digest of chessboard scope is needed
+	//	to let HTML chessboard template catch up with refreshed model.	
+		if (restart) {	
+			$scope.$digest();
 		}
-		$scope.displayPieces(game.currentPosition);
 		$scope.enableDragDrop();
 		$scope.nextTurn(false);
-		console.log('%cChessboard control flow started.', LOG.action);
+		console.log('%cGameflow started. Restart:', LOG.action, restart);
 	};
 
 	$scope.nextTurn = function(switchActive) {

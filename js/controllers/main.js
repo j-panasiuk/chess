@@ -9,6 +9,7 @@ app.controller('mainController', function($scope, /*$route,*/ $timeout, settings
 	//	restart == true: Restart game with current settings. Model update needed.
 		if (restart) {
 			game.initialize();
+			console.log('%cSetting up starting position...', LOG.action, game.currentPosition);
 		}			
 		$scope.$broadcast('startGame', !!restart);
 	};

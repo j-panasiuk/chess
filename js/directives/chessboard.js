@@ -1,50 +1,14 @@
 'use strict';
 
-app.directive('chessboard', function(settings, rules, game) {
+app.directive('chessboard', function($timeout, settings, rules, game) {
 	function linkChessboard(scope, element, attributes) {
-		scope.rules = rules;
-		scope.game = game;
-
-		scope.squareColor = function(square) {
-			return square.complex;
-		};
-
-		scope.displayPieces = function(position) {
-		//	DEPENDENCIES: [jQuery UI]
-			console.assert(position.fen.match(rules.validFen), 'Invalid position (FEN).', position.fen);
-			console.log('%cDisplaying pieces...', LOG.ui);
-		//	Display pieces to match current position.
-		//	<div.chessboard>
-		//		<div class='square' id={{code}}> (x64)
-		//		<div class='piece {{color}} {{type}}'></div> (x32)
-		//	</div>
-		//	Pieces are represented by divs (children of div.chessboard).
-		//	For each piece in play adjust its position, by setting css `position` attribute.
-		//	
-		//	Add .data('square') token to mark piece's current square.
-		// 	For king occupying e1 square: $('.white.king').data('square') == 4
-			var piece, square, pieceElement, squareElement,
-				pieces = position.pieceLists.all,
-				pieceElements = $('.piece');
-			for (var i = 0; i < pieces.length; i++) {
-				piece = pieces[i];
-				square = piece.square;	
-				pieceElement = $(pieceElements[i]);
-				squareElement = $('#' + square);
-			//	[jQuery UI] position		
-				pieceElement.position({ 			
-					'of': squareElement,
-					'my': 'left top',
-					'at': 'left top'
-				})
-				.removeClass('invisible')
-				.data('square', +(square));			
-			}
-		};
 
 		scope.enableDragDrop = function() {
 		//	DEPENDENCIES: [jQuery UI]
 		//	Define drag behavior.
+
+			$timeout(function() {
+
 			$('.piece').draggable({
 				containment: '#body-container',
 				cursor: 'none',
@@ -56,11 +20,11 @@ app.directive('chessboard', function(settings, rules, game) {
 				//	User starts to drag a piece.
 				//	Look up legalTargets array for a list of legal target squares.
 				//	Enable drop for each legal square. Disable all other squares.
-					var square = $(this).data('square'),
+					var square = +$(this).attr('at'),
 						targets = scope.legalTargets[square];
 					
 					$('.square').each(function() {						
-						if (targets.indexOf(+(this.id)) > -1) {
+						if (_.contains(targets, +this.id)) {
 							$(this).droppable('enable');
 						} else {
 							$(this).droppable('disable');
@@ -74,6 +38,10 @@ app.directive('chessboard', function(settings, rules, game) {
 					.removeClass('ui-state-highlight');
 				}
 			});
+			console.debug('READY');
+
+			}, 250);
+
 		//	Define drop behavior.	
 			$('.square').droppable({
 				accept: '.piece',
@@ -86,16 +54,16 @@ app.directive('chessboard', function(settings, rules, game) {
 				//	3.	Find the move in legalMoves array. 
 					var move, 
 						pieceElement = $(ui.draggable),
-						from = pieceElement.data('square'),
-						to = +(this.id),
+						from = +pieceElement.attr('at'),
+						to = +this.id,
 						squareElement = $('#' + to);
 
+					console.log('%cSnapping element...', LOG.ui);
 					pieceElement.position({
 						'of': squareElement,
 						'my': 'left top',
 						'at': 'left top'
-					})
-					.data('square', to);
+					});
 
 					$('.piece').draggable('disable');
 					$('.square').droppable('disable');
@@ -136,7 +104,7 @@ app.directive('chessboard', function(settings, rules, game) {
 		//	but applies to other forms of move selection (via click, console).
 			var pieceElement;
 			$('.piece').each(function() {
-				if ($(this).data('square') === move.from) {
+				if (+$(this).attr('at') === move.from) {
 					pieceElement = $(this);
 					return false;
 				}
@@ -209,6 +177,8 @@ app.directive('chessboard', function(settings, rules, game) {
 			var squareElement = $('#' + square), 
 				animate = settings.animationTime;
 
+			console.log('%cAnimating movement...', LOG.ui);
+			//$animate.addClass(pieceElement, 'at-' + square);
 			pieceElement.position({
 				'of': squareElement,
 				'my': "left top",
@@ -216,8 +186,7 @@ app.directive('chessboard', function(settings, rules, game) {
 				'using': (animate) ? function(css, duration) {
 			        pieceElement.animate(css, animate, "linear");
 			    } : null
-			})
-			.data('square', square);
+			});
 		};
 
 		scope.displaySubscripts = function(show) {
@@ -289,7 +258,7 @@ app.directive('subscript.piece', function() {
 		restrict: 'A',
 		replace: true,
 		priority: 1,
-		template: '<div class="debug subscript data unselectable">{{square || data}}</div>',
+		template: '<div class="debug subscript data unselectable">{{data}}</div>',
 		scope: {
 			data: '@'
 		},
@@ -303,25 +272,17 @@ app.directive('subscript.piece', function() {
 			});
 		},
 		link: function(scope, element) {
-			scope.piece = element.parent();
-			scope.square = scope.piece.data('square');
-			scope.update = function() {
-				scope.square = scope.piece.data('square');
-				//scope.$digest();
-			};
 			scope.show = function() {
 				element.show();
 			};
 			scope.hide = function() {
 				element.hide();
 			};
-		//	Update piece subscript on element .data('square') change.
-			scope.$watch(scope.square, scope.update());
 		}
 	};
 });
 
-app.directive('outline.square', function(game) {
+app.directive('outline.square', function() {
 	return {
 		restrict: 'A',
 		replace: true,

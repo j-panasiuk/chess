@@ -48,18 +48,20 @@ body {
 		&.black.queen { background-image: url('../img/pieces/black-queen.png'); }
 		&.black.king { background-image: url('../img/pieces/black-king.png'); }
 
-		&.invisible { visibility: hidden; }
-	}
-
-	@for $i from 0 through 7 {
-		.rank-#{$i} {
-			bottom: $i * $square-size;
+		&.ng-enter,
+		&.ng-leave {
+			-webkit-transition: .25s linear all;
+			-moz-transition: .25s linear all;
+			-o-transiton: .25s linear all;
+			transition: .25s linear all;
 		}
-	}
-
-	@for $i from 0 through 7 {
-		.file-#{$i} {
-			left: $i * $square-size;
+		&.ng-enter,
+		&.ng-leave.ng-leave-active {
+			opacity: 0
+		}
+		&.ng-leave,
+		&.ng-enter.ng-enter-active {
+			opacity: 1;
 		}
 	}
 

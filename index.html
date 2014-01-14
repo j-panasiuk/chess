@@ -12,14 +12,14 @@
 <!-- Template: chessboard -->
 <script type="text/ng-template" id="template-chessboard.html">
 <div class="chessboard" id="chessboard">
-    <div ng-repeat="square in rules.SQUARES" class="square rank-{{square.rank}} file-{{square.file}} {{squareColor(square)}} unselectable" id={{square}}>
+    <div ng-repeat="square in squares" class="square at-{{square}} {{square.complex}} unselectable" id={{square}}>
     	<div subscript.square code="{{square}}"></div>
     	<div outline.square code="{{square}}" state="{{squaresState[square]}}"></div>
     </div>
-    <div ng-repeat="piece in game.currentPosition.pieceLists[0]" class="piece white {{piece.name}} invisible">
+    <div ng-repeat="piece in pieces.white" class="piece white {{piece.name}} at-{{piece.square}}" at={{piece.square}}>
     	<div subscript.piece data="{{piece.square}}"></div>
     </div>
-    <div ng-repeat="piece in game.currentPosition.pieceLists[1]" class="piece black {{piece.name}} invisible">
+    <div ng-repeat="piece in pieces.black" class="piece black {{piece.name}} at-{{piece.square}}" at={{piece.square}}>
     	<div subscript.piece data="{{piece.square}}"></div>
     </div>
 </div>
@@ -43,8 +43,12 @@
 <script src="lib/js/jquery-ui-1.10.3.custom.min.js" defer></script>
 <script src="lib/js/lodash.min.js" defer></script>
 <script src="lib/js/angular.min.js" defer></script>
-<!--<script src="lib/js/angular-route.js" defer></script>-->
+<script src="lib/js/angular-animate.min.js" defer></script>
 <script src="lib/js/angular-bootstrap.min.js" defer></script>
+<!--
+<script src="lib/js/tween-lite.min.js"></script>
+<script src="lib/js/tween-cssplugin.min.js"></script>
+-->
 <!-- Chess App -->
 <script src="js/scripts.js" defer></script>
 <script src="js/app.js" defer></script>
