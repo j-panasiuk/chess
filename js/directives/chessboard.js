@@ -1,6 +1,6 @@
 'use strict';
 
-app.directive('chessboard', function($timeout, settings, rules, game) {
+app.directive('chessboard', function($timeout, $animate, settings, rules, game) {
 	function linkChessboard(scope, element, attributes) {
 
 		scope.enableDragDrop = function() {
@@ -22,6 +22,9 @@ app.directive('chessboard', function($timeout, settings, rules, game) {
 				//	Enable drop for each legal square. Disable all other squares.
 					var square = +$(this).attr('at'),
 						targets = scope.legalTargets[square];
+
+					$(this).removeClass('sliding');
+					console.log('%cSwitching dragged movement to instant...', LOG.ui, !$(this).hasClass('sliding'));
 					
 					$('.square').each(function() {						
 						if (_.contains(targets, +this.id)) {
@@ -36,6 +39,8 @@ app.directive('chessboard', function($timeout, settings, rules, game) {
 					$('.square').droppable('disable')
 					.removeClass('drag-hover')
 					.removeClass('ui-state-highlight');
+
+					$(ui.draggable).addClass('sliding');
 				}
 			});
 			console.debug('READY');
@@ -64,6 +69,9 @@ app.directive('chessboard', function($timeout, settings, rules, game) {
 						'my': 'left top',
 						'at': 'left top'
 					});
+
+					$(ui.draggable).addClass('sliding');
+					console.log('%cRestoring dropped movement to sliding...', LOG.ui, ui.draggable.hasClass('sliding'));
 
 					$('.piece').draggable('disable');
 					$('.square').droppable('disable');
@@ -178,15 +186,16 @@ app.directive('chessboard', function($timeout, settings, rules, game) {
 				animate = settings.animationTime;
 
 			console.log('%cAnimating movement...', LOG.ui);
-			//$animate.addClass(pieceElement, 'at-' + square);
-			pieceElement.position({
-				'of': squareElement,
-				'my': "left top",
-				'at': "left top",
-				'using': (animate) ? function(css, duration) {
-			        pieceElement.animate(css, animate, "linear");
-			    } : null
-			});
+			$animate.addClass(pieceElement, 'at-' + square);
+
+			//pieceElement.position({
+			//	'of': squareElement,
+			//	'my': "left top",
+			//	'at': "left top",
+			//	'using': (animate) ? function(css, duration) {
+			//        pieceElement.animate(css, animate, "linear");
+			//    } : null
+			//});
 		};
 
 		scope.displaySubscripts = function(show) {

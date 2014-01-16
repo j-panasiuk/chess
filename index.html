@@ -16,10 +16,10 @@
     	<div subscript.square code="{{square}}"></div>
     	<div outline.square code="{{square}}" state="{{squaresState[square]}}"></div>
     </div>
-    <div ng-repeat="piece in pieces.white" class="piece white {{piece.name}} at-{{piece.square}}" at={{piece.square}}>
+    <div ng-repeat="piece in pieces.white" class="piece white {{piece.name}} at-{{piece.square}} sliding" at={{piece.square}}>
     	<div subscript.piece data="{{piece.square}}"></div>
     </div>
-    <div ng-repeat="piece in pieces.black" class="piece black {{piece.name}} at-{{piece.square}}" at={{piece.square}}>
+    <div ng-repeat="piece in pieces.black" class="piece black {{piece.name}} at-{{piece.square}} sliding" at={{piece.square}}>
     	<div subscript.piece data="{{piece.square}}"></div>
     </div>
 </div>

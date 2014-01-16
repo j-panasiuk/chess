@@ -52,7 +52,6 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	};
 
 	$scope.updateMovesHash = function(color) {
-		console.time('Update legal moves hash');
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
 	//	Helper function for UI. Matches all square sources and their possible targets.
 	//	To save computation on future mouse drag/drop events.
@@ -86,7 +85,6 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		Object.freeze(legalMoves);
 
 		console.log('%cLegal move count...', LOG.action, position.moves.length);
-		console.timeEnd('Update legal moves hash');
 	};
 
 	$scope.selectMoveUser = function(color) {
@@ -197,7 +195,6 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	};
 
 	$scope.validateMovesHash = function() {
-		console.time('Data Validation');
 		console.log('%cValidating data compability: Moves', LOG.valid);
 	//	Check if data across all representation types is compatible.
 	//	Position displayed on the user interface cannot differ from
@@ -221,11 +218,9 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 		console.assert(validMoves, 'Incompatible legal moves.', validMoves, data, game.currentPosition.moves);
 		console.log('%cData successfully verified.', LOG.valid);
-		console.timeEnd('Data Validation');
 	};
 
 	$scope.validatePieceData = function() {
-		console.time('Data Validation');
 		console.log('%cValidating data compability: Pieces', LOG.valid);
 	//	Check if data across all representation types is compatible.
 	//	Position displayed on the user interface cannot differ from
@@ -255,7 +250,6 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		console.assert(validCount, 'Incompatible pieces.', $('.piece').length, $scope.pieces.white.length, $scope.pieces.black.length);
 		console.assert(validSquares, 'Incompatible occupied squares.');	
 		console.log('%cData successfully verified.', LOG.valid);
-		console.timeEnd('Data Validation');
 	};
 
 	$scope.startGame = function(restart) {
