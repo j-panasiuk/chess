@@ -157,7 +157,9 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	//	Update game logic.
 		console.time('Updating position');
-		game.currentPosition.update(move);
+		$scope.$apply(function() {
+			game.currentPosition.update(move);
+		});		
 		console.timeEnd('Updating position');		
 
 	//	Cleanup after a non-standard move.
@@ -263,9 +265,12 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		if (restart) {	
 			$scope.$digest();
 		}
+	//	Wait for animations to finish.
+		$timeout(function() {
 		$scope.enableDragDrop();
 		$scope.nextTurn(false);
 		console.log('%cGameflow started. Restart:', LOG.action, restart);
+		}, 400);
 	};
 
 	$scope.nextTurn = function(switchActive) {
@@ -290,7 +295,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	}
 
 	$scope.$on('startGame', function(event, restart) {
-		$scope.startGame(restart || false);
+		$scope.startGame(restart || false);		
 	});
 
 });

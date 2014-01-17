@@ -23,7 +23,7 @@ app.controller('mainController', function($scope, /*$route,*/ $timeout, settings
 	$scope.$on('gameOver', function(event, result) {
 		$timeout(function() {
 			$scope.startGame(true);
-		}, 500);
+		}, 1500);
 	});
 
 	$timeout(function initialize() {

@@ -4,12 +4,23 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 	function linkChessboard(scope, element, attributes) {
 
 		scope.enableDragDrop = function() {
+		//	Define drag & drop behavior for all pieces and squares.
+		//	Disable dragging until player is allowed to move.
+			var pieceElements = $('.piece'),
+				squareElements = $('.square');
+
+			scope.enableDrag(pieceElements);
+			scope.enableDrop(squareElements);		
+			scope.disableSelect();
+		};
+
+		scope.enableDrag = function(element) {
+			console.assert(element instanceof jQuery, 'Invalid drag selector.');
 		//	DEPENDENCIES: [jQuery UI]
-		//	Define drag behavior.
+		//	Define drag behavior on selected pieces.
+			var element = element || $('.piece');
 
-			$timeout(function() {
-
-			$('.piece').draggable({
+			element.draggable({
 				containment: '#body-container',
 				cursor: 'none',
 				helper: 'original',			// draggedPiece | "original" | "clone"
@@ -22,10 +33,8 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 				//	Enable drop for each legal square. Disable all other squares.
 					var square = +$(this).attr('at'),
 						targets = scope.legalTargets[square];
-
-					$(this).removeClass('sliding');
-					console.log('%cSwitching dragged movement to instant...', LOG.ui, !$(this).hasClass('sliding'));
-					
+				
+					console.log('%cDragging started...', LOG.ui, square);					
 					$('.square').each(function() {						
 						if (_.contains(targets, +this.id)) {
 							$(this).droppable('enable');
@@ -39,42 +48,40 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 					$('.square').droppable('disable')
 					.removeClass('drag-hover')
 					.removeClass('ui-state-highlight');
-
-					$(ui.draggable).addClass('sliding');
 				}
 			});
-			console.debug('READY');
+			console.log('%cSetting drag on pieces:', LOG.ui, element.length);
+		};
 
-			}, 250);
+		scope.enableDrop = function(element) {
+			console.assert(element instanceof jQuery, 'Invalid drag selector.');
+		//	DEPENDENCIES: [jQuery UI]
+		//	Define drop behavior on selected squares.
+			var element = element || $('.square');
 
-		//	Define drop behavior.	
-			$('.square').droppable({
+			element.droppable({
 				accept: '.piece',
 				activeClass: 'ui-state-highlight',
 				drop: function(event, ui) {
 				//	Handle piece drop event. Deal with user inteface only, 
-				//	leaving further updates to handleMove() function.
-				//	1.	Adjust position of the dropped piece to fit the square.
-				//	2.	Update .data('square') token to new square index.
-				//	3.	Find the move in legalMoves array. 
+				//	leaving model updates to handleMove() function.
+				//	1.	Snap dropped piece to fit target square.
+				// 	2. 	Disable drag & drop until next player's turn.
+				//	3.	Find and handle selected move in legalMoves array. 
 					var move, 
 						pieceElement = $(ui.draggable),
 						from = +pieceElement.attr('at'),
 						to = +this.id,
 						squareElement = $('#' + to);
 
-					console.log('%cSnapping element...', LOG.ui);
+					console.log('%cSnapping dropped element...', LOG.ui, to);
 					pieceElement.position({
 						'of': squareElement,
 						'my': 'left top',
 						'at': 'left top'
 					});
 
-					$(ui.draggable).addClass('sliding');
-					console.log('%cRestoring dropped movement to sliding...', LOG.ui, ui.draggable.hasClass('sliding'));
-
-					$('.piece').draggable('disable');
-					$('.square').droppable('disable');
+					scope.disableSelect();
 
 					move = scope.legalMoves[from][to];
 					scope.handleMove(move);
@@ -83,9 +90,7 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 				out: function(event, ui) { $(this).removeClass("drag-hover"); },
 				over: function(event, ui) {	$(this).addClass("drag-hover");	}
 			});
-		//	Disable drag & drop until player is allowed to move.
-			scope.disableSelect();
-		};
+		}
 
 		scope.enableSelect = function(color) {
 			console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
@@ -120,59 +125,6 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 			scope.movePiece(pieceElement, move.to);
 		};
 
-		scope.cleanupMove = function(move) {
-			console.assert(move.requiresCleanup, 'No cleanup necessary.', move.notation);
-		//	Necessary display (DOM) cleanup after weird moves.
-		//	1.	Removes captured piece from DOM.
-		//	2.	Moves castling rook (this includes updating rook's .data('square')).
-		//	3.	Changes avatar of promoted pawn.
-			var side, castle, 
-				color = rules.COLOR_NAME[move.color], 
-				enemy = rules.COLOR_NAME[rules.opposite(move.color)];
-
-			if (move.isCapture) {
-				if (!move.isEnpassant) {
-					$('.piece.' + enemy).each(function() {
-						if ($(this).data('square') === move.to) {
-							console.log('%cCAPTURE!\tGoodbye piece!', LOG.ui, this);
-							$(this).remove();
-							return false;
-						}
-					});
-				} else {
-					$('.piece.' + enemy + '.pawn').each(function() {
-						if ($(this).data('square') === rules.ENPASSANT_TARGET[move.to]) {
-							console.log('%cEN PASSANT!\tGoodbye pawn!', LOG.ui, this);
-							$(this).remove();
-							return false;
-						}
-					});
-				}
-			} else if (move.isCastle) {
-				side = move.special - 2;
-				castle = rules.CASTLE_ROOKS[move.color][side];
-				$('.piece.' + color + '.rook').each(function() {
-					if ($(this).data('square') === castle.from) {
-						console.log('%cCASLTE!\tGo rook!', LOG.ui, side);
-						scope.movePiece($(this), castle.to);
-						return false;
-					}
-				});
-			}
-			if (move.isPromote) {
-				$('.piece').promise().done(function() {
-					$('.piece.' + color + '.pawn').each(function() {
-						var pieceName;
-						if ($(this).data('square') === move.to) {
-							pieceName = rules.PIECE_NAME[move.promote];
-							$(this).removeClass('pawn').addClass(pieceName);
-						}
-					});
-				});
-			}
-			console.log('%cDisplay cleanup complete.', LOG.ui);
-		};
-
 		scope.movePiece = function(pieceElement, square) {
 			console.assert(pieceElement instanceof jQuery, 'Invalid move data.', pieceElement);
 			console.assert(square.onBoard, 'Invalid move data.', square);
@@ -183,19 +135,30 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 		//	pieceElement: 		jQuery selector with piece in question
 		//	square: 			int index [0..119]
 			var squareElement = $('#' + square), 
-				animate = settings.animationTime;
+				duration = settings.animationTime;
 
 			console.log('%cAnimating movement...', LOG.ui);
-			$animate.addClass(pieceElement, 'at-' + square);
+			pieceElement.position({
+				'of': squareElement,
+				'my': "left top",
+				'at': "left top",
+				'using': (duration) ? function(css, duration) {
+			        pieceElement.animate(css, duration, "linear");
+			    } : null
+			});
+		};
 
-			//pieceElement.position({
-			//	'of': squareElement,
-			//	'my': "left top",
-			//	'at': "left top",
-			//	'using': (animate) ? function(css, duration) {
-			//        pieceElement.animate(css, animate, "linear");
-			//    } : null
-			//});
+		scope.cleanupMove = function(move) {
+		//	Add drag functionality to promoted piece.
+			if (move.isPromote) {
+				$('.piece').each(function() {
+					if (!$(this).hasClass('ui-draggable')) {
+						console.log('%cSetting drag on a piece...', LOG.action);
+						scope.enableDrag($(this));
+						return false;
+					}
+				});
+			}
 		};
 
 		scope.displaySubscripts = function(show) {

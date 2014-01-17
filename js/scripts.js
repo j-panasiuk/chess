@@ -14,7 +14,8 @@ var LOG = {
 	ui: "color:SandyBrown",
 	valid: "color:LimeGreen",
 	promise: "color:CornflowerBlue",
-	warn: "color:DarkOrange"
+	warn: "color:DarkOrange",
+	attention: "color:Fuchsia; font-weight:bold; line-height:200%;"
 };
 
 console.log('%cExtending prototypes...', LOG.action);

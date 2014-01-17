@@ -50,10 +50,10 @@ body {
 
 		&.ng-enter,
 		&.ng-leave {
-			-webkit-transition: opacity 1s;
-			-moz-transition: opacity 1s;
-			-o-transiton: opacity 1s;
-			transition: opacity 1s;
+			-webkit-transition: opacity .5s;
+			-moz-transition: opacity .5s;
+			-o-transiton: opacity .5s;
+			transition: opacity .5s;
 		}
 		&.ng-enter,
 		&.ng-leave.ng-leave-active {
@@ -63,13 +63,21 @@ body {
 		&.ng-enter.ng-enter-active {
 			opacity: 1;
 		}
-
+		/*
 		&.sliding {
-			-webkit-transition: left 1s linear, bottom 1s linear;
-			-moz-transition: left 1s linear, bottom 1s linear;
-			-o-transiton: left 1s linear, bottom 1s linear;
-			transition: left 1s linear, bottom 1s linear;
+			-webkit-transition: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
+			-moz-transition: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
+			-o-transiton: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
+			transition: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
 		}
+		&.snap {
+			background: red;
+			-webkit-transition: background .5s;
+			-moz-transition: background .5s;
+			-o-transiton:background .5s;
+			transition: background .5s;
+		}
+		*/
 	}
 
 	@for $i from 0 through 7 {
