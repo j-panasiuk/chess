@@ -23,7 +23,7 @@ app.factory('rules', function(settings) {
 //	ENPASSANT_TARGET 		Hash of captured pawn's coordinate (captured enpassant).
 //	validFen 				RegEx for FEN string validation.
 //
-//	position(fen)			Factory function of position objects.
+//	createPosition(fen)		Factory function of position objects.
 //	check
 //	pin
 // 	piece
@@ -352,7 +352,7 @@ app.factory('rules', function(settings) {
 
 //	position :: function()
 //	Factory function, returns position object based on given FEN string.
-	function position(fen) {
+	function createPosition(fen) {
 		console.assert(fen.match(validFen), 'Invalid FEN notation.');
 	//	Property 			Description 				Method 				Description
 	//	--------------------------------------------------------------------------------------------------
@@ -972,7 +972,7 @@ app.factory('rules', function(settings) {
 		/*
 		Object.defineProperties(position, {
 			'update': 			{ value: function(move) { console.log('Updating position...'); } },
-			'yield': 			{ value: function(move) { console.log('Yield new position...'); } },
+			'yields': 			{ value: function(move) { console.log('Yield new position...'); } },
 			'evaluate': 		{ value: function() { console.log('Evaluate position...'); } }
 		});
 		*/
@@ -1083,9 +1083,123 @@ app.factory('rules', function(settings) {
 			}
 		});
 
+		Object.defineProperty(position, 'yields', {
+			value: function yieldPosition(move) {
+				console.assert(_move.isPrototypeOf(move), 'Invalid move.', move);
+				var position = createPosition(this.fen),
+					from = move.from, 
+					to = move.to, 
+					special = move.special,
+					color = move.color, 
+					enemy = opposite(color);
+
+				console.log('%cYielding position after move...', LOG.action, move.san);
+				console.log('%cCloned position', LOG.attention, position, this);
+
+			//	1. Update pieces (& piece 'square' properties)
+			//	Move piece to target square (occupying piece is lost). Empty initial square.
+			//	Also update 'square' property of affected pieces, so that it matches new square.
+				position.pieces[to] = position.pieces[from];
+				position.pieces[to].square = to;
+				position.pieces[from] = null;
+				if (special) {
+					if (special === MOVE_SPECIAL.castles[0]) {
+					//	Kingside castle. Move the rook.
+						position.pieces[CASTLE_ROOKS[color][0].to] = position.pieces[CASTLE_ROOKS[color][0].from];
+						position.pieces[CASTLE_ROOKS[color][0].to].square = CASTLE_ROOKS[color][0].to;
+						position.pieces[CASTLE_ROOKS[color][0].from] = null;
+					} else if (special === MOVE_SPECIAL.castles[1]) {
+					//	Queenside castle. Move the rook.
+						position.pieces[CASTLE_ROOKS[color][1].to] = position.pieces[CASTLE_ROOKS[color][1].from];
+						position.pieces[CASTLE_ROOKS[color][1].to].square = CASTLE_ROOKS[color][1].to;
+						position.pieces[CASTLE_ROOKS[color][1].from] = null;	
+					} else if (special === MOVE_SPECIAL.enpassant) {
+					//	Enpassant. Om-nom-nom
+						position.pieces[ENPASSANT_TARGET[to]] = null;
+					} else if (move.isPromote) {
+					//	A pawn has promoted. Delete it and create new piece in its place.
+					//	!Important
+						console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
+						delete position.pieces[to];
+						position.pieces[to] = piece(move.promote, to);
+						console.log('%cNew piece:', LOG.state, position.pieces[to]);
+					}
+				}
+
+			//	2.	Update activeColor
+				position.activeColor = enemy;
+
+			//	3.	Update castleRights
+			//	If castle is already illegal, there is no need to update.
+			//	Own castle rights can be lost, when king or rook moves.
+			//	Enemy castle can be disabled, when capturing a rook.
+				if (position.castleRights[color]) {
+					if (move.piece.pieceType === KING) {
+						position.castleRights[color] = 0;
+					} else if (move.piece.pieceType === ROOK) {
+						if (from === CASTLE_ROOKS[color][0].from) {
+							position.castleRights[color] &= 2;
+						} else if (from === CASTLE_ROOKS[color][1].from) {
+							position.castleRights[color] &= 1;
+						}
+					}
+				}
+				if (position.castleRights[enemy] && move.isCapture) {
+					if (to === CASTLE_ROOKS[enemy][0].from) {
+						position.castleRights[enemy] &= 2
+					} else if (to === CASTLE_ROOKS[enemy][1].from) {
+						position.castleRights[enemy] &= 1;
+					}
+				}
+				console.log('%ccastleRights', LOG.state, position.castleRights);
+
+			//	4. 	Update enpassantAt
+				if (move.isDouble) {
+					position.enpassantAt = (from + to) / 2;
+				} else {
+					position.enpassantAt = null;
+				}
+				console.log('%cenpassantAt', LOG.state, position.enpassantAt);
+
+			//	5. 	Update halfMoveClock
+				if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
+					position.halfMoveClock += 1;
+				} else {
+					position.halfMoveClock = 0;
+				}
+
+			//	6. 	Update fullMoveCount
+				position.fullMoveCount += (color === WHITE) ? 0 : 1;
+
+			//	Essential information about the position have been updated.
+			//	Update remaining position properties:
+
+			//	7. 	Update pieceLists
+				position.setPieceLists();
+
+			//	8.	Update piece attacks
+				position.setPieceAttacks();
+
+			//	9.	Update attacked
+				position.setAttacked();
+
+			//	10.	Update checks
+				position.setChecks();
+
+			//	11.	Update pins
+				position.setPins();
+
+			//	12.	Update moves
+				position.updateMoves(move);
+
+			//	Returned modified shallow clone.
+				return position;
+			}
+		});
+
 		return position;
 	}
-	rules.position = position;
+	rules.createPosition = createPosition;
 
 //	** CHECK REPRESENTATION
 //	-----------------------------------------------------

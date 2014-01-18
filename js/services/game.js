@@ -51,7 +51,7 @@ app.factory('game', function(settings, rules) {
 		//	Create starting position.
 		//	Update all properties.
 			var fen = fen || settings.fen;
-			currentPosition = rules.position(fen);
+			currentPosition = rules.createPosition(fen);
 			currentPosition.setPieceLists();
 			currentPosition.setPieceAttacks();
 			currentPosition.setAttacked();
@@ -139,6 +139,9 @@ app.factory('game', function(settings, rules) {
 
 //	Initialize default game model.
 	game.initialize();
+
+	GAME = game;
+	P = game.currentPosition;
 
 	return game;
 });
