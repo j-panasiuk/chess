@@ -161,27 +161,13 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 			}
 		};
 
-		scope.displaySubscripts = function(show) {
-		//	Show or hide debugging subscripts.
-		//	Shows subscripts unless explicitly provided with show === false.
-		//	show: 		true | false
-			var show = (show !== false) ? true: false;
-			if (show) {
-				$('.debug.subscript').show();
-			} else {
-				$('.debug.subscript').hide();
-			}
-		};
-		scope.displayOutlines = function(show) {
-		//	Show or hide debugging square outlines.
-		//	Shows outlines unless explicitly provided with show === false.
-		// 	show: 		true | false
-			var show = (show !== false) ? true : false;
-			if (show) {
-				$('.debug.square-outline').show();
-			} else {
-				$('.debug.square-outline').hide();
-			}
+		scope.reverse = function() {
+			console.log('%cReversing chessboard...', LOG.ui);
+		//	Reverse chessboard. Adjust positions of all squares and pieces.
+		//	Reset jQuery UI styles responsible for positioning animated elements.
+			$('.square, .piece').toggleClass('reversed')
+			.css('top', '')
+			.css('left', '');
 		};
 
 		console.log('%cChessboard linked.', LOG.ui);
@@ -196,84 +182,48 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 });
 
 /* DEBUG TOOLS */
-app.directive('subscript.square', function() {
+app.directive('subscript.square', function(settings) {
 	return {
 		restrict: 'A',
 		replace: true,
 		priority: 1,
-		template: '<div class="debug subscript square-id unselectable">{{code}}</div>',
+		template: '<div ng-hide="{{isVisible}}" class="debug subscript square-id unselectable">{{code}}</div>',
 		scope: {
 			code: '@'
 		},
-		controller: function($scope) {
-			$scope.$on('setDebug', function(event, show) {
-				if (show) {
-					$scope.show();
-				} else {
-					$scope.hide();
-				}
-			});
-		},
 		link: function(scope, element) {
-			scope.show = function() {
-				element.show();
-			};
-			scope.hide = function() {
-				element.hide();
-			};
+			scope.isVisible = !!settings.debugMode;
 		}
 	};
 });
 
-app.directive('subscript.piece', function() {
+app.directive('subscript.piece', function(settings) {
 	return {
 		restrict: 'A',
 		replace: true,
 		priority: 1,
-		template: '<div class="debug subscript data unselectable">{{data}}</div>',
+		template: '<div ng-hide="{{isVisible}}" class="debug subscript data unselectable">{{data}}</div>',
 		scope: {
 			data: '@'
 		},
-		controller: function($scope) {
-			$scope.$on('setDebug', function(event, show) {
-				if (show) {
-					$scope.show();
-				} else {
-					$scope.hide();
-				}
-			});
-		},
 		link: function(scope, element) {
-			scope.show = function() {
-				element.show();
-			};
-			scope.hide = function() {
-				element.hide();
-			};
+			scope.isVisible = !!settings.debugMode;
 		}
 	};
 });
 
-app.directive('outline.square', function() {
+app.directive('outline.square', function(settings) {
 	return {
 		restrict: 'A',
 		replace: true,
 		priority: 1,
-		template: '<div class="debug square-outline {{stateName(state)}}"></div>',
+		template: '<div ng-hide="{{isVisible}}" class="debug square-outline {{stateName(state)}}"></div>',
 		scope: {
 			code: '@',
 			state: '@'
 		},
-		controller: function($scope) {
-			$scope.$on('setDebug', function(event, show) {
-				if (show) {
-					$scope.show();
-				} else {
-					$scope.hide();
-				}
-			});
-		},
 		link: function(scope, element) {
+			scope.isVisible = !!settings.debugMode;			
 			scope.stateName = function(state) {
 				switch (+state) {
 					case 1: 	return 'check';
@@ -284,13 +234,6 @@ app.directive('outline.square', function() {
 			scope.reset = function() {
 				scope.state = 0;
 			};
-			scope.show = function() {
-				element.show();
-			};
-			scope.hide = function() {
-				element.hide();
-			};	
-
 			scope.$on('startGame', function(event, restart) {
 				if (restart) {
 					scope.reset();

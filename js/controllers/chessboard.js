@@ -17,6 +17,21 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		$scope.squaresState[square] = 0;
 	}
 
+	$scope.debug = function(show) {
+		console.assert((typeof(show) === 'boolean') || (show === undefined), 'Invalid debug value.', show);
+	//	Set debug interface visibilty.
+	//	debug(true/false): show/hide debug interface.
+	//	debug(undefined): toggle debug interface.
+		if (show === true) {
+			settings.debugMode = true;
+		} else if (show === false) {
+			settings.debugMode = false;
+		} else {
+			settings.debugMode = !settings.debugMode;
+		}
+		console.log('%cdebug:', LOG.state, settings.debugMode);
+	};
+
 	$scope.updateSquaresState = function() {
 	//	`squaresState` hash tracks current status of each square on the board.
 	//	This includes keeping information about checks and pins.

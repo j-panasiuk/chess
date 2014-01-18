@@ -27,13 +27,13 @@
 
 <div id="body-container" ng-controller="mainController">   
 
-	<div class="control-panel" ng-controller="debugController">
-	   <button class="btn btn-primary" data-toggle="modal" href="#newGameSettings">New Game</button>	
-	   <button class="btn btn-default" data-toggle="modal" href="#gameOptions"><span class="glyphicon glyphicon-cog"></span> Options</button>
-	   <button ng-click="updateDebug(true)" class="btn btn-default" id="debug-toggle"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
+	<div class="control-panel">
+	   <button class="btn btn-info">New Game</button>	   
 	</div>
 
     <div id="board-container" ng-controller="chessboardController">
+        <button ng-click="reverse()" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> Reverse</button>
+        <button ng-click="debug()" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
         <div chessboard></div>
 	</div>
 
@@ -54,7 +54,6 @@
 <script src="js/services/engine.js" defer></script>
 <script src="js/controllers/main.js" defer></script>
 <script src="js/controllers/chessboard.js" defer></script>
-<script src="js/controllers/debug.js" defer></script>
 <script src="js/directives/chessboard.js" defer></script>
 </body>
 </html>

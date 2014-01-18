@@ -14,12 +14,6 @@ app.controller('mainController', function($scope, /*$route,*/ $timeout, settings
 		$scope.$broadcast('startGame', !!restart);
 	};
 
-	$scope.$on('changeDebugVisibility', function(event, show) {
-		console.assert((show === true) || (show === false), 'Invalid event `show` parameter', show);
-		console.log('%cSetting debug visibility...', LOG.ui, show);
-		$scope.$broadcast('setDebug', show);
-	});
-
 	$scope.$on('gameOver', function(event, result) {
 		$timeout(function() {
 			$scope.startGame(true);

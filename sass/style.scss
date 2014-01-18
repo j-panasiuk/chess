@@ -84,7 +84,12 @@ body {
 		@for $j from 0 through 7 {
 			.at-#{16*$i + $j} {
 				left: $j * $square-size;
-				bottom: $i * $square-size;
+				top: (7 - $i) * $square-size;
+
+				&.reversed {
+					left: (7 - $j) * $square-size;
+					top: $i * $square-size;
+				}
 			}
 		}
 	}
