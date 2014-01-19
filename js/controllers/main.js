@@ -1,6 +1,6 @@
 'use strict';
 
-app.controller('mainController', function($scope, /*$route,*/ $timeout, settings, rules, game) {
+app.controller('mainController', function($scope, $timeout, settings, rules, game) {
 	console.log('%cLoading mainController...', LOG.action);
 
 	$scope.startGame = function(restart) {

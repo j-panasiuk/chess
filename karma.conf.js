@@ -14,6 +14,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+    //  vendor libraries
         'lib/js/jquery-2.0.2-min.js',
         'lib/js/jquery-ui-1.10.3.custom.min.js',
         'lib/js/lodash.min.js',
@@ -21,9 +22,18 @@ module.exports = function(config) {
         'lib/js/angular-mocks.js',
         'lib/js/angular-animate.min.js',
         'lib/js/angular-bootstrap.min.js',
+    //  application
         'js/scripts.js',
         'js/app.js',
-        'test/hello.js'
+        'js/services/settings.js',
+        'js/services/rules.js',
+        'js/services/game.js',
+        'js/services/engine.js',
+        'js/controllers/main.js',
+        'js/controllers/chessboard.js',
+        'js/directives/chessboard.js',
+    //  test suites
+        'test/unit-tests.js'
     ],
 
 
@@ -63,7 +73,7 @@ module.exports = function(config) {
     // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'Firefox'],
 
 
     // If browser does not capture in given timeout [ms], kill it
