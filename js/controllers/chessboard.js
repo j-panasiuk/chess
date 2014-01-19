@@ -174,6 +174,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		console.time('Updating position');
 		$scope.$apply(function() {
 			game.currentPosition.update(move);
+			game.history.update(move);
 		});		
 		console.timeEnd('Updating position');		
 

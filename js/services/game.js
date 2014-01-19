@@ -8,20 +8,20 @@ app.factory('game', function(settings, rules) {
 //	currentPosition 		position object representing current game state.
 //	activeColor 			(Quick Access) Active color value: 0 | 1
 //	activePlayer 			(Quick Access) Pointer to active player object.
-//	history 				*TBI
+//	history 				object storing serialized moves and positions.
 //
 //	player 					Factory function of player objects.
 //	switchActive 			Function. Changes active side to the opponent.
 
 //	Declare local variables (for factories).
-	var _player, _user, _ai; // Prototypes.
+	var _player, _user, _ai, _history; // Prototypes.
 
 	Object.defineProperties(game, {
 		'players': 			{ writable: true, enumerable: true, configurable: true },
 		'currentPosition': 	{ writable: true, enumerable: true, configurable: true },
 		'activeColor': 		{ writable: true, enumerable: true, configurable: true },
-		'activePlayer': 	{ writable: true, enumerable: true, configurable: true }	
-		//'history': 		{ writable: true, enumerable: true, configurable: true },		
+		'activePlayer': 	{ writable: true, enumerable: true, configurable: true },	
+		'history': 			{ writable: true, enumerable: true, configurable: true }		
 	});
 
 	Object.defineProperty(game, 'switchActive', {
@@ -42,8 +42,8 @@ app.factory('game', function(settings, rules) {
 		//	Define players.
 			if (!players) {
 				players = [];
-				players.push(player(0, settings.controlWhite));
-				players.push(player(1, settings.controlBlack));				
+				players.push(createPlayer(0, settings.controlWhite));
+				players.push(createPlayer(1, settings.controlBlack));				
 			}
 			Object.freeze(players);
 			this.players = players;
@@ -63,6 +63,10 @@ app.factory('game', function(settings, rules) {
 		//	Creating quick access properties.
 			this.activeColor = this.currentPosition.activeColor;
 			this.activePlayer = this.players[this.activeColor];
+
+		//	Create game history.
+			this.history = createHistory();
+			console.log('%cCreating game history...', LOG.action, this.history);
 		}
 	});
 
@@ -103,7 +107,7 @@ app.factory('game', function(settings, rules) {
 		'selectMove': 		{ writable: true, configurable: true }
 	});	
 
-	function player(color, control) {
+	function createPlayer(color, control) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color.', color);
 		console.assert(_.contains(settings.CONTROL_FLAGS, +control), 'Invalid flag.', control);
 	//	Player factory function.
@@ -121,21 +125,64 @@ app.factory('game', function(settings, rules) {
 		console.log('%cCreating new player...', LOG.action, player);
 		return player;
 	}
-	game.player = player;
+	//game.createPlayer = createPlayer;
 
 //	* GAME HISTORY
 //	Property 				Description
 //	----------------------------------------------------------------------------
-/*
+
 	_history = {};
 	Object.defineProperties(_history, {
-		'fenList': 		{ value: [currentPosition.fen], writable: true, enumerable: true, configurable: true },
-		'moveList': 	{ value: [], writable: true, enumerable: true, configurable: true },
-		'pgn': 			{ get: function() { return 'PGN string.'; } }
+		'fenList': 		{ writable: true, enumerable: true, configurable: true },
+		'sanList': 		{ writable: true, enumerable: true, configurable: true },
+		'pgn': { 
+			get: function() {
+			//	Return PGN (Portable Game Notation) string.
+				var pgn = '';
+			//	[Event "F/S Return Match"]
+			//	[Site "Belgrade"]
+			//	[Date "1992.11.04"]
+			//	[Round "29"]
+			//	[White "Fischer, Robert J."]
+			//	[Black "Spassky, Boris V."]
+			//	[Result "1/2-1/2"]
+			//
+			//	1. e4 e5 2. Nf3 Nc6 3. Bb5 ... 43. Re6 1/2-1/2
+
+			//	Join array of san notations into full pgn string.
+				for (var i = 0; i < this.sanList.length; i++) {
+					pgn += (i % 2) ? '' : Math.ceil((i + 1) / 2) + '. ';
+					pgn += this.sanList[i] + ' ';
+				}
+
+			//	Append game result, if finished.
+				return pgn;
+			} 
+		},
+		'update': {
+			value: function(move) {
+			//	Update history after a move has been played.
+				this.sanList.push(move.san);
+				this.fenList.push(game.currentPosition.fen);
+				console.log('%cUpdating game history...', LOG.action, this);
+			}
+		}
 	});
-	Object.preventExtensions(_history);
-	game.history = _history;
-*/
+
+	function createHistory(pgn) {
+		console.assert(pgn === undefined, 'Invalid PGN history.', pgn);
+	//	History factory function.
+		var history_;
+		function History() {};
+		History.prototype = _history;
+		history_ = new History();
+
+	//	Set history to default (starting position).
+		history_.fenList = [settings.fen];
+		history_.sanList = [];
+
+		return history_;
+	}
 
 //	Initialize default game model.
 	game.initialize();
