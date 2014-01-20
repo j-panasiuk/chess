@@ -2,6 +2,9 @@
 
 app.controller('chessboardController', function($scope, $timeout, settings, rules, game, engine) {
 
+	$scope.settings = settings;
+	$scope.rules = rules;
+	$scope.engine = engine;
 	$scope.squares = rules.SQUARES;
 	$scope.pieces = {
 		'white': [],
@@ -125,12 +128,12 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 			delay = settings.delayAI || 100,
 			position = game.currentPosition;
 
-		engine.tree.plant(position);
+		//engine.tree.plant(position);
 		console.log('%ctree:', LOG.state, engine.tree);
 
 		$timeout(function() {
 			try {
-				move = engine.getMove(position);
+				move = engine.tree.getMove(position);
 			} catch (error) {
 				console.log('%cCaught error in AI move generation.', LOG.warn, error.message);
 			//	Problems encountered in move generating script.

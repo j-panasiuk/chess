@@ -21,6 +21,7 @@ app.factory('rules', function(settings) {
 //	PIECE_NAME 				Hash of piece names {17:'pawn', 18:'knight'... 31:'queen'}
 //	CASTLE_ROOKS 			Hash of rook move coordinates for castling.		
 //	ENPASSANT_TARGET 		Hash of captured pawn's coordinate (captured enpassant).
+//	ACTIVITY 				Hash of piece activity at each square.
 //	validFen 				RegEx for FEN string validation.
 //
 //	createPosition(fen)		Factory function of position objects.
@@ -36,8 +37,10 @@ app.factory('rules', function(settings) {
 		PIECES, PIECE_TYPES, PIECE_NAME, FEN_TO_CODE, CODE_TO_FEN, PIECE_TYPE_NOTATION, // Pieces.
 		ATTACK_VECTORS, PASSIVE_VECTORS, ATTACK_RAYS, PASSIVE_RAYS, ATTACK_FIELDSET, // Piece attacks & movement.
 		QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, // Specific ranks.
+		CENTER, SEMI_CENTER, // Specific chessboard regions.
 		CASTLE_ROOKS, CASTLE_KING_TO, ENPASSANT_TARGET, // Special moves & square-specific stuff.
 		MOVE_SPECIAL_MASK, MOVE_SPECIAL, // Move special values.
+		ACTIVITY, // Piece activity hash.
 		validFen, // Regular expression.
 		_check, _pin, _piece, _move, // Object prototypes.
 		_pawn, _knight, _bishop, _rook, _queen, _king, // Piece prototypes.
@@ -311,6 +314,66 @@ app.factory('rules', function(settings) {
 		ENPASSANT_TARGET[RANKS[2][i]] = RANKS[3][i];
 		ENPASSANT_TARGET[RANKS[5][i]] = RANKS[4][i];
 	}
+
+//	CENTER
+	CENTER = [51, 52, 67, 68];
+//	SEMI_CENTER
+	SEMI_CENTER = [34, 35, 36, 37, 50, 51, 52, 53, 66, 67, 68, 69, 82, 83, 84, 85];
+
+//	ACTITITY
+//	Translates piece code and its current location to activity value.
+//	The better square a piece occupies the higher its activity value.
+//	ACTIVITY[W|KNIGHT][0] = 0 		(Knight on a1 value = 310)
+//	ACTIVITY[W|KNIGHT][84] = 20 	(Knight on e6 value = 330)
+	ACTIVITY = {};
+	rules.ACTIVITY = ACTIVITY;
+	A = ACTIVITY;
+
+	ACTIVITY[W|PAWN] = {};
+	ACTIVITY[B|PAWN] = {};
+
+	(function calculatePawnActivity() {
+		var square, activity;
+	//	White pawns activity.
+		for (var i = 0; i < SQUARES.length; i++) {
+			square = SQUARES[i];
+			activity = fileValue(square.file) + centerValue(square);
+			ACTIVITY[W|PAWN][square] = activity + advancementValue(WHITE, square.rank);
+			ACTIVITY[B|PAWN][square] = activity + advancementValue(BLACK, square.rank);
+		}
+
+		function advancementValue(color, rank) {
+			switch (rank) {				
+				case 1: 	return color ? 20 : 0; break;
+				case 6: 	return color ? 0 : 20; break;
+				case 2: 	return color ? 10 : 1; break;
+				case 5: 	return color ? 1 : 10; break;
+				case 3: 	return color ? 5 : 3; break;
+				case 4: 	return color ? 3 : 5; break;
+			//	First and last rank added for consistency measures.	
+				case 0: 	return color ? 50 : 0; break;
+				case 7: 	return color ? 0 : 50; break;
+				default: 	return 0;
+			}
+		}
+
+		function fileValue(file) {
+			console.assert(_.contains(_.range(8), file), 'Invalid file index.', file);
+		//	Return bonus points for file centralization.
+		//	A    B    C    D    E    F    G    H
+		//	0    1    2    3    3    2    1    0
+			return 3.5 - Math.abs(file - 3.5);
+		}
+
+		function centerValue(square) {
+			console.assert(square.onBoard, 'Invalid square.', square);
+		//	Return bonus points for central position.
+		//	CENTER: 4 		SEMI_CENTER: 2 		(default): 0
+			return _.contains(SEMI_CENTER, square) ? (_.contains(CENTER, square) ? 4 : 2) : 0;
+		}
+	}());
+	console.log('%cACTIVITY', LOG.attention, ACTIVITY);
+
 
 //	** POSITION REPRESENTATION
 //	-----------------------------------------------------
@@ -1329,7 +1392,7 @@ app.factory('rules', function(settings) {
 		'pin': 				{ writable: true, configurable: true },		
 		'name': 			{ get: function() { return "pawn" } },
 		'range': 			{ get: function() { return 1; } },
-		'points': 			{ get: function() { return 1; } },
+		'points': 			{ get: function() { return 100; } },
 		'attackVectors': 	{ get: function() { return (this.color) ? [-17,-15] : [15,17]; } },
 		'passiveVectors': 	{ get: function() { return (this.color) ? [-16] : [16]; } }
 	});
@@ -1408,7 +1471,7 @@ app.factory('rules', function(settings) {
 		'pin': 				{ writable: true, configurable: true },
 		'name': 			{ get: function() { return "knight" } },
 		'range': 			{ get: function() { return 1; } },
-		'points': 			{ get: function() { return 3; } },
+		'points': 			{ get: function() { return 310; } },
 		'attackVectors': 	{ get: function() { return [-33,-31,-18,-14,14,18,31,33]; } }
 	});
 	Object.defineProperty(_knight, 'updateAttacks', {
@@ -1452,7 +1515,7 @@ app.factory('rules', function(settings) {
 		'pin': 				{ writable: true, configurable: true },
 		'name': 			{ get: function() { return "bishop" } },
 		'range': 			{ get: function() { return 7; } },
-		'points': 			{ get: function() { return 3; } },
+		'points': 			{ get: function() { return 320; } },
 		'attackVectors': 	{ get: function() { return [-17,-15,15,17]; } },
 		'complex': 			{ get: function() { return this.square.complex; } }
 	});
@@ -1509,7 +1572,7 @@ app.factory('rules', function(settings) {
 		'pin': 				{ writable: true, configurable: true },
 		'name': 			{ get: function() { return "rook" } },
 		'range': 			{ get: function() { return 7; } },
-		'points': 			{ get: function() { return 5; } },
+		'points': 			{ get: function() { return 480; } },
 		'attackVectors': 	{ get: function() { return [-16,-1,1,16]; } }
 	});
 	Object.defineProperty(_rook, 'updateAttacks', {
@@ -1565,7 +1628,7 @@ app.factory('rules', function(settings) {
 		'pin': 				{ writable: true, configurable: true },
 		'name': 			{ get: function() { return "queen" } },
 		'range': 			{ get: function() { return 7; } },
-		'points': 			{ get: function() { return 9; } },
+		'points': 			{ get: function() { return 920; } },
 		'attackVectors': 	{ get: function() { return [-17,-16,-15,-1,1,15,16,17]; } }
 	});
 	Object.defineProperty(_queen, 'updateAttacks', {
@@ -1621,7 +1684,7 @@ app.factory('rules', function(settings) {
 		'checks': 			{ writable: true, configurable: true },
 		'name': 			{ get: function() { return "king" } },
 		'range': 			{ get: function() { return 1; } },
-		'points': 			{ get: function() { return 100; } },
+		'points': 			{ get: function() { return 10000; } },
 		'attackVectors': 	{ get: function() { return [-17,-16,-15,-1,1,15,16,17]; } },
 		'passiveVectors': 	{ get: function() { return [-1,1]; } }
 	});

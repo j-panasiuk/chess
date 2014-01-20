@@ -18,7 +18,7 @@ var LOG = {
 	attention: "color:Fuchsia; font-weight:bold; line-height:200%;"
 };
 
-var GAME, P, T;
+var GAME, P, T, A;
 
 console.log('%cExtending prototypes...', LOG.action);
 //	*** EXTEND PROTOTYPES
