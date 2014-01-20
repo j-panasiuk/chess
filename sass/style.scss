@@ -1,6 +1,14 @@
 $square-size: 65px;
 
 
+/* ANGULAR BOOTSTRAP */
+.nav, 
+.pagination, 
+.carousel, 
+.panel-title a { 
+	cursor: pointer; 
+}
+
 
 body {
     background: #bbb;
@@ -11,6 +19,8 @@ body {
 
 #board-container {
 	position: relative;
+	display: block;
+	float: left;
     padding: 20px;
 }
 
@@ -26,6 +36,15 @@ body {
 		position: absolute;
 	    width: $square-size;
 	    height: $square-size;
+
+	    .square-value {
+	    	width: 16px;
+	    	height: 16px;
+	    	font-size: 11px;
+	    	line-height: 16px;
+	    	text-align:center;
+	    	color: #f44;
+	    }
 	}
 
 	.piece {
@@ -115,10 +134,9 @@ body {
 }
 
 /* DEBUG TOOLS */
-.debug {
-	/*visibility: hidden;*/
+.chessboard {
 
-	&.subscript.square-id {
+	.subscript.square-id {
 	    position: absolute;
 	    bottom: 1px;
 	    right: 3px;
@@ -126,7 +144,7 @@ body {
 	    line-height: 100%;
 	    color: #999;
 	}	
-	&.subscript.data {
+	.subscript.data {
 	    position: absolute;
 	    bottom: 1px;
 	    left: 2px;
@@ -135,7 +153,7 @@ body {
 	    color: #444;
 	}
 
-	&.square-outline {
+	.square-outline {
 		visibility: hidden;
 	    position: absolute;
 	    left: 0;
@@ -145,12 +163,12 @@ body {
 	    margin: 1px;
 	    border-width: 2px;
 
-	  	&.check {
+	  	&.state-1 {
 	    	visibility: visible;
 	    	border-style: dashed;
 		    border-color: #f90;    
 		}
-		&.pin {
+		&.state-2 {
 			visibility: visible;
 			border-style: dashed;
 		    border-color: #333;    
@@ -159,5 +177,29 @@ body {
 
 }
 
+
+#console-container {
+	position: relative;
+	display: block;
+	float: right;
+	padding: 20px;
+}
+
+#console {
+	min-width: 260px;
+	padding: 10px;
+	background: #222;
+	color: #ffe;
+
+	p {
+		height: 12px;
+		line-height: 12px;
+		font-size: 12px;
+
+		&.top-move {
+			background: #444;
+		}
+	}
+}
 
 

@@ -13,29 +13,52 @@
 <script type="text/ng-template" id="template-chessboard.html">
 <div class="chessboard" id="chessboard">
     <div ng-repeat="square in squares" class="square at-{{square}} {{square.complex}} unselectable" id={{square}}>
-    	<div subscript.square code="{{square}}"></div>
-    	<div outline.square code="{{square}}" state="{{squaresState[square]}}"></div>
+        <div ng-show="settings.debugMode" class="subscript square-id unselectable">{{square}}</div>
+        <div ng-show="settings.debugMode" class="square-outline state-{{squaresState[square]}}"></div>
+        <div ng-show="settings.debugMode" class="square-value">{{rules.ACTIVITY[17][square]}}</div>
     </div>
     <div ng-repeat="piece in pieces.white" class="piece white {{piece.name}} at-{{piece.square}} sliding" at={{piece.square}}>
-    	<div subscript.piece data="{{piece.square}}"></div>
+        <div ng-show="settings.debugMode" class="subscript data unselectable">{{piece.square}}</div>
     </div>
     <div ng-repeat="piece in pieces.black" class="piece black {{piece.name}} at-{{piece.square}} sliding" at={{piece.square}}>
-    	<div subscript.piece data="{{piece.square}}"></div>
+    	<div ng-show="settings.debugMode" class="subscript data unselectable">{{piece.square}}</div>
     </div>
 </div>
 </script>
 
 <div id="body-container" ng-controller="mainController">   
 
+    <!--
 	<div class="control-panel">
 	   <button class="btn btn-info">New Game</button>	   
 	</div>
+    -->
 
     <div id="board-container" ng-controller="chessboardController">
         <button ng-click="reverse()" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> Reverse</button>
         <button ng-click="debug()" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
         <div chessboard></div>
 	</div>
+
+    <div id="console-container" ng-controller="consoleController">
+        <tabset>
+            <tab heading="Static title">Static content</tab>
+            <tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" disabled="tab.disabled">
+                {{tab.content}}
+            </tab>
+            <tab select="alertMe()">
+                <tab-heading>
+                    <i class="glyphicon glyphicon-bell"></i> Alert!
+                </tab-heading>
+                I've got an HTML heading, and a select callback. Pretty cool!
+            </tab>
+        </tabset>
+
+        <div id="console">
+            <p class="top-move">{{engine.tree.root.move.san}} {{engine.tree.root.value/100}}</p>
+            <p ng-repeat="node in engine.tree.root.children | orderBy:'value'">{{node.move.san}}: {{node.value/100}}</p>
+        </div>
+    </div>
 
 </div>
 <!-- Vendor Libraries -->
@@ -54,6 +77,7 @@
 <script src="js/services/engine.js" defer></script>
 <script src="js/controllers/main.js" defer></script>
 <script src="js/controllers/chessboard.js" defer></script>
+<script src="js/controllers/console.js" defer></script>
 <script src="js/directives/chessboard.js" defer></script>
 </body>
 </html>
