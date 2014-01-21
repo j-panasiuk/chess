@@ -45,6 +45,9 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 				},
 				stop: function(event, ui) {
 				//	Dragging has stopped. Revert all temporary dragging functionalities.
+					console.log('%cDragging stopped.', LOG.ui);
+					$(this).css('top', '').css('left', '');
+
 					$('.square').droppable('disable')
 					.removeClass('drag-hover')
 					.removeClass('ui-state-highlight');
