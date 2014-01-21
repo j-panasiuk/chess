@@ -14,6 +14,7 @@ app.factory('settings', function() {
 		'mode': 0,
 		'timeLimit': 0,
 		'isReversed': false,
+		'reverseForBlack': true,
 		'debugMode': true,
 		'animationTime': 250,
 		'delayAI': 500

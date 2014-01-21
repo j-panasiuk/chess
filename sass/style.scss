@@ -43,7 +43,7 @@ body {
 	    	font-size: 11px;
 	    	line-height: 16px;
 	    	text-align:center;
-	    	color: #f44;
+	    	color: #d90;
 	    }
 	}
 
@@ -112,8 +112,20 @@ body {
 			}
 		}
 	}
+
+	&.debug-true {
+    	background: #eee;
+    	
+    	.square {
+    		outline: 1px solid #bbb;
+    	}
+    }
 }
 
+
+.glyphicon.grey {
+	color: #bbb;
+}
 
 
 .unselectable {

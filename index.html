@@ -11,11 +11,11 @@
     
 <!-- Template: chessboard -->
 <script type="text/ng-template" id="template-chessboard.html">
-<div class="chessboard" id="chessboard">
+<div class="chessboard debug-{{settings.debugMode}}" id="chessboard">
     <div ng-repeat="square in squares" class="square at-{{square}} {{square.complex}} unselectable" id={{square}}>
         <div ng-show="settings.debugMode" class="subscript square-id unselectable">{{square}}</div>
         <div ng-show="settings.debugMode" class="square-outline state-{{squaresState[square]}}"></div>
-        <div ng-show="settings.debugMode" class="square-value">{{rules.ACTIVITY[17][square]}}</div>
+        <div ng-show="settings.debugMode" class="square-value">{{rules.ACTIVITY[22][square]}}</div>
     </div>
     <div ng-repeat="piece in pieces.white" class="piece white {{piece.name}} at-{{piece.square}} sliding" at={{piece.square}}>
         <div ng-show="settings.debugMode" class="subscript data unselectable">{{piece.square}}</div>
@@ -35,12 +35,16 @@
     -->
 
     <div id="board-container" ng-controller="chessboardController">
-        <button ng-click="reverse()" class="btn btn-default"><span class="glyphicon glyphicon-cog"></span> Reverse</button>
-        <button ng-click="debug()" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span> Debug</button>
+        <button ng-click="reverse()" class="btn btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
+        <button ng-click="debug()" class="btn btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
         <div chessboard></div>
 	</div>
 
     <div id="console-container" ng-controller="consoleController">
+
+        <h3>Dynamic <button class="btn btn-sm btn-primary" type="button" ng-click="random()">Randomize</button></h3>
+        <progressbar max="max" value="dynamic"><span style="color:black; white-space:nowrap;">{{dynamic}} / {{max}}</span></progressbar>
+
         <tabset>
             <tab heading="Static title">Static content</tab>
             <tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active" disabled="tab.disabled">
@@ -55,9 +59,10 @@
         </tabset>
 
         <div id="console">
-            <p class="top-move">{{engine.tree.root.move.san}} {{engine.tree.root.value/100}}</p>
-            <p ng-repeat="node in engine.tree.root.children | orderBy:'value'">{{node.move.san}}: {{node.value/100}}</p>
+            <p class="top-move">{{engine.tree.root.move}} {{engine.tree.root.value/100}}</p>
+            <p ng-repeat="node in engine.tree.root.children | orderBy:'value'">{{node.move}}: {{node.value/100}}</p>
         </div>
+
     </div>
 
 </div>

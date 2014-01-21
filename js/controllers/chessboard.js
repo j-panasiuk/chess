@@ -10,15 +10,23 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		'white': [],
 		'black': []
 	};
-
 	$scope.legalTargets = [];
-	$scope.legalMoves = {};
-	
+	$scope.legalMoves = {};	
 	$scope.squaresState = {};
-	for (var square in rules.SQUARES) {
-		square = rules.SQUARES[square];
-		$scope.squaresState[square] = 0;
-	}
+
+	$scope.reset = function() {
+	//	Reset scope variables to initial state.
+	//	Start tracking pieces on the chessboard based on current model.
+		$scope.pieces = {
+			'white': game.currentPosition.pieceLists[0],
+			'black': game.currentPosition.pieceLists[1]
+		};
+	//	Reset all square states.
+		for (var square in rules.SQUARES) {
+			square = rules.SQUARES[square];
+			$scope.squaresState[square] = 0;
+		}
+	};
 
 	$scope.debug = function(show) {
 		console.assert((typeof(show) === 'boolean') || (show === undefined), 'Invalid debug value.', show);
@@ -132,8 +140,14 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		console.log('%ctree:', LOG.state, engine.tree);
 
 		$timeout(function() {
+			var san;
 			try {
-				move = engine.tree.getMove(position);
+			//	Get best possible move in SAN format.
+			//	Translate SAN to move object.
+				san = engine.tree.getMove(position);
+				move = _.find(position.moves, function(move) {
+					return move.san === san;
+				});
 			} catch (error) {
 				console.log('%cCaught error in AI move generation.', LOG.warn, error.message);
 			//	Problems encountered in move generating script.
@@ -274,21 +288,20 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	};
 
 	$scope.startGame = function(restart) {
-	//	Begin tracking pieces, based on current game model.
-		$scope.pieces = {
-			'white': game.currentPosition.pieceLists[0],
-			'black': game.currentPosition.pieceLists[1]
-		};
+	//	Reset scope variables to initial values.
+		$scope.reset();
+
 	//	In case of restarting a game, $digest of chessboard scope is needed
 	//	to let HTML chessboard template catch up with refreshed model.	
 		if (restart) {	
 			$scope.$digest();
 		}
-	//	Wait for animations to finish.
+
+	//	Wait for initial animations to finish.
 		$timeout(function() {
-		$scope.enableDragDrop();
-		$scope.nextTurn(false);
-		console.log('%cGameflow started. Restart:', LOG.action, restart);
+			$scope.enableDragDrop();
+			$scope.nextTurn(false);
+			console.log('%cGameflow started. Restart:', LOG.action, restart);
 		}, 400);
 	};
 
