@@ -2,7 +2,7 @@
 
 //	Define standard chess rules.
 app.factory('rules', function(settings) {
-	console.log('%cDefining basic data...', LOG.action);
+	//console.log('%cDefining basic data...', LOG.action);
 //	Chess rules are precomputed and stored in `rules` object, which is a set of 
 //	(frozen) flags, arrays and hashtables. Anything regarding chess rules, move
 //	generation & validity etc, which may be of use to other modules is kept here.
@@ -36,7 +36,7 @@ app.factory('rules', function(settings) {
 	var COLORS, COLOR_NAME, COLOR_MASK, SQUARES, FILE_NAMES, RANK_NAMES, SQUARE_NAME, RANKS, FILES,
 		PIECES, PIECE_TYPES, PIECE_NAME, FEN_TO_CODE, CODE_TO_FEN, PIECE_TYPE_NOTATION, // Pieces.
 		ATTACK_VECTORS, PASSIVE_VECTORS, ATTACK_RAYS, PASSIVE_RAYS, ATTACK_FIELDSET, // Piece attacks & movement.
-		QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, // Specific ranks.
+		QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, FIRST_RANK, FIRST_RANK_INDEX, // Specific ranks.
 		CENTER, SEMI_CENTER, // Specific chessboard regions.
 		CASTLE_ROOKS, CASTLE_KING_TO, ENPASSANT_TARGET, // Special moves & square-specific stuff.
 		MOVE_SPECIAL_MASK, MOVE_SPECIAL, // Move special values.
@@ -292,6 +292,18 @@ app.factory('rules', function(settings) {
 		0: 6,
 		1: 1
 	};
+//	FIRST_RANK :: Object{2}
+//	Stores 1st rank (array of squares) for each color.
+	FIRST_RANK = {
+		0: RANKS[0],
+		1: RANKS[7]
+	};
+//	FIRST_RANK_INDEX :: Object{2}
+//	Stores 1st rank index for each color.
+	SEVENTH_RANK_INDEX = {
+		0: 0,
+		1: 7
+	};
 //	CASTLE_ROOKS :: { W: [<0-0>, <0-0-0>], B: [<0-0>, <0-0-0>] }
 //	CASTLE_ROOKS[W][1].from = 0 	 	CASTLE_ROOKS[W][1].to = 3
 	CASTLE_ROOKS = {
@@ -323,33 +335,43 @@ app.factory('rules', function(settings) {
 //	ACTITITY
 //	Translates piece code and its current location to activity value.
 //	The better square a piece occupies the higher its activity value.
-//	ACTIVITY[W|KNIGHT][0] = 0 		(Knight on a1 value = 310)
-//	ACTIVITY[W|KNIGHT][84] = 20 	(Knight on e6 value = 330)
+//	Activity doesn't take into account positions of other pieces or any other factors.
+//	(Knight on b1 value +1) 		ACTIVITY[W|KNIGHT][1] = 1
+//	(Knight on e6 value +7) 		ACTIVITY[W|KNIGHT][84] = 7	
 	ACTIVITY = {};
 	rules.ACTIVITY = ACTIVITY;
-	A = ACTIVITY;
 
 	ACTIVITY[W|PAWN] = {};
 	ACTIVITY[B|PAWN] = {};
+	ACTIVITY[W|KNIGHT] = {};
+	ACTIVITY[B|KNIGHT] = {};
+	ACTIVITY[W|BISHOP] = {};
+	ACTIVITY[B|BISHOP] = {};
+	ACTIVITY[W|ROOK] = {};
+	ACTIVITY[B|ROOK] = {};
 
 	(function calculatePawnActivity() {
 		var square, activity;
-	//	White pawns activity.
+
 		for (var i = 0; i < SQUARES.length; i++) {
 			square = SQUARES[i];
-			activity = fileValue(square.file) + centerValue(square);
-			ACTIVITY[W|PAWN][square] = activity + advancementValue(WHITE, square.rank);
-			ACTIVITY[B|PAWN][square] = activity + advancementValue(BLACK, square.rank);
+			activity = fileValue(square.file) + centralization(square);
+			ACTIVITY[W|PAWN][square] = activity + advancement(WHITE, square.rank);
+			ACTIVITY[B|PAWN][square] = activity + advancement(BLACK, square.rank);
 		}
 
-		function advancementValue(color, rank) {
+		function advancement(color, rank) {
+		//	Return bonus for pawn advanced position.
+		//	(Use multiplier later, if the pawn is passed!)
+		//	Rank: 		2    3    4    5    6    7 
+		//	Bonus: 		0    1    2    4    8    20
 			switch (rank) {				
 				case 1: 	return color ? 20 : 0; break;
 				case 6: 	return color ? 0 : 20; break;
-				case 2: 	return color ? 10 : 1; break;
-				case 5: 	return color ? 1 : 10; break;
-				case 3: 	return color ? 5 : 3; break;
-				case 4: 	return color ? 3 : 5; break;
+				case 2: 	return color ? 8 : 1; break;
+				case 5: 	return color ? 1 : 8; break;
+				case 3: 	return color ? 4 : 2; break;
+				case 4: 	return color ? 2 : 4; break;
 			//	First and last rank added for consistency measures.	
 				case 0: 	return color ? 50 : 0; break;
 				case 7: 	return color ? 0 : 50; break;
@@ -365,14 +387,111 @@ app.factory('rules', function(settings) {
 			return 3.5 - Math.abs(file - 3.5);
 		}
 
-		function centerValue(square) {
+		function centralization(square) {
 			console.assert(square.onBoard, 'Invalid square.', square);
 		//	Return bonus points for central position.
 		//	CENTER: 4 		SEMI_CENTER: 2 		(default): 0
 			return _.contains(SEMI_CENTER, square) ? (_.contains(CENTER, square) ? 4 : 2) : 0;
 		}
 	}());
-	console.log('%cACTIVITY', LOG.attention, ACTIVITY);
+
+	(function calculateKnightActivity() {
+		var square, activity;
+
+		for (var i = 0; i < SQUARES.length; i++) {
+			square = SQUARES[i];
+			activity = centralization(square);
+			ACTIVITY[W|KNIGHT][square] = activity + advancement(WHITE, square.rank);
+			ACTIVITY[B|KNIGHT][square] = activity + advancement(BLACK, square.rank);
+		}
+
+		function advancement(color, rank) {
+		//	Return bonus for knight advanced position.
+		//	Rank: 		0    1    2    3    4    5    6    7 
+		//	Bonus: 		0    0    0    0    1    2    1    0
+			if (color) {
+				switch (rank) {
+					case 3: 	return 1; break;
+					case 2: 	return 2; break;
+					case 1: 	return 1; break;
+					default: 	return 0;
+				}
+			} else {
+				switch (rank) {
+					case 4: 	return 1; break;
+					case 5: 	return 2; break;
+					case 6: 	return 1; break;
+					default: 	return 0;
+				}
+			}
+		}
+
+		function centralization(square) {
+			console.assert(square.onBoard, 'Invalid square.', square);
+		//	Return bonus points for square centralization.
+		//	Adds bonus for both coordinates (rank & file).
+		//	0  1  2  3  3  2  1  0
+		//	1  2  3  4  4  3  2  1 
+		//	2  3  4  5  5  4  3  2
+		//	3  4  5  6  6  5  4  3
+		//	3  4  5  6  6  5  4  3
+		//	2  3  4  5  5  4  3  2
+		//	1  2  3  4  4  3  2  1
+		//	0  1  2  3  3  2  1  0
+			return 7 - Math.abs(square.file - 3.5) - Math.abs(square.rank - 3.5);
+		}		
+	}());
+
+	(function calculateBishopActivity() {
+		var square;
+
+		for (var i = 0; i < SQUARES.length; i++) {
+			square = SQUARES[i];
+			ACTIVITY[W|BISHOP][square] = scope(square);
+			ACTIVITY[B|BISHOP][square] = scope(square);
+		}
+
+		function scope(square) {
+		//	Return bonus for bishop's scope.
+		//	3  2  1  0  0  1  2  3
+		//	2  4  3  2  2  3  4  2 
+		//	2  3  4  3  3  4  3  2
+		//	1  2  3  4  4  3  2  1
+		//	1  2  3  4  4  3  2  1
+		//	2  3  4  3  3  4  3  2
+		//	2  4  3  2  2  3  4  2
+		//	3  2  1  0  0  1  2  3
+			return 0;
+		}			
+	}());
+
+	(function calculateRookActivity() {
+		var square;
+
+		for (var i = 0; i < SQUARES.length; i++) {
+			square = SQUARES[i];
+			ACTIVITY[W|ROOK][square] = advancement(WHITE, square.rank);
+			ACTIVITY[B|ROOK][square] = advancement(BLACK, square.rank);
+		}
+
+		function advancement(color, rank) {
+		//	Return bonus for rook's activity.
+		//	10 10 10 10 10 10 10 10
+		//	8  8  8  8  8  8  8  8 
+		//	0  0  0  0  0  0  0  0
+		//	0  0  0  0  0  0  0  0
+		//	0  0  0  0  0  0  0  0
+		//	0  0  0  0  0  0  0  0
+		//	0  0  0  0  0  0  0  0
+		//	0  0  0  0  0  0  0  0
+			switch (rank) {
+				case (color ? 1 : 6): 	return 8; break;
+				case (color ? 0 : 7): 	return 10; break;
+				default: 				return 0;
+			}
+		}			
+	}());
+	//console.log('%cACTIVITY', LOG.attention, ACTIVITY);
 
 
 //	** POSITION REPRESENTATION
@@ -403,10 +522,10 @@ app.factory('rules', function(settings) {
 //	and are used to store all kinds of useful infomation about current
 //	state of the game. Position objects offer three useful methods:
 //	.update(move)			Self-updates
-// 	.yield(move)			Returns modified copy
+// 	.yields(move)			Returns modified copy
 //	.evaluate() 			Returns position's value
 //
-	console.log('%cDefining positions...', LOG.action);
+	//console.log('%cDefining positions...', LOG.action);
 
 //	validFen :: RegEx
 //	Create regular expression for validating FEN strings.	
@@ -437,7 +556,7 @@ app.factory('rules', function(settings) {
 	// 													updateMoves(move)
 	//	gameOver 			getter
 	//													update(move)
-	//													yield(move)
+	//													yields(move)
 	//													evaluate
 	//
 		var position, pieces, active, castling, enpassant, halfmove, fullmove, occupied;
@@ -623,7 +742,7 @@ app.factory('rules', function(settings) {
 						this.pieceLists[piece.color].push(piece);
 					}
 				}
-				console.log('%cpieceLists:', LOG.state, this.pieceLists);
+				//console.log('%cpieceLists:', LOG.state, this.pieceLists);
 			}
 		});
 		Object.defineProperty(position, 'updatePieceLists', {
@@ -646,9 +765,9 @@ app.factory('rules', function(settings) {
 						return !!((piece.type === PAWN) && (piece.square.rank === QUEENING_RANK_INDEX[move.color]));
 					});
 					this.pieceLists[move.color].push(this.pieces[move.to]);
-					console.log('%cRedirecting moveList pointer to...', LOG.action, _.last(this.pieceLists[move.color]).name);
+					//console.log('%cRedirecting moveList pointer to...', LOG.action, _.last(this.pieceLists[move.color]).name);
 				}
-				console.log('%cpieceLists:', LOG.state, this.pieceLists);
+				//console.log('%cpieceLists:', LOG.state, this.pieceLists);
 			}
 		});
 
@@ -773,7 +892,7 @@ app.factory('rules', function(settings) {
 				}
 				this.checks = checks;
 				this.pieces[kingSquare].checks = checks;
-				console.log('%cchecks:', LOG.state, checks);
+				//console.log('%cchecks:', LOG.state, checks);
 			}
 		});
 
@@ -864,7 +983,7 @@ app.factory('rules', function(settings) {
 			//	constructor / factory function.		
 				this.pinLists[WHITE] = pins[WHITE];
 				this.pinLists[BLACK] = pins[BLACK];
-				console.log('%cpins:', LOG.state, this.pinLists);
+				//console.log('%cpins:', LOG.state, this.pinLists);
 			}
 		});
 
@@ -873,7 +992,7 @@ app.factory('rules', function(settings) {
 		});
 		Object.defineProperty(position, 'setMoves', {
 			value: function setMoves() {
-				console.time('Setting moves');
+				//console.time('Setting moves');
 			//	Generate array of all legal moves.
 			//	Note some useful rules for eliminating moves:
 			//	
@@ -896,13 +1015,13 @@ app.factory('rules', function(settings) {
 				}
 
 				this.moves = moves;
-				console.timeEnd('Setting moves');
-				console.log('%cmoves:', LOG.state, this.moves);
+				//console.timeEnd('Setting moves');
+				//console.log('%cmoves:', LOG.state, this.moves);
 			}
 		});
 		Object.defineProperty(position, 'updateMoves', {
 			value: function updateMoves(move) {
-				console.time('Updating moves');
+				//console.time('Updating moves');
 			//	*(Duplicate of setMoves() function, to be changed) 
 				var color = this.activeColor,
 					ownPieceList = this.pieceLists[color],
@@ -917,7 +1036,7 @@ app.factory('rules', function(settings) {
 			//	Update moves in current game context.
 			// 	Disambiguate move notation.
 				(function eliminateCollisions() {
-					console.log('%cEliminating move collisions...', LOG.action);
+					//console.log('%cEliminating move collisions...', LOG.action);
 				//	Look for multiple:
 				//	+ Knights 
 				//	+ Opposite-color bishops
@@ -991,9 +1110,9 @@ app.factory('rules', function(settings) {
 						//		'e6': [Ae6, Ce6]
 						//	}
 						if (_.size(collisions) > 0) {
-							console.log('%ccollisions:', LOG.state, collisions);
+							//console.log('%ccollisions:', LOG.state, collisions);
 						} else {
-							console.log('%cNo collisions.', LOG.action);
+							//console.log('%cNo collisions.', LOG.action);
 						}
 						
 
@@ -1001,15 +1120,15 @@ app.factory('rules', function(settings) {
 						for (var collision in collisions) {
 							collision = collisions[collision];
 							disambiguate(collision);
-							console.log('%cSolved collision...', LOG.action, _.values(collision).map(function(move) { return move.san; }));
+							//console.log('%cSolved collision...', LOG.action, _.values(collision).map(function(move) { return move.san; }));
 						}
 					}
 
 				}());
 
 				this.moves = moves;
-				console.timeEnd('Updating moves');
-				console.log('%cmoves:', LOG.state, this.moves);
+				//console.timeEnd('Updating moves');
+				//console.log('%cmoves:', LOG.state, this.moves);
 			}
 		});
 
@@ -1021,7 +1140,7 @@ app.factory('rules', function(settings) {
 			//	1 		01 		Draw
 			//	2 		10 		White wins
 			//	3 		11 		Black win
-				console.log('%cChecking result. Legal moves:', LOG.action, this.moves.length);
+				//console.log('%cChecking result. Legal moves:', LOG.action, this.moves.length);
 				if (this.moves.length) {
 					return 0;
 				}
@@ -1034,9 +1153,9 @@ app.factory('rules', function(settings) {
 
 		/*
 		Object.defineProperties(position, {
-			'update': 			{ value: function(move) { console.log('Updating position...'); } },
-			'yields': 			{ value: function(move) { console.log('Yield new position...'); } },
-			'evaluate': 		{ value: function() { console.log('Evaluate position...'); } }
+			'update': 			{ value: function(move) { //console.log('Updating position...'); } },
+			'yields': 			{ value: function(move) { //console.log('Yield new position...'); } },
+			'evaluate': 		{ value: function() { //console.log('Evaluate position...'); } }
 		});
 		*/
 
@@ -1046,7 +1165,7 @@ app.factory('rules', function(settings) {
 				var from = move.from, to = move.to, special = move.special,
 					color = move.color, enemy = opposite(color);
 
-				console.log('%cUpdating position after move...', LOG.action, move.san);
+				//console.log('%cUpdating position after move...', LOG.action, move.san);
 
 			//	1. Update pieces (& piece 'square' properties)
 			//	Move piece to target square (occupying piece is lost). Empty initial square.
@@ -1071,10 +1190,10 @@ app.factory('rules', function(settings) {
 					} else if (move.isPromote) {
 					//	A pawn has promoted. Delete it and create new piece in its place.
 					//	!Important
-						console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
+						//console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
 						delete this.pieces[to];
 						this.pieces[to] = piece(move.promote, to);
-						console.log('%cNew piece:', LOG.state, this.pieces[to]);
+						//console.log('%cNew piece:', LOG.state, this.pieces[to]);
 					}
 				}
 
@@ -1103,7 +1222,7 @@ app.factory('rules', function(settings) {
 						this.castleRights[enemy] &= 1;
 					}
 				}
-				console.log('%ccastleRights', LOG.state, this.castleRights);
+				//console.log('%ccastleRights', LOG.state, this.castleRights);
 
 			//	4. 	Update enpassantAt
 				if (move.isDouble) {
@@ -1111,7 +1230,7 @@ app.factory('rules', function(settings) {
 				} else {
 					this.enpassantAt = null;
 				}
-				console.log('%cenpassantAt', LOG.state, this.enpassantAt);
+				//console.log('%cenpassantAt', LOG.state, this.enpassantAt);
 
 			//	5. 	Update halfMoveClock
 				if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
@@ -1148,7 +1267,7 @@ app.factory('rules', function(settings) {
 
 		Object.defineProperty(position, 'yields', {
 			value: function yieldPosition(move) {
-				console.assert(_move.isPrototypeOf(move), 'Invalid move.', move);
+				//console.assert(_move.isPrototypeOf(move), 'Invalid move.', move);
 				var position = createPosition(this.fen),
 					from = move.from, 
 					to = move.to, 
@@ -1156,8 +1275,8 @@ app.factory('rules', function(settings) {
 					color = move.color, 
 					enemy = opposite(color);
 
-				console.log('%cYielding position after move...', LOG.action, move.san);
-				console.log('%cCloned position', LOG.attention, position, this);
+				//console.log('%cYielding position after move...', LOG.action, move.san);
+				//console.log('%cCloned position', LOG.attention, position, this);
 
 			//	1. Update pieces (& piece 'square' properties)
 			//	Move piece to target square (occupying piece is lost). Empty initial square.
@@ -1182,10 +1301,10 @@ app.factory('rules', function(settings) {
 					} else if (move.isPromote) {
 					//	A pawn has promoted. Delete it and create new piece in its place.
 					//	!Important
-						console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
+						//console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
 						delete position.pieces[to];
 						position.pieces[to] = piece(move.promote, to);
-						console.log('%cNew piece:', LOG.state, position.pieces[to]);
+						//console.log('%cNew piece:', LOG.state, position.pieces[to]);
 					}
 				}
 
@@ -1214,7 +1333,7 @@ app.factory('rules', function(settings) {
 						position.castleRights[enemy] &= 1;
 					}
 				}
-				console.log('%ccastleRights', LOG.state, position.castleRights);
+				//console.log('%ccastleRights', LOG.state, position.castleRights);
 
 			//	4. 	Update enpassantAt
 				if (move.isDouble) {
@@ -1222,7 +1341,7 @@ app.factory('rules', function(settings) {
 				} else {
 					position.enpassantAt = null;
 				}
-				console.log('%cenpassantAt', LOG.state, position.enpassantAt);
+				//console.log('%cenpassantAt', LOG.state, position.enpassantAt);
 
 			//	5. 	Update halfMoveClock
 				if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
@@ -1296,7 +1415,7 @@ app.factory('rules', function(settings) {
 		check.ray = ray;
 		Object.freeze(check);
 
-		console.log('%cCreating new check...', LOG.action, check);
+		//console.log('%cCreating new check...', LOG.action, check);
 		return check;
 	}
 
@@ -1326,7 +1445,7 @@ app.factory('rules', function(settings) {
 		pin.ray = ray;
 		Object.freeze(pin);
 
-		console.log('%cCreating new pin...', LOG.action, pin);
+		//console.log('%cCreating new pin...', LOG.action, pin);
 		return pin;
 	}
 
@@ -1373,7 +1492,7 @@ app.factory('rules', function(settings) {
 //	Instead, a new instance of Piece is created on the promotion square.
 //	In general, 'code' property of a piece is meant to be immutable, whereas
 //	'square', 'attacks' and 'moves' are updated every time position changes.
-	console.log('%cDefining pieces...', LOG.action);
+	//console.log('%cDefining pieces...', LOG.action);
 
 //	Piece prototype.
 	_piece = {};
@@ -1384,7 +1503,9 @@ app.factory('rules', function(settings) {
 		'moves': 			{ writable: true, configurable: true },
 		'color': 			{ get: function() { return this.code.pieceColor; } },
 		'type': 			{ get: function() { return this.code.pieceType; } },
-		'isRanged': 		{ get: function() { return !!(this.code & 4); } }
+		'isRanged': 		{ get: function() { return !!(this.code & 4); } },
+		'isLight': 			{ get: function() { return (this.type === KNIGHT) || (this.type === BISHOP); } },
+		'isHeavy': 			{ get: function() { return (this.type === ROOK) || (this.type === QUEEN); } }
 	});
 
 	_pawn = Object.create(_piece);
@@ -1829,7 +1950,7 @@ app.factory('rules', function(settings) {
 //	capture 	4
 //	enpassant 	1
 //
-	console.log('%cDefining moves...', LOG.action);
+	//console.log('%cDefining moves...', LOG.action);
 
 	MOVE_SPECIAL_MASK = {
 		'double': 1,
@@ -2079,6 +2200,16 @@ app.factory('rules', function(settings) {
 	//	1 	Horizontal 				15 	TopLeft-BottomRight diagonal
 	//	16 	Vertical 				17 	TopRight-BottomLeft diagonal
 		return Math.abs(ray[1] - ray[0]);
+	}
+
+	function proximity(target, distance) {
+		console.assert(target.onBoard && (typeof distance === 'number'), 'Invalid proximity arguments.');
+	//	Return array of squares in proximity of target square.
+	//	All squares within a certain range are returned.
+	//	(Note: target square itself is not included)
+		var proximity = _.without(SQUARES, target).filter(function(square) {
+			return dist(square, target) <= distance;
+		});
 	}
 
 	function disambiguate(moves) {
