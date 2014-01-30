@@ -31,6 +31,7 @@ body {
     background: #ddd;
     background: url('../img/chessboard.jpg') no-repeat center center;
     background-size: cover;
+    cursor: default;
 
     .square {
 		position: absolute;
@@ -170,9 +171,9 @@ body {
 	    position: absolute;
 	    left: 0;
 	    top: 0;
-	    width: $square-size - 6px;
-		height: $square-size - 6px;
-	    margin: 1px;
+	    width: $square-size - 4px;
+		height: $square-size - 4px;
+	    margin: 2px;
 	    border-width: 2px;
 
 	  	&.state-1 {

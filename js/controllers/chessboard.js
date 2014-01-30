@@ -4,6 +4,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	$scope.settings = settings;
 	$scope.rules = rules;
+	$scope.game = game;
 	$scope.engine = engine;
 	$scope.squares = rules.SQUARES;
 	$scope.pieces = {
@@ -140,6 +141,17 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		console.log('%ctree:', LOG.state, engine.tree);
 
 		$timeout(function() {
+			var promise = engine.tree.getMove(position);
+
+			promise.then(function(san) {
+				console.log('%cMove promise resolved:', LOG.promise, san);
+				move = _.find(position.moves, function(move) {
+					return move.san === san;
+				}) || _.sample(position.moves);
+
+				$scope.handleMove(move);
+			});
+		/*
 			var san;
 			try {
 			//	Get best possible move in SAN format.
@@ -160,6 +172,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 				console.debug('%cAI selected move.', LOG.action, move.san);
 				$scope.handleMove(move);
 			}
+		*/
 		}, delay);
 	};
 
@@ -179,20 +192,20 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	//	Finally, determine game result after the move.
 	//
 		var fullDisplayRequired;
-		console.log('%cMove selected.', LOG.action, move.san);
+		console.log('%cMove selected.', LOG.action, move);
 
 	//	Display direct move of a piece (if not moved by the player).
-		fullDisplayRequired = !game.players[game.currentPosition.activeColor].isUser;
+		fullDisplayRequired = !game.activePlayer.isUser;
 		if (fullDisplayRequired) {
 			$scope.displayDirectMove(move);
 		}
 
 	//	Update game logic.
 		console.time('Updating position');
-		$scope.$apply(function() {
-			game.currentPosition.update(move);
-			game.history.update(move);
-		});		
+
+		game.currentPosition.update(move);
+		game.history.update(move);
+	
 		console.timeEnd('Updating position');		
 
 	//	Cleanup after a non-standard move.
@@ -217,7 +230,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		$scope.$digest();
 		$scope.validatePieceData();		
 
-		result = game.currentPosition.gameOver;
+		result = game.currentPosition.result;
 		if (result) {
 
 			$scope.endGame(result);
@@ -293,7 +306,11 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	//	In case of restarting a game, $digest of chessboard scope is needed
 	//	to let HTML chessboard template catch up with refreshed model.	
-		if (restart) {	
+		if (restart) {
+
+			//if (settings.switchColorOnRestart) {
+				//$scope.reverse(settings.isReversed);
+			//}			
 			$scope.$digest();
 		}
 
@@ -323,8 +340,14 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	$scope.endGame = function(result) {
 		console.log('%c\nGAME OVER\n', LOG.action, result);
+		game.result = result;
 		$scope.$emit('gameOver', result);
-	}
+	};
+
+	$scope.restart = function() {
+		console.log($scope.game.activePlayer);
+		$scope.$emit('restart');
+	};
 
 	$scope.$on('startGame', function(event, restart) {
 		$scope.startGame(restart || false);		

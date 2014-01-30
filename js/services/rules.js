@@ -554,7 +554,7 @@ app.factory('rules', function(settings) {
 	//	pinLists 										setPins
 	//	moves 											setMoves
 	// 													updateMoves(move)
-	//	gameOver 			getter
+	//	result 				getter
 	//													update(move)
 	//													yields(move)
 	//													evaluate
@@ -1132,7 +1132,7 @@ app.factory('rules', function(settings) {
 			}
 		});
 
-		Object.defineProperty(position, 'gameOver', {
+		Object.defineProperty(position, 'result', {
 			get: function() {
 			//	Game results: 2bit integer [0..3]
 			// 	result = <checkmate flag>|<color flag>
@@ -1899,10 +1899,6 @@ app.factory('rules', function(settings) {
 		}
 
 		piece = new Piece();
-		//Object.defineProperties(piece, {
-		//	'code': 		{ value: code, enumerable: true, writable: false },
-		//	'square': 		{ value: square, enumerable: true, writable: true }
-		//});
 		piece.code = code;
 		piece.square = square;
 

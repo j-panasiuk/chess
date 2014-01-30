@@ -9,6 +9,7 @@ app.factory('game', function(settings, rules) {
 //	activeColor 			(Quick Access) Active color value: 0 | 1
 //	activePlayer 			(Quick Access) Pointer to active player object.
 //	history 				object storing serialized moves and positions.
+//	result 					(Flag) game result.
 //
 //	player 					Factory function of player objects.
 //	switchActive 			Function. Changes active side to the opponent.
@@ -21,7 +22,8 @@ app.factory('game', function(settings, rules) {
 		'currentPosition': 	{ writable: true, enumerable: true, configurable: true },
 		'activeColor': 		{ writable: true, enumerable: true, configurable: true },
 		'activePlayer': 	{ writable: true, enumerable: true, configurable: true },	
-		'history': 			{ writable: true, enumerable: true, configurable: true }		
+		'history': 			{ writable: true, enumerable: true, configurable: true },
+		'result': 			{ writable: true, enumerable: true, configurable: true }		
 	});
 
 	Object.defineProperty(game, 'switchActive', {
@@ -63,6 +65,7 @@ app.factory('game', function(settings, rules) {
 		//	Creating quick access properties.
 			this.activeColor = this.currentPosition.activeColor;
 			this.activePlayer = this.players[this.activeColor];
+			this.result = 0;
 
 		//	Create game history.
 			this.history = createHistory();

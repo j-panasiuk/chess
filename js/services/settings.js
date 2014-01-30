@@ -15,6 +15,7 @@ app.factory('settings', function() {
 		'timeLimit': 0,
 		'isReversed': false,
 		'reverseForBlack': true,
+		'switchColorOnRestart': true,
 		'debugMode': true,
 		'animationTime': 250,
 		'delayAI': 500
@@ -42,6 +43,19 @@ app.factory('settings', function() {
 		'displayOutlines': true
 		//'displayAttacked': false
 	};
+
+	function switchControls() {
+		var t = +(settings.controlWhite);
+		settings.controlWhite = +(settings.controlBlack);
+		settings.controlBlack = t;
+
+		if (settings.controlBlack === settings.CONTROL_FLAGS.user) {
+			settings.isReversed = settings.reverseForBlack ? true : false;
+		} else {
+			settings.isReversed = false;
+		}
+	}
+	settings.switchControls = switchControls;
 
 	return settings;
 });

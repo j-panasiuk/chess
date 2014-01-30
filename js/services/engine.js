@@ -1,6 +1,6 @@
 'use strict';
 
-app.factory('engine', function(rules, game) {
+app.factory('engine', function($q, rules, game) {
 	console.log('%cCreating engine...', LOG.action);
 //
 //
@@ -142,7 +142,8 @@ app.factory('engine', function(rules, game) {
 		},
 		'getMove': {
 			value: function(position) {				
-				var childNodes, node, move;
+				var childNodes, node, move,
+					deferred = $q.defer();
 
 			//	Reset game tree to current position.
 				this.plant(position);
@@ -161,7 +162,10 @@ app.factory('engine', function(rules, game) {
 				node = game.activeColor ? _.first(childNodes) : _.last(childNodes);
 
 				console.debug('Best move:', node.move, node.value);
-				return node.move; 
+				//return node.move;
+
+				deferred.resolve(node.move);
+				return deferred.promise; 
 			}
 		}
 	});

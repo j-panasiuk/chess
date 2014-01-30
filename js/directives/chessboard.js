@@ -164,13 +164,18 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 			}
 		};
 
-		scope.reverse = function() {
+		scope.reverse = function(isReversed) {
+			console.assert((typeof isReversed === 'boolean') || (isReversed === undefined), 'Invalid isReversed value.');
 			console.log('%cReversing chessboard...', LOG.ui);
 		//	Reverse chessboard. Adjust positions of all squares and pieces.
 		//	Reset jQuery UI styles responsible for positioning animated elements.
-			$('.square, .piece').toggleClass('reversed')
-			.css('top', '')
-			.css('left', '');
+			var elements = $('.square, .piece');
+			switch (isReversed) {
+				case true: 		elements.addClass('reversed'); break;
+				case false: 	elements.removeClass('reversed'); break;
+				default: 		elements.toggleClass('reversed');
+			}
+			elements.css('top', '').css('left', '');
 		};
 
 		console.log('%cChessboard linked.', LOG.ui);

@@ -15,7 +15,7 @@
     <div ng-repeat="square in squares" class="square at-{{square}} {{square.complex}} unselectable" id={{square}}>
         <div ng-show="settings.debugMode" class="subscript square-id unselectable">{{square}}</div>
         <div ng-show="settings.debugMode" class="square-outline state-{{squaresState[square]}}"></div>
-        <div ng-show="settings.debugMode" class="square-value">{{rules.ACTIVITY[22][square]}}</div>
+        <div ng-show="settings.debugMode" class="square-value unselectable">{{rules.ACTIVITY[22][square]}}</div>
     </div>
     <div ng-repeat="piece in pieces.white" class="piece white {{piece.name}} at-{{piece.square}} sliding" at={{piece.square}}>
         <div ng-show="settings.debugMode" class="subscript data unselectable">{{piece.square}}</div>
@@ -35,6 +35,7 @@
     -->
 
     <div id="board-container" ng-controller="chessboardController">
+        <button ng-click="restart()" ng-show="game.result" class="btn btn-primary">New Game</button>
         <button ng-click="reverse()" class="btn btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
         <button ng-click="debug()" class="btn btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
         <div chessboard></div>
