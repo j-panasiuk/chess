@@ -12,7 +12,7 @@ app.factory('engine', function($q, rules, game) {
 //						Tree branching repeats recursively up to a given depth.
 
 //	Declare local variables.
-	var tree = {}, _node = {}, maxDepth = 2;
+	var tree = {}, _node = {}, maxDepth = 1;
 
 
 	Object.defineProperties(_node, {
@@ -173,9 +173,9 @@ app.factory('engine', function($q, rules, game) {
 	function evaluation(position) {
 		console.assert(position.fen.match(rules.validFen), 'Invalid position.', position);
 	//	Evaluate position. Return computed value.
-		return _.sample(_.range(20));
-	/*
-		var 
+	//	return _.sample(_.range(20));
+		var square, leastValuableAttacker,
+			attacked = position.attacked,
 			pieces = position.pieceLists,
 			piecesWhite = pieces[0],
 			piecesBlack = pieces[1],
@@ -187,7 +187,22 @@ app.factory('engine', function($q, rules, game) {
 			kingBlack = pieces.filter(27),
 			lightPiecesWhite = pieces[0].filter(function(piece) { return !!piece.isLight; }),
 			lightPiecesBlack = pieces[1].filter(function(piece) { return !!piece.isLight; }),
+			hangingModifier = 0.8,
 			value = 0;
+
+		function getPieceValue(type) {
+			switch (type) {
+				case 1: 	return 100;
+				case 2: 	return 310;
+				case 3: 	return 10000;
+				case 5: 	return 315;
+				case 6: 	return 480;
+				case 7: 	return 920;
+				default: 	throw new Error('Unknown piece type.');
+			}
+		}
+
+		console.debug('attacked', position, attacked);
 
 	//	Count the material.
 		for (var i = 0; i < piecesWhite.length; i++) {
@@ -225,11 +240,47 @@ app.factory('engine', function($q, rules, game) {
 			}
 		}
 
+	//	Modifiers for attacked pieces.
+	//	For every piece check whether it is attacked.
+	//	If so, look for defending pieces. Compare captured / recaptured piece values.
+	//	If not sufficiently defended, treat piece as hanging and decrease the evaluation.
+		for (var i = 0; i < piecesWhite.length; i++) {
+			square = piecesWhite[i].square;
+			if (attacked[square][1].length) {
+			//	This piece is under attack.
+				if (!attacked[square][0].length) {
+				//	This piece is hanging.
+					value -= hangingModifier * piecesWhite[i].points;
+				} else {
+				//	This piece is defended.
+					leastValuableAttacker = _.min(attacked[square][1]);
+					if (getPieceValue(leastValuableAttacker) < piecesWhite[i].points) {
+						value -= hangingModifier * (piecesWhite[i].points - getPieceValue(leastValuableAttacker));
+					}
+				}
+			}
+		}
+		for (var i = 0; i < piecesBlack.length; i++) {
+			square = piecesBlack[i].square;
+			if (attacked[square][0].length) {
+			//	This piece is under attack.
+				if (!attacked[square][1].length) {
+				//	This piece is hanging.
+					value += hangingModifier * piecesBlack[i].points;
+				} else {
+				//	This piece is defended.
+					leastValuableAttacker = _.min(attacked[square][0]);
+					if (getPieceValue(leastValuableAttacker) < piecesBlack[i].points) {
+						value += hangingModifier * (piecesBlack[i].points - getPieceValue(leastValuableAttacker));
+					}
+				}
+			}
+		}
+
 	//	King safety.
 
 		console.log('%cEvaluating position...', LOG.action, value);
 		return value;
-	*/
 	}
 
 	engine.tree = tree;
