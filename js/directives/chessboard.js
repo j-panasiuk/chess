@@ -22,7 +22,7 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 
 			element.draggable({
 				containment: '#body-container',
-				cursor: 'none',
+				//cursor: 'none',
 				helper: 'original',			// draggedPiece | "original" | "clone"
 				revert: 'invalid',			// true | false | "invalid" | "valid"
 				revertDuration: 0,
@@ -45,8 +45,8 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 				},
 				stop: function(event, ui) {
 				//	Dragging has stopped. Revert all temporary dragging functionalities.
-					console.log('%cDragging stopped.', LOG.ui);
-					$(this).css('top', '').css('left', '');
+					console.log('%cDragging stopped.', LOG.ui, $(this).css('left'), $(this).css('top'));
+					$(this).css('top', '').css('left', '').css('z-index', '');
 
 					$('.square').droppable('disable')
 					.removeClass('drag-hover')
