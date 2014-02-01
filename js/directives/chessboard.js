@@ -34,7 +34,8 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 					var square = +$(this).attr('at'),
 						targets = scope.legalTargets[square];
 				
-					console.log('%cDragging started...', LOG.ui, square);					
+					console.log('%cDragging started...', LOG.ui, square);
+					//console.debug('DEBUGGING DRAG:', this, $(this).css('left'), $(this).css('top'), $(this).css('z-index'));					
 					$('.square').each(function() {						
 						if (_.contains(targets, +this.id)) {
 							$(this).droppable('enable');
@@ -45,8 +46,8 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game) 
 				},
 				stop: function(event, ui) {
 				//	Dragging has stopped. Revert all temporary dragging functionalities.
-					console.log('%cDragging stopped.', LOG.ui, $(this).css('left'), $(this).css('top'));
-					$(this).css('top', '').css('left', '').css('z-index', '');
+					console.log('%cDragging stopped.', LOG.ui);
+					$(this).css('top', '').css('left', '').css('z-index', '').removeAttr('style');
 
 					$('.square').droppable('disable')
 					.removeClass('drag-hover')
