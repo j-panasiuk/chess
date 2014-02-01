@@ -174,7 +174,7 @@ app.factory('engine', function($q, rules, game) {
 		console.assert(position.fen.match(rules.validFen), 'Invalid position.', position);
 	//	Evaluate position. Return computed value.
 	//	return _.sample(_.range(20));
-		var square, leastValuableAttacker,
+		var square, leastValuableAttacker, hangingPiecesWhite, hangingPiecesBlack,
 			attacked = position.attacked,
 			pieces = position.pieceLists,
 			piecesWhite = pieces[0],
@@ -187,7 +187,8 @@ app.factory('engine', function($q, rules, game) {
 			kingBlack = pieces.filter(27),
 			lightPiecesWhite = pieces[0].filter(function(piece) { return !!piece.isLight; }),
 			lightPiecesBlack = pieces[1].filter(function(piece) { return !!piece.isLight; }),
-			hangingModifier = 0.8,
+			hangingModifier = 0.5,
+			firstHangingModifier = 0.05,
 			value = 0;
 
 		function getPieceValue(type) {
@@ -201,8 +202,6 @@ app.factory('engine', function($q, rules, game) {
 				default: 	throw new Error('Unknown piece type.');
 			}
 		}
-
-		console.debug('attacked', position, attacked);
 
 	//	Count the material.
 		for (var i = 0; i < piecesWhite.length; i++) {
@@ -244,18 +243,23 @@ app.factory('engine', function($q, rules, game) {
 	//	For every piece check whether it is attacked.
 	//	If so, look for defending pieces. Compare captured / recaptured piece values.
 	//	If not sufficiently defended, treat piece as hanging and decrease the evaluation.
+		hangingPiecesWhite = [];
+		hangingPiecesBlack = [];
+
 		for (var i = 0; i < piecesWhite.length; i++) {
 			square = piecesWhite[i].square;
 			if (attacked[square][1].length) {
 			//	This piece is under attack.
 				if (!attacked[square][0].length) {
 				//	This piece is hanging.
-					value -= hangingModifier * piecesWhite[i].points;
+					//value -= hangingModifier * piecesWhite[i].points;
+					hangingPiecesWhite.push(piecesWhite[i].points);
 				} else {
 				//	This piece is defended.
 					leastValuableAttacker = _.min(attacked[square][1]);
 					if (getPieceValue(leastValuableAttacker) < piecesWhite[i].points) {
-						value -= hangingModifier * (piecesWhite[i].points - getPieceValue(leastValuableAttacker));
+						//value -= hangingModifier * (piecesWhite[i].points - getPieceValue(leastValuableAttacker));
+						hangingPiecesWhite.push(piecesWhite[i].points - getPieceValue(leastValuableAttacker));
 					}
 				}
 			}
@@ -266,15 +270,55 @@ app.factory('engine', function($q, rules, game) {
 			//	This piece is under attack.
 				if (!attacked[square][1].length) {
 				//	This piece is hanging.
-					value += hangingModifier * piecesBlack[i].points;
+					//value += hangingModifier * piecesBlack[i].points;
+					hangingPiecesBlack.push(piecesBlack[i].points);
 				} else {
 				//	This piece is defended.
 					leastValuableAttacker = _.min(attacked[square][0]);
 					if (getPieceValue(leastValuableAttacker) < piecesBlack[i].points) {
-						value += hangingModifier * (piecesBlack[i].points - getPieceValue(leastValuableAttacker));
+						//value += hangingModifier * (piecesBlack[i].points - getPieceValue(leastValuableAttacker));
+						hangingPiecesBlack.push(piecesBlack[i].points - getPieceValue(leastValuableAttacker));
 					}
 				}
 			}
+		}
+
+	//	Penalty for hanging pieces.
+		hangingPiecesWhite = hangingPiecesWhite.sort(function(x, y) { return y - x; });
+		hangingPiecesBlack = hangingPiecesBlack.sort(function(x, y) { return y - x; });
+		if (position.activeColor === 0) {
+		//	It's white's turn to play, so he has the chance to save the most valuable hanging piece.
+		//	Remaining attacked pieces count as hanging.
+			if (hangingPiecesWhite.length) {
+				value -= firstHangingModifier * hangingPiecesWhite[0];
+				if (hangingPiecesWhite.length > 1) {
+					value -= hangingModifier * hangingPiecesWhite.slice(1).reduce(function(x, y) { 
+						return x + (+y);
+					});
+				}
+			}
+			if (hangingPiecesBlack.length) {
+				value += hangingModifier * hangingPiecesBlack.reduce(function(x, y) { 
+					return x + (+y);
+				});
+			}			
+			
+		} else {
+
+			if (hangingPiecesBlack.length) {
+				value -= firstHangingModifier * hangingPiecesBlack[0];
+				if (hangingPiecesBlack.length > 1) {
+					value -= hangingModifier * hangingPiecesBlack.slice(1).reduce(function(x, y) { 
+						return x + (+y);
+					});
+				}
+			}
+			if (hangingPiecesWhite.length) {
+				value += hangingModifier * hangingPiecesWhite.reduce(function(x, y) { 
+					return x + (+y);
+				});
+			}
+
 		}
 
 	//	King safety.
