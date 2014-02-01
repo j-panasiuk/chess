@@ -35,15 +35,15 @@
     -->
 
     <div id="board-container" ng-controller="chessboardController">
-        <button ng-click="reverse()" class="btn btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
-        <button ng-click="debug()" class="btn btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
-        <button ng-click="restart()" ng-show="game.result" class="btn btn-primary">New Game</button>
+        <button ng-click="reverse()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
+        <button ng-click="debug()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
+        <button ng-click="restart()" ng-show="game.result" class="btn btn-sm btn-primary">New Game</button>
         <div chessboard></div>
 	</div>
 
     <div id="console-container" ng-controller="consoleController">
 
-        <div id="console">
+        <div ng-show="settings.debugMode" id="console">
             <p class="top-move">{{engine.tree.root.move}} {{engine.tree.root.value/100}}</p>
             <p ng-repeat="node in engine.tree.root.children | orderBy:'value'">{{node.move}}: {{node.value/100}}</p>
         </div>
