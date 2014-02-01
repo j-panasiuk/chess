@@ -306,12 +306,12 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	//	In case of restarting a game, $digest of chessboard scope is needed
 	//	to let HTML chessboard template catch up with refreshed model.	
-		if (restart) {
-
-			//if (settings.switchColorOnRestart) {
-				//$scope.reverse(settings.isReversed);
-			//}			
+		if (restart) {			
 			$scope.$digest();
+			if (settings.switchColorOnRestart) {
+				console.debug('Reversing colors...', settings.isReversed);
+				$scope.reverse(settings.isReversed);
+			}
 		}
 
 	//	Wait for initial animations to finish.

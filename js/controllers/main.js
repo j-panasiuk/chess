@@ -10,7 +10,7 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
 		if (restart) {
 		//	Depending on current settings, switch colors / reverse chessboard.
 			if (settings.switchColorOnRestart) {
-				settings.switchSides();
+				settings.switchControls();
 				console.log('%cSwitching sides...', LOG.action, settings);
 			}
 			game.initialize();
