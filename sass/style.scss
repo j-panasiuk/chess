@@ -51,6 +51,10 @@ body {
 	    	text-align:center;
 	    	color: #d90;
 	    }
+
+	    &.selectable {
+	    	background: #ff9;
+	    }
 	}
 
 	.piece {
@@ -88,21 +92,13 @@ body {
 		&.ng-enter.ng-enter-active {
 			opacity: 1;
 		}
-		/*
-		&.sliding {
-			-webkit-transition: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
-			-moz-transition: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
-			-o-transiton: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
-			transition: left 1s linear, right 1s linear, top 1s linear, bottom 1s linear;
+
+		&.selectable {
+			box-shadow: inset 0 0 0 2px #fc4;
 		}
-		&.snap {
-			background: red;
-			-webkit-transition: background .25s;
-			-moz-transition: background .25s;
-			-o-transiton:background .25s;
-			transition: background .25s;
+		&.selected {
+			box-shadow: inset 0 0 0 2px #f91;
 		}
-		*/
 	}
 
 	@for $i from 0 through 7 {
@@ -115,6 +111,11 @@ body {
 					left: (7 - $j) * $square-size;
 					top: $i * $square-size;
 				}
+
+				-webkit-transition: left .5s, top .5s;
+				-moz-transition: left .5s, top .5s;
+				-o-transiton: left .5s, top .5s;
+				transition: left .5s, top .5s;
 			}
 		}
 	}
