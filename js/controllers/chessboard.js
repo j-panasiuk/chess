@@ -48,22 +48,67 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		}
 	};
 
-	$scope.disableSelect = function() {
-		$scope.disablePieceSelect();
+	$scope.enableSquareSelect = function(squares) {
+		console.assert((squares === undefined) || (_.isArray(squares) && squares.every(function(square) { 
+			return square.onBoard; })), 'Invalid square array.', squares);
+	//	Allow user to select squares from the given set.
+	//	If no set of squares is provided, allow selecting all squares.
+	//	squares: 	array of square codes [1, 3, 55, 76...] or undefined
+	//
+		$scope.selectableSquares = squares ? _.union($scope.selectableSquares || [], squares) : rules.SQUARES;
+	};
+
+	$scope.disableSquareSelect = function(squares) {
+		console.assert((squares === undefined) || (_.isArray(squares) && squares.every(function(square) { 
+			return square.onBoard; })), 'Invalid square array.', squares);
+	//	Disable selecting squares from the given set.
+	//	If no set of squares is provided, disable all squares.
+	//	squares: 	array of square codes [1, 3, 55, 76...] or undefined
+	//
+		$scope.selectableSquares = squares ? _.difference($scope.selectableSquares || [], squares) : [];
+	};
+
+	$scope.enablePieceSelect = function(color) {
+	//	Allow user to select pieces of the given color. Disable selecting other pieces.
+	//	If no color is provided, allow selecting any piece.
+	//	color: 		0 = white 	1 = black 	undefined = white and black
+	//
+		var colorName = rules.COLOR_NAME[color] || null;
+		console.log('%cEnabling selection...', LOG.ui, colorName);
+
+		if (colorName) {
+			$scope.selectablePieces = game.currentPosition.pieceLists[color];
+		} else {
+			$scope.selectablePieces = game.currentPosition.pieceLists.all;
+		}
+	};
+
+	$scope.disablePieceSelect = function(color) {
+	//	Disable picking pieces of the given color (if given).
+	//	If no color is provided, disable all selection.
+	//	color: 		0 = white 	1 = black 	undefined = white and black
+	//
+		var colorName = rules.COLOR_NAME[color] || null;
+		console.log('%cDisabling selection...', LOG.ui, colorName || 'all pieces');
+
+		if (colorName) {
+			$scope.selectablePieces = $scope.selectablePieces.filter(function(piece) {
+				return piece.color !== color;
+			});
+		} else {
+			$scope.selectablePieces = [];
+		}			
+	};
+
+	$scope.cancelSelection = function() {
 		$scope.disableSquareSelect();
 		$scope.selectedPiece = null;
 	};
 
-	$scope.reset = function() {
-	//	Reset scope variables to initial state.
-	//	Start tracking pieces on the chessboard based on current model.
-		//$scope.pieces = game.currentPosition.pieceLists.all;
-
-	//	Reset all square states.
-		//for (var square in rules.SQUARES) {
-		//	square = rules.SQUARES[square];
-		//	$scope.squaresState[square] = 0;
-		//}
+	$scope.disableSelect = function() {
+		$scope.disablePieceSelect();
+		$scope.disableSquareSelect();
+		$scope.selectedPiece = null;
 	};
 
 	$scope.debug = function(show) {
@@ -243,21 +288,24 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	A.	currentPosition.pieceLists 		(internal game logic)
 	//	B. 	$('.piece') 					(user interface DOM elements)
 		var validCount = true, 
-			validSquares = true;
+			validSquares = true,
+			displayedPieces = document.getElementsByClassName('piece'),
+			existingPieces = game.currentPosition.pieceLists.all;
 
-		//if (angular.element('.piece').length !== $scope.pieces.length) {
-		//	console.log('%cPiece count does not match.', LOG.warn, angular.element('.piece').length, $scope.pieces.length);
-		//	validCount = false;
-		//}
+		if (displayedPieces.length !== existingPieces.length) {
+			console.log('%cPiece count does not match.', LOG.warn);
+			validCount = false;
+		}
 
-		angular.element('.piece').each(function() {
-			var square = +angular.element(this).attr('at');
-			if (!game.currentPosition.pieces[square]) {
-				console.log('%cPiece placement does not match.', LOG.warn, square);
-				validSquares = false;
-				return false;
-			}
+		existingPieces = existingPieces.map(function(piece) {
+			return piece.square;
 		});
+		for (var i = 0; i < displayedPieces.length; i++) {
+			if (!_.contains(existingPieces, +displayedPieces[i].getAttribute('at'))) {
+				validSquares = false;
+				break;
+			}
+		}
 
 		console.assert(validCount, 'Incompatible piece count.');
 		console.assert(validSquares, 'Incompatible occupied squares.');
@@ -267,15 +315,11 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	};
 
 	$scope.startGame = function(restart) {
-	//	Reset scope variables to initial values.
-		$scope.reset();
-
 	//	In case of restarting a game, $digest of chessboard scope is needed
 	//	to let HTML chessboard template catch up with refreshed model.	
 		if (restart) {			
 			$scope.$digest();
 			if (settings.switchColorOnRestart) {
-				console.debug('Reversing colors...', settings.isReversed);
 				$scope.reverse(settings.isReversed);
 			}
 		}
@@ -316,6 +360,13 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 
 	$scope.$on('startGame', function(event, restart) {
 		$scope.startGame(restart || false);		
+	});
+
+	$scope.$on('cancel', function() {
+		console.debug('Received broadcast');
+		if ($scope.selectedPiece) {
+			$scope.cancelSelection();
+		}
 	});
 
 });

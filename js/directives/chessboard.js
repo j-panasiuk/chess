@@ -3,58 +3,6 @@
 app.directive('chessboard', function($timeout, $animate, settings, rules, game, engine) {
 	function linkChessboard(scope, element, attributes) {
 
-		scope.enableSquareSelect = function(squares) {
-			console.assert((squares === undefined) || (_.isArray(squares) && squares.every(function(square) { 
-				return square.onBoard; })), 'Invalid square array.', squares);
-		//	Allow user to select squares from the given set.
-		//	If no set of squares is provided, allow selecting all squares.
-		//	squares: 	array of square codes [1, 3, 55, 76...] or undefined
-		//
-			scope.selectableSquares = squares ? _.union(scope.selectableSquares || [], squares) : rules.SQUARES;
-		};
-
-		scope.disableSquareSelect = function(squares) {
-			console.assert((squares === undefined) || (_.isArray(squares) && squares.every(function(square) { 
-				return square.onBoard; })), 'Invalid square array.', squares);
-		//	Disable selecting squares from the given set.
-		//	If no set of squares is provided, disable all squares.
-		//	squares: 	array of square codes [1, 3, 55, 76...] or undefined
-		//
-			scope.selectableSquares = squares ? _.difference(scope.selectableSquares || [], squares) : [];
-		};
-
-		scope.enablePieceSelect = function(color) {
-		//	Allow user to select pieces of the given color. Disable selecting other pieces.
-		//	If no color is provided, allow selecting any piece.
-		//	color: 		0 = white 	1 = black 	undefined = white and black
-		//
-			var colorName = rules.COLOR_NAME[color] || null;
-			console.log('%cEnabling selection...', LOG.ui, colorName);
-
-			if (colorName) {
-				scope.selectablePieces = game.currentPosition.pieceLists[color];
-			} else {
-				scope.selectablePieces = game.currentPosition.pieceLists.all;
-			}
-		};
-
-		scope.disablePieceSelect = function(color) {
-		//	Disable picking pieces of the given color (if given).
-		//	If no color is provided, disable all selection.
-		//	color: 		0 = white 	1 = black 	undefined = white and black
-		//
-			var colorName = rules.COLOR_NAME[color] || null;
-			console.log('%cDisabling selection...', LOG.ui, colorName || 'all pieces');
-
-			if (colorName) {
-				scope.selectablePieces = scope.selectablePieces.filter(function(piece) {
-					return piece.color !== color;
-				});
-			} else {
-				scope.selectablePieces = [];
-			}			
-		};
-
 		scope.reverse = function(isReversed) {
 			console.assert((typeof isReversed === 'boolean') || (isReversed === undefined), 'Invalid isReversed value.');
 			console.log('%cReversing chessboard...', LOG.ui);
@@ -67,7 +15,6 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game, 
 			}
 		};
 
-		console.log('%cChessboard linked.', LOG.ui);
 	}
 	return {
 		restrict: 'A',
@@ -77,19 +24,20 @@ app.directive('chessboard', function($timeout, $animate, settings, rules, game, 
 	};
 });
 
-app.directive('square', function(settings) {
+app.directive('square', function(settings, game) {
 	return {
 		restrict: 'A',
 		replace: true,
 		templateUrl: 'template-square.html',
 		scope: {
 			square: '=square',
-			isSelectable: '=selectable'
+			isSelectable: '=selectable',
+			state: '=state'
 		},
 		link: function(scope) {
 			scope.settings = settings;
+			scope.game = game;
 			scope.square = +scope.square;
-			scope.state = scope.$parent.squaresState[scope.square];
 
 			scope.select = function handleSquareClick() {
 				if (scope.isSelectable) {
@@ -100,7 +48,7 @@ app.directive('square', function(settings) {
 	};
 });
 
-app.directive('piece', function(settings, rules, game) {
+app.directive('piece', function(settings, rules) {
 	return {
 		restrict: 'A',
 		replace: true,
@@ -110,7 +58,7 @@ app.directive('piece', function(settings, rules, game) {
 			isSelectable: '=selectable',
 			isSelected: '=selected'
 		},
-		link: function(scope, element) {
+		link: function(scope) {
 			scope.settings = settings;
 			scope.color = rules.COLOR_NAME[scope.piece.color];
 
