@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl" dir="ltr" ng-app="app">
+<html lang="pl" dir="ltr" ng-app="app" ng-controller="mainController">
 <head>
 	<title>Chess</title>
 	<meta content="utf-8"/>
@@ -7,12 +7,12 @@
 	<link href="lib/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
 	<link href="sassc/style.css" rel="stylesheet"/>
 </head>
-<body>
+<body ng-keypress="keypress($event)">
     
 <!-- Template: chessboard -->
 <script type="text/ng-template" id="template-chessboard.html">
 <div class="chessboard debug-{{settings.debugMode}}" id="chessboard">
-    <div square="square" selectable="isSelectableSquare(square)" ng-repeat="square in squares"></div>
+    <div square="square" state="squaresState[square]" selectable="isSelectableSquare(square)" ng-repeat="square in squares"></div>
     <div piece ng-model="piece" selectable="isSelectablePiece(piece)" selected="isSelected(piece)" ng-repeat="piece in game.currentPosition.pieceLists.all"></div>
 </div>
 </script>
@@ -22,7 +22,7 @@
 <div ng-click="select()" class="square at-{{square}} {{square.complex}} selectable-{{isSelectable}} default-select-disabled" id={{square}}>
     <div ng-show="settings.debugMode" class="subscript square-id default-select-disabled">{{square}}</div>
     <div ng-show="settings.debugMode" class="square-outline state-{{state}}"></div>
-    <div ng-show="settings.debugMode" class="square-value default-select-disabled">{{game.currentPosition.attacked[square][0].join(',')}}</div>
+    <div ng-show="{{false}}" class="square-value default-select-disabled">{{game.currentPosition.attacked[square][0].join(',')}}</div>
 </div>
 </script>
 
@@ -33,13 +33,7 @@
 </div>
 </script>
 
-<div id="body-container" ng-controller="mainController">   
-
-    <!--
-	<div class="control-panel">
-	   <button class="btn btn-info">New Game</button>	   
-	</div>
-    -->
+<div id="body-container">   
 
     <div id="board-container" ng-controller="chessboardController">
         <button ng-click="reverse()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
@@ -50,18 +44,14 @@
 	</div>
 
     <div id="console-container" ng-controller="consoleController">
-
         <div ng-show="settings.debugMode" id="console">
             <p class="top-move">{{engine.tree.root.move}} {{engine.tree.root.value/100}}</p>
             <p ng-repeat="node in engine.tree.root.children | orderBy:'value'">{{node.move}}: {{node.value/100}}</p>
         </div>
-
     </div>
 
 </div>
 <!-- Vendor Libraries -->
-<script src="lib/js/jquery-2.0.2-min.js" defer></script>
-<script src="lib/js/jquery-ui-1.10.3.custom.min.js" defer></script>
 <script src="lib/js/lodash.min.js" defer></script>
 <script src="lib/js/angular.min.js" defer></script>
 <script src="lib/js/angular-animate.min.js" defer></script>
