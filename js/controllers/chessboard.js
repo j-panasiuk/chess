@@ -1,16 +1,14 @@
 'use strict';
 
-app.controller('chessboardController', function($scope, $timeout, settings, rules, game, engine) {
+app.controller('chessboardController', function($scope, $timeout, $q, settings, rules, game, engine) {
 
 	$scope.settings = settings;
 	$scope.rules = rules;
 	$scope.game = game;
 	$scope.engine = engine;
+
 	$scope.squares = rules.SQUARES;
-	$scope.pieces = {
-		'white': [],
-		'black': []
-	};
+	$scope.pieces = game.currentPosition.pieceLists.all;
 	$scope.legalTargets = [];
 	$scope.legalMoves = {};	
 	$scope.squaresState = {};
@@ -18,15 +16,13 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	$scope.reset = function() {
 	//	Reset scope variables to initial state.
 	//	Start tracking pieces on the chessboard based on current model.
-		$scope.pieces = {
-			'white': game.currentPosition.pieceLists[0],
-			'black': game.currentPosition.pieceLists[1]
-		};
+		//$scope.pieces = game.currentPosition.pieceLists.all;
+
 	//	Reset all square states.
-		for (var square in rules.SQUARES) {
-			square = rules.SQUARES[square];
-			$scope.squaresState[square] = 0;
-		}
+		//for (var square in rules.SQUARES) {
+		//	square = rules.SQUARES[square];
+		//	$scope.squaresState[square] = 0;
+		//}
 	};
 
 	$scope.debug = function(show) {
@@ -124,7 +120,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	//	of legal moves based on game logic (game.currentPosition.moves).
 		$scope.updateMovesHash(color);
 		$scope.validateMovesHash();
-		$scope.enableSelect(color);
+		$scope.enablePieceSelect(color);
 	};
 
 	$scope.selectMoveAI = function(color) {
@@ -179,45 +175,55 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 	$scope.handleMove = function(move) {
 		console.assert(game.currentPosition.moves.indexOf(move) > -1, 'Illegal move selected.', move);
 	//	A legal move has been selected by the active side.
-	//	Depending on who selected the move:
-	//	A. 	If move was played by the user, it has already appeared
-	//		on the board. Update game logic to bring the game to
-	//		new position. It may be necessary, though, to cleanup
-	//		after captures (also enpassant) and castling afterwards.
-	//	B. 	If move was chosen by AI, it has to be displayed from scratch.
-	//		This means moving the selected piece first (to bring board
-	//		to the same state as after a player-selected move), and then,
-	//		after updating game logic, doing necessary cleanup.
-	//	C. 	Any move from non-local source has to be fully displayed.
-	//	Finally, determine game result after the move.
 	//
-		var fullDisplayRequired;
 		console.log('%cMove selected.', LOG.action, move);
-
-	//	Display direct move of a piece (if not moved by the player).
-		fullDisplayRequired = !game.activePlayer.isUser;
-		if (fullDisplayRequired) {
-			$scope.displayDirectMove(move);
-		}
+		$scope.disablePieceSelect();
+		$scope.disableSquareSelect();
+		$scope.cleanupMove();
 
 	//	Update game logic.
 		console.time('Updating position');
-
 		game.currentPosition.update(move);
-		game.history.update(move);
-	
-		console.timeEnd('Updating position');		
+		game.history.update(move);	
+		console.timeEnd('Updating position');	
 
-	//	Cleanup after a non-standard move.
-		if (move.requiresCleanup) {
-			$scope.cleanupMove(move);
-		}
+		//$timeout(function() {
+		//	$scope.validatePieceData();
+		//	$scope.endTurn();
+		//}, 500);
 
-	//	Wait for all animations to complete. Finish the turn.
-		$('.piece').promise().done(function() {
-			console.log('%cAnimations complete.', LOG.promise);
+		var animations = $q.defer();
+
+		(function collectAsync() {
+			return $q.all([
+				$timeout(function() { return 1; }, _.random(4000)),
+				$timeout(function() { return 2; }, _.random(4000)),
+				$timeout(function() { return 3; }, _.random(4000)),
+				$timeout(function() { return 4; }, _.random(4000)),
+			])
+			.then(function(results) {
+				animations.resolve();
+			});
+		}());
+
+		animations.promise.then(function() {
+			console.log('Animations complete...', animations);
 			$scope.endTurn();
 		});
+		
+		
+
+	//	Cleanup after a non-standard move.
+		//if (move.requiresCleanup) {
+		//	$scope.cleanupMove(move);
+		//}
+
+	//	Wait for all animations to complete. Finish the turn.
+		//$('.piece').promise().done(function() {
+		//	console.log('%cAnimations complete.', LOG.promise);
+		//	$scope.endTurn();
+		//});
+
 	};
 
 	$scope.endTurn = function() {
@@ -227,8 +233,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		var result;
 
 		$scope.updateSquaresState();
-		$scope.$digest();
-		$scope.validatePieceData();		
+		//$scope.$digest();		
 
 		result = game.currentPosition.result;
 		if (result) {
@@ -278,26 +283,25 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		var validCount = true, 
 			validSquares = true;
 
-
-		if ($('.piece.white').length !== $scope.pieces.white.length) {
-			validCount = false;
-		}
-		if ($('.piece.black').length !== $scope.pieces.black.length) {
+		if (angular.element('.piece').length !== $scope.pieces.length) {
+			console.log('%cPiece count does not match.', LOG.warn, angular.element('.piece').length, $scope.pieces.length);
 			validCount = false;
 		}
 
-		$('.piece').each(function() {
-			var square = +$(this).attr('at');
+		angular.element('.piece').each(function() {
+			var square = +angular.element(this).attr('at');
 			if (!game.currentPosition.pieces[square]) {
-				console.debug('PIECE PLACEMENT ERROR', this, square, game.currentPosition.pieces);
+				console.log('%cPiece placement does not match.', LOG.warn, square);
 				validSquares = false;
 				return false;
 			}
 		});
 
-		console.assert(validCount, 'Incompatible pieces.', $('.piece').length, $scope.pieces.white.length, $scope.pieces.black.length);
-		console.assert(validSquares, 'Incompatible occupied squares.');	
-		console.log('%cData successfully verified.', LOG.valid);
+		console.assert(validCount, 'Incompatible piece count.');
+		console.assert(validSquares, 'Incompatible occupied squares.');
+		if (validCount && validSquares) {
+			console.log('%cData successfully verified.', LOG.valid);
+		}		
 	};
 
 	$scope.startGame = function(restart) {
@@ -316,7 +320,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 
 	//	Wait for initial animations to finish.
 		$timeout(function() {
-			$scope.enableDragDrop();
+			//$scope.enableDragDrop();
 			$scope.nextTurn(false);
 			console.log('%cGameflow started. Restart:', LOG.action, restart);
 		}, 400);
@@ -326,7 +330,7 @@ app.controller('chessboardController', function($scope, $timeout, settings, rule
 		console.assert((switchActive === true) || (switchActive === false), 'Attribute `switchActive` missing.');
 	//	Select next player to choose a move.
 	//	If the game is in progress (switchActive == true), always select opposite player.
-	//	On game's first move don't switch active player (switchActive == false). 
+	//	On game's first move don't switch active player (switchActive == false).
 		if (switchActive) {
 			console.log('%c\nNEXT TURN\n', LOG.action);
 			game.switchActive();
