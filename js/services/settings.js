@@ -17,7 +17,7 @@ app.factory('settings', function() {
 		'reverseForBlack': true,
 		'switchColorOnRestart': true,
 		'debugMode': true,
-		'animationTime': 250,
+		'animationTime': 400,
 		'delayAI': 500
 	};
 	Object.freeze(defaults);

@@ -109,8 +109,8 @@ app.factory('engine', function($q, rules, game) {
 				}
 
 				console.timeEnd('Growing Tree');
-				console.debug('Grown nodes:', nodes);
-				console.log('%cExpanded tree...', LOG.attention, this);
+				console.log('%cGrown nodes:', LOG.state, nodes);
+				console.log('%cExpanded tree:', LOG.state, this);
 			}
 		},
 		'analyze': {
@@ -136,7 +136,7 @@ app.factory('engine', function($q, rules, game) {
 				}
 
 				console.time('Analyzing Tree');
-				console.debug('Analyzed nodes:', nodes);
+				console.log('%cAnalyzed nodes:', LOG.state, nodes);
 				console.log('%cTree root value:', LOG.state, this.root.value);
 			}
 		},
@@ -161,7 +161,7 @@ app.factory('engine', function($q, rules, game) {
 			//	Select highest or lowest valued move, depending on color.
 				node = game.activeColor ? _.first(childNodes) : _.last(childNodes);
 
-				console.debug('Best move:', node.move, node.value);
+				console.log('%cOptimal move:', LOG.state, node.move, node.value);
 				//return node.move;
 
 				deferred.resolve(node.move);
@@ -323,7 +323,6 @@ app.factory('engine', function($q, rules, game) {
 
 	//	King safety.
 
-		console.log('%cEvaluating position...', LOG.action, value);
 		return value;
 	}
 

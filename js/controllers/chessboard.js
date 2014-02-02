@@ -8,10 +8,51 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	$scope.engine = engine;
 
 	$scope.squares = rules.SQUARES;
-	$scope.pieces = game.currentPosition.pieceLists.all;
-	$scope.legalTargets = [];
-	$scope.legalMoves = {};	
 	$scope.squaresState = {};
+
+	$scope.selectablePieces = [];
+	$scope.selectedPiece = null;
+	$scope.selectableSquares = [];
+	$scope.availableMoves = [];
+
+	$scope.isSelectablePiece = function(piece) {
+		return _.contains($scope.selectablePieces, piece);
+	};
+
+	$scope.isSelectableSquare = function(square) {
+		return _.contains($scope.selectableSquares, square);
+	};
+
+	$scope.isSelected = function(piece) {
+		return $scope.selectedPiece === piece;
+	};
+
+	$scope.handlePieceSelect = function(piece) {
+		console.log('%cSelected piece...', LOG.ui, piece.name);
+		$scope.selectedPiece = piece;
+		$scope.availableMoves = piece.moves || [];
+		$scope.selectableSquares = $scope.availableMoves.map(function(move) {
+			return move.to;
+		});		
+		console.log('%cAvailable moves', LOG.ui, $scope.availableMoves.length);
+	};
+
+	$scope.handleSquareSelect = function(square) {
+		console.log('%cSelected square...', LOG.ui, square);
+		var selectedMove;
+		if (_.contains($scope.selectableSquares, square)) {
+			selectedMove = _.find($scope.availableMoves, function(move) {
+				return move.to === square;
+			});
+			$scope.handleMove(selectedMove);
+		}
+	};
+
+	$scope.disableSelect = function() {
+		$scope.disablePieceSelect();
+		$scope.disableSquareSelect();
+		$scope.selectedPiece = null;
+	};
 
 	$scope.reset = function() {
 	//	Reset scope variables to initial state.
@@ -74,42 +115,6 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		}
 	};
 
-	$scope.updateMovesHash = function(color) {
-		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
-	//	Helper function for UI. Matches all square sources and their possible targets.
-	//	To save computation on future mouse drag/drop events.
-	//	legalTargets[1] = [32, 34]			legalMoves[1][32] = Move{}
-		var selectableSquares, 
-			position = game.currentPosition, 
-			legalTargets = [],
-			legalMoves = {};
-
-	//	Allow to select all pieces matching given color.
-		selectableSquares = position.pieceLists[color].map(function(piece) {
-			return piece.square;
-		});
-	//	Create legal moves hash.
-		for (var square in selectableSquares) {
-			square = selectableSquares[square];
-			legalTargets[square] = position.pieces[square].moves.map(function(move) {
-				return move.to;
-			});
-			legalMoves[square] = {};
-			for (var target in legalTargets[square]) {
-				target = legalTargets[square][target];
-				legalMoves[square][target] = _.find(position.pieces[square].moves, function(move) {
-					return !!(move.to === target);
-				});
-			}
-		}
-		$scope.legalTargets = legalTargets;
-		$scope.legalMoves = legalMoves;
-		Object.freeze(legalTargets);
-		Object.freeze(legalMoves);
-
-		console.log('%cLegal move count...', LOG.action, position.moves.length);
-	};
-
 	$scope.selectMoveUser = function(color) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
 		console.log('%cUser selects a move...', LOG.action, rules.COLOR_NAME[color]);
@@ -118,9 +123,9 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	Before allowing move selection, assert data compability.
 	//	Moves available for user ($scope.legalMoves) must match the set 
 	//	of legal moves based on game logic (game.currentPosition.moves).
-		$scope.updateMovesHash(color);
-		$scope.validateMovesHash();
+	//			
 		$scope.enablePieceSelect(color);
+		$scope.validateMoves();
 	};
 
 	$scope.selectMoveAI = function(color) {
@@ -130,10 +135,9 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	Since AI choses moves based on game logic and not on legalMoves
 	//	hash table, there is no need to check their compatibility.
 		var move,
-			delay = settings.delayAI || 100,
+			delay = settings.delayAI || 200,
 			position = game.currentPosition;
 
-		//engine.tree.plant(position);
 		console.log('%ctree:', LOG.state, engine.tree);
 
 		$timeout(function() {
@@ -147,83 +151,44 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 
 				$scope.handleMove(move);
 			});
-		/*
-			var san;
-			try {
-			//	Get best possible move in SAN format.
-			//	Translate SAN to move object.
-				san = engine.tree.getMove(position);
-				move = _.find(position.moves, function(move) {
-					return move.san === san;
-				});
-			} catch (error) {
-				console.log('%cCaught error in AI move generation.', LOG.warn, error.message);
-			//	Problems encountered in move generating script.
-			//	Fallback to basic move selection method (based on move value).
-				move = _.sample(position.moves);				
-				//move = position.moves.sort(function(x, y) {	
-				//	return y.value - x.value; 
-				//})[0];
-			} finally {
-				console.debug('%cAI selected move.', LOG.action, move.san);
-				$scope.handleMove(move);
-			}
-		*/
+
 		}, delay);
 	};
 
 	$scope.handleMove = function(move) {
 		console.assert(game.currentPosition.moves.indexOf(move) > -1, 'Illegal move selected.', move);
-	//	A legal move has been selected by the active side.
-	//
 		console.log('%cMove selected.', LOG.action, move);
-		$scope.disablePieceSelect();
-		$scope.disableSquareSelect();
-		$scope.cleanupMove();
+	//	A legal move has been selected by the active side.
+	//		
+		$scope.disableSelect();
 
 	//	Update game logic.
-		console.time('Updating position');
 		game.currentPosition.update(move);
-		game.history.update(move);	
-		console.timeEnd('Updating position');	
+		game.history.update(move);		
 
-		//$timeout(function() {
-		//	$scope.validatePieceData();
-		//	$scope.endTurn();
-		//}, 500);
+		$timeout(function() {
+			$scope.validatePieceData();
+			$scope.endTurn();
+		}, settings.animationTime + 100);
 
+		/*
 		var animations = $q.defer();
-
 		(function collectAsync() {
 			return $q.all([
-				$timeout(function() { return 1; }, _.random(4000)),
-				$timeout(function() { return 2; }, _.random(4000)),
-				$timeout(function() { return 3; }, _.random(4000)),
-				$timeout(function() { return 4; }, _.random(4000)),
+				$timeout(function() { return 1; }, 250),
+				$timeout(function() { return 2; }, 250),
+				$timeout(function() { return 3; }, 250)
 			])
 			.then(function(results) {
 				animations.resolve();
 			});
 		}());
-
 		animations.promise.then(function() {
 			console.log('Animations complete...', animations);
+			$scope.validatePieceData();
 			$scope.endTurn();
 		});
-		
-		
-
-	//	Cleanup after a non-standard move.
-		//if (move.requiresCleanup) {
-		//	$scope.cleanupMove(move);
-		//}
-
-	//	Wait for all animations to complete. Finish the turn.
-		//$('.piece').promise().done(function() {
-		//	console.log('%cAnimations complete.', LOG.promise);
-		//	$scope.endTurn();
-		//});
-
+		*/
 	};
 
 	$scope.endTurn = function() {
@@ -247,30 +212,27 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		}
 	};
 
-	$scope.validateMovesHash = function() {
+	$scope.validateMoves = function() {
 		console.log('%cValidating data compability: Moves', LOG.valid);
 	//	Check if data across all representation types is compatible.
 	//	Position displayed on the user interface cannot differ from
 	//	internal position representation. Compare available moves:
-	//	A.	currentPosition.moves 			(internal game logic)
-	//	B.	legalMoves 						(user interface hash table)
-		var data, 
-			validMoves = true;
+	//	A.	currentPosition.moves 			(game model)
+	//	B.	scope.availableMoves 			(user interface moves)
+		var validMoves,
+			legalMoves = game.currentPosition.moves,
+			playableMoves = _.flatten($scope.selectablePieces.map(function(piece) { 
+				return piece.moves; 
+			}));
 
-		data = _.toArray($scope.legalMoves).map(function(targets) {
-			return _.toArray(targets);
+		validMoves = (playableMoves.length === legalMoves.length) && legalMoves.every(function(move) {
+			return _.contains(playableMoves, move);
 		});
-		data = _.flatten(data);
-		for (var move in data) {
-			move = data[move];
-			if (game.currentPosition.moves.indexOf(move) === -1) {
-				validMoves = false;
-				break;
-			}
-		}
 
-		console.assert(validMoves, 'Incompatible legal moves.', validMoves, data, game.currentPosition.moves);
-		console.log('%cData successfully verified.', LOG.valid);
+		console.assert(validMoves, 'Incompatible legal moves.', legalMoves, playableMoves);
+		if (validMoves) {
+			console.log('%cData successfully verified.', LOG.valid);
+		}
 	};
 
 	$scope.validatePieceData = function() {
@@ -283,10 +245,10 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		var validCount = true, 
 			validSquares = true;
 
-		if (angular.element('.piece').length !== $scope.pieces.length) {
-			console.log('%cPiece count does not match.', LOG.warn, angular.element('.piece').length, $scope.pieces.length);
-			validCount = false;
-		}
+		//if (angular.element('.piece').length !== $scope.pieces.length) {
+		//	console.log('%cPiece count does not match.', LOG.warn, angular.element('.piece').length, $scope.pieces.length);
+		//	validCount = false;
+		//}
 
 		angular.element('.piece').each(function() {
 			var square = +angular.element(this).attr('at');
@@ -320,7 +282,6 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 
 	//	Wait for initial animations to finish.
 		$timeout(function() {
-			//$scope.enableDragDrop();
 			$scope.nextTurn(false);
 			console.log('%cGameflow started. Restart:', LOG.action, restart);
 		}, 400);
