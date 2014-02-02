@@ -3,6 +3,13 @@
 app.controller('mainController', function($scope, $timeout, settings, rules, game) {
 	console.log('%cLoading mainController...', LOG.action);
 
+	$scope.keypress = function(evt) {
+		console.log('%cKey pressed:', LOG.ui, evt.keyCode);
+		if (evt.keyCode === 32) {
+			$scope.$broadcast('cancel');
+		}
+	};
+
 	$scope.startGame = function(restart) {
 		console.log('%c\nSTART GAME\n', LOG.action);
 	//	restart == false: Start first game. Game model is already up-to-date.
