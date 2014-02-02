@@ -79,14 +79,20 @@ body {
 
 		&.ng-enter,
 		&.ng-leave {
-			-webkit-transition: opacity .25s;
-			-moz-transition: opacity .25s;
-			-o-transiton: opacity .25s;
-			transition: opacity .25s;
+			-webkit-transition: all .25s;
+			-moz-transition: all .25s;
+			-ms-transition: all .25s;
+			-o-transiton: all .25s;
+			transition: all .25s;
 		}
 		&.ng-enter,
 		&.ng-leave.ng-leave-active {
 			opacity: 0
+		}
+		&.ng-leave.ng-leave-active {
+			-webkit-transform: rotate(90deg);
+			-ms-transform: rotate(90deg);
+			transform: rotate(90deg);
 		}
 		&.ng-leave,
 		&.ng-enter.ng-enter-active {
