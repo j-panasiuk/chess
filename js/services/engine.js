@@ -162,7 +162,6 @@ app.factory('engine', function($q, rules, game) {
 				node = game.activeColor ? _.first(childNodes) : _.last(childNodes);
 
 				console.log('%cOptimal move:', LOG.state, node.move, node.value);
-				//return node.move;
 
 				deferred.resolve(node.move);
 				return deferred.promise; 
@@ -173,72 +172,131 @@ app.factory('engine', function($q, rules, game) {
 	function evaluation(position) {
 		console.assert(position.fen.match(rules.validFen), 'Invalid position.', position);
 	//	Evaluate position. Return computed value.
-	//	return _.sample(_.range(20));
-		var square, leastValuableAttacker, hangingPiecesWhite, hangingPiecesBlack,
+		var sign,
+			colors = [0, 1], 
 			attacked = position.attacked,
 			pieces = position.pieceLists,
-			piecesWhite = pieces[0],
-			piecesBlack = pieces[1],
-			pawnsWhite = pieces.filter(17),
-			pawnsBlack = pieces.filter(25),
-			knightsWhite = pieces.filter(18),
-			knightsBlack = pieces.filter(26),
-			kingWhite = pieces.filter(19),
-			kingBlack = pieces.filter(27),
-			lightPiecesWhite = pieces[0].filter(function(piece) { return !!piece.isLight; }),
-			lightPiecesBlack = pieces[1].filter(function(piece) { return !!piece.isLight; }),
-			hangingModifier = 0.5,
-			firstHangingModifier = 0.05,
+			activity = rules.ACTIVITY,
+			proximity = rules.proximity,
 			value = 0;
 
-		function getPieceValue(type) {
-			switch (type) {
-				case 1: 	return 100;
-				case 2: 	return 310;
-				case 3: 	return 10000;
-				case 5: 	return 315;
-				case 6: 	return 480;
-				case 7: 	return 920;
-				default: 	throw new Error('Unknown piece type.');
+		sign = {};
+		sign[0] = 1;
+		sign[1] = -1;		
+
+		function evaluateMaterial(color) {
+			var value = 0;
+			pieces[color].forEach(function(piece) { value += piece.points; });
+			return sign[color] * value;
+		}
+
+		function evaluateAttacked(color) {
+			var enemy = +!color,
+				exchanges = [],
+				hanging = [],
+				value = 0;
+
+			pieces[color].filter(function(piece) { return attacked[piece.square][enemy].length; })
+			.forEach(function(piece) {
+				if (attacked[piece.square][piece.color].length) {
+				//	This piece is attacked and defended, which means an exchange (possibly a sequence
+				//	of exchanges) is possible on this square. Create exchange object to be evaluated later.
+					exchanges.push({
+						'piece': piece,
+						'attackers': attacked[piece.square][enemy],
+						'defenders': attacked[piece.square][piece.color]
+					});
+				} else {
+				//	This piece is hanging, it's attacked and not defended.
+					hanging.push(piece);
+				}
+			});
+
+			return sign[color] * value;
+		}
+
+		function evaluateExchange(exchange) {
+		//	Returns expected outcome of exchanges at position occupied by given piece.
+		//	Exchanges are evaluated with optimal captures for both sides (always try to capture
+		//	a piece with the least valuable piece first, in case of enemy recapture).
+		// 	exchange: {
+		//		piece:     		piece object under attack
+		//		attackers: 		array of attacking piece types, sorted increasingly
+		// 		          		pawn, knight, rook, pawn == [1, 1, 2, 5]
+		//		defenders: 		array of defending pieces, similar to above
+		//	}
+			var value = 0;
+
+			for (;;) {
+				nextAttacker = exchange.attackers.shift();
 			}
+			return value;
 		}
 
-	//	Count the material.
-		for (var i = 0; i < piecesWhite.length; i++) {
-			value += piecesWhite[i].points;
-		}
-		for (var i = 0; i < piecesBlack.length; i++) {
-			value -= piecesBlack[i].points;
+		function evaluateActivity(color) {
+			var value = 0;
+			pieces[color].forEach(function(piece) { value += activity[piece.code][piece.square] || 0; });
+			return sign[color] * value;
 		}
 
-	//	Evaluate pawn activity.
-		for (var i = 0; i < pawnsWhite.length; i++) {
-			value += rules.ACTIVITY[17][pawnsWhite[i].square];
-		}
-		for (var i = 0; i < pawnsBlack.length; i++) {
-			value -= rules.ACTIVITY[25][pawnsBlack[i].square];
-		}
-
-	//	Piece activity.
-		for (var i = 0; i < knightsWhite.length; i++) {
-			value += rules.ACTIVITY[18][knightsWhite[i].square];
-		}
-		for (var i = 0; i < knightsBlack.length; i++) {
-			value -= rules.ACTIVITY[26][knightsBlack[i].square];
+		function evaluateDevelopment(color) {
+		//	Apply penalty for light pieces staying on the first rank.
+			var firstRank = color ? 7 : 0,
+				value = 0;
+			pieces[color].filter(function(piece) { return piece.isLight; }).forEach(function(piece) {
+				if (piece.square.rank === firstRank) {
+					value -= 4;
+				}
+			});
+			return sign[color] * value;
 		}
 
-	//	Apply penalty for light pieces on the first rank.
-		for (var i = 0; i < lightPiecesWhite.length; i++) {
-			if (lightPiecesWhite[i].square.rank === 0) {
-				value -= 5;
+		function evaluateKingSafety(color) {
+			var king = pieces.kings(color)[0],
+				kingProximity = proximity(king.square, 1),
+				defenders = 0,
+				attackers = 0,
+				empty = 0,
+				value = 0;
+
+		//	Apply penalty when the king is checked.
+		//	Double check is particularly dangerous!
+			switch (_.size(king.checks)) {
+				case 0: 	break;
+				case 1: 	value -= 5; break;
+				default: 	value -= 25;
 			}
-		}
-		for (var i = 0; i < lightPiecesBlack.length; i++) {
-			if (lightPiecesBlack[i].square.rank === 7) {
-				value += 5;
-			}
+
+		//	Count defenders, attackers and empty squares around the king (within 1 square distance).
+		//	The more defenders the better. Every empty square except for first two also decrease safety.
+			kingProximity.forEach(function(square) {
+				var piece = position.pieces[square]; 
+				if (piece) {
+					if (piece.color === king.color) {
+						defenders += 1;
+					} else {
+						attackers += 1;
+					}
+				} else {
+					empty += 1;
+				}
+			});
+			value += defenders;
+			value -= 2 * attackers; 
+			value -= 2 * Math.max(0, empty - 2);
+			return sign[color] * value;
 		}
 
+		
+		colors.forEach(function evaluateColor(color) {
+			value += evaluateMaterial(color);
+			value += evaluateAttacked(color);
+			value += evaluateActivity(color);
+			value += evaluateDevelopment(color);
+			value += evaluateKingSafety(color);
+		});
+
+	/*
 	//	Modifiers for attacked pieces.
 	//	For every piece check whether it is attacked.
 	//	If so, look for defending pieces. Compare captured / recaptured piece values.
@@ -320,9 +378,7 @@ app.factory('engine', function($q, rules, game) {
 			}
 
 		}
-
-	//	King safety.
-
+	*/
 		return value;
 	}
 
