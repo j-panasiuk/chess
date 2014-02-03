@@ -31,6 +31,7 @@ app.factory('rules', function(settings) {
 //	move
 //
 //	opposite 				Returns opposite color code.
+//	proximity 				Returns array of squares within given distance.
 
 //	Declare local variables.
 	var COLORS, COLOR_NAME, COLOR_MASK, SQUARES, FILE_NAMES, RANK_NAMES, SQUARE_NAME, RANKS, FILES,
@@ -341,14 +342,12 @@ app.factory('rules', function(settings) {
 	ACTIVITY = {};
 	rules.ACTIVITY = ACTIVITY;
 
-	ACTIVITY[W|PAWN] = {};
-	ACTIVITY[B|PAWN] = {};
-	ACTIVITY[W|KNIGHT] = {};
-	ACTIVITY[B|KNIGHT] = {};
-	ACTIVITY[W|BISHOP] = {};
-	ACTIVITY[B|BISHOP] = {};
-	ACTIVITY[W|ROOK] = {};
-	ACTIVITY[B|ROOK] = {};
+	ACTIVITY[W|PAWN] = {};  		ACTIVITY[B|PAWN] = {};	
+	ACTIVITY[W|KNIGHT] = {};		ACTIVITY[B|KNIGHT] = {};	
+	ACTIVITY[W|BISHOP] = {};		ACTIVITY[B|BISHOP] = {};	
+	ACTIVITY[W|ROOK] = {};  		ACTIVITY[B|ROOK] = {};	
+	ACTIVITY[W|QUEEN] = {}; 		ACTIVITY[B|QUEEN] = {};	
+	ACTIVITY[W|KING] = {};  		ACTIVITY[B|KING] = {};	
 
 	(function calculatePawnActivity() {
 		var square, activity;
@@ -490,6 +489,20 @@ app.factory('rules', function(settings) {
 				default: 				return 0;
 			}
 		}			
+	}());
+
+	(function calculateQueenActivity(){
+		SQUARES.forEach(function(square) {
+			ACTIVITY[W|QUEEN][square] = 0;
+			ACTIVITY[B|QUEEN][square] = 0;
+		});
+	}());
+
+	(function calculateKingActivity(){
+		SQUARES.forEach(function(square) {
+			ACTIVITY[W|KING][square] = 0;
+			ACTIVITY[B|KING][square] = 0;
+		});
 	}());
 	//console.log('%cACTIVITY', LOG.attention, ACTIVITY);
 
@@ -700,6 +713,67 @@ app.factory('rules', function(settings) {
 		//	pieceLists.filter(17) == [<white pawns>]
 		//	pieceLists.pinned == [[<white pinned>], [<black pinned>]]
 			var pieceLists = {};
+
+			Object.defineProperties(pieceLists, {
+				0: 			{ value: [], writable: true, enumerable: true },
+				1: 			{ value: [], writable: true, enumerable: true },
+				'pawns': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) { 
+							return piece.name === 'pawn';
+						});
+					}
+				},
+				'knights': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) { 
+							return piece.name === 'knight';
+						});
+					}
+				},
+				'bishops': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) { 
+							return piece.name === 'bishop';
+						});
+					}
+				},
+				'rooks': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) { 
+							return piece.name === 'rook';
+						});
+					}
+				},
+				'queens': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) { 
+							return piece.name === 'queen';
+						});
+					}
+				},
+				'kings': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) { 
+							return piece.name === 'king';
+						});
+					}
+				},
+				'pinned': {
+					value: function(color) {
+						return this[+!!color].filter(function(piece) {
+							return !!piece.pin;
+						});
+					}
+				},
+				'all': { 
+					get: function() {
+						return this[0].concat(this[1]);
+					} 
+				}
+			});
+
+			/*
 			Object.defineProperties(pieceLists, {
 				0: 				{ value: [], writable: true, enumerable: true },
 				1: 				{ value: [], writable: true, enumerable: true }
@@ -726,9 +800,11 @@ app.factory('rules', function(settings) {
 					return pinnedPieces;
 				}
 			});
+			*/
 			Object.defineProperty(position, 'pieceLists', {
 				value: pieceLists, writable: true, enumerable: true, configurable: true
 			});
+
 		}());
 		Object.defineProperty(position, 'setPieceLists', {
 			value: function setPieceLists() {
@@ -825,7 +901,8 @@ app.factory('rules', function(settings) {
 				var checks = [], attackerSquares, attackers, piece,
 					own = (this.activeColor) ? B : W,
 					enemy = (this.activeColor) ? W : B,
-					kingSquare = this.pieceLists.filter(own|KING)[0].square;
+					kingSquare = this.pieceLists.kings(this.activeColor)[0].square;
+					//kingSquare = this.pieceLists.filter(own|KING)[0].square;
 
 			//	Examine checks by knights. (At most one)
 				attackerSquares = ATTACK_FIELDSET[kingSquare][own|KNIGHT];
@@ -921,18 +998,26 @@ app.factory('rules', function(settings) {
 					own, enemy, kingSquare;
 
 			//	Reset old pins, regardless of color.
-				pins = _.flatten(this.pieceLists.pinned);
-				for (var piece in pins) {
-					piece = pins[piece];
-					piece.pin = null;
-				}
+				this.pieceLists.all.forEach(function(piece) {
+					if (piece.pin) {
+						piece.pin = null;
+					}
+				});
 				pins = [[], []];
+
+				//pins = _.flatten(this.pieceLists.pinned);
+				//for (var piece in pins) {
+				//	piece = pins[piece];
+				//	piece.pin = null;
+				//}
+				//pins = [[], []];
 
 				for (var color in COLORS) {
 					color = COLORS[color];
 					own = (color) ? B : W;
 					enemy = (color) ? W : B;
-					kingSquare = this.pieceLists.filter(own|KING)[0].square;
+					kingSquare = this.pieceLists.kings(this.activeColor)[0].square;
+					//kingSquare = this.pieceLists.filter(own|KING)[0].square;
 
 				//	Examine diagonals for possible pins.
 				//	Eliminate all rays shorter than 2 squares.
@@ -2206,7 +2291,9 @@ app.factory('rules', function(settings) {
 		var proximity = _.without(SQUARES, target).filter(function(square) {
 			return dist(square, target) <= distance;
 		});
+		return proximity;
 	}
+	rules.proximity = proximity;
 
 	function disambiguate(moves) {
 		console.assert(_.isArray(moves) && (moves.length > 1), 'Invalid moves array.');
