@@ -1019,7 +1019,7 @@ app.factory('rules', function(settings) {
 					return 0;
 				}
 				if (this.checks.length) {
-					return 2|this.activeColor; 
+					return 2|+!this.activeColor; 
 				} 
 				return 1;
 			}
