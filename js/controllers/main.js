@@ -1,62 +1,62 @@
 'use strict';
 
 app.controller('mainController', function($scope, $timeout, settings, rules, game) {
-	console.log('%cLoading mainController...', LOG.action);
+    console.log('%cLoading mainController...', LOG.action);
 
-	$scope.settings = settings;
-	$scope.rules = rules;
-	$scope.game = game;
+    $scope.settings = settings;
+    $scope.rules = rules;
+    $scope.game = game;
 
-	$scope.keypress = function(evt) {
-		console.log('%cKey pressed:', LOG.ui, evt.keyCode);
-		switch (evt.keyCode) {
-			case 32: 	$scope.$broadcast('cancel'); break;
-			case 13: 	$scope.$broadcast('confirm'); break;
-		}
-	};
+    $scope.keypress = function(evt) {
+        console.log('%cKey pressed:', LOG.ui, evt.keyCode);
+        switch (evt.keyCode) {
+            case 32:     $scope.$broadcast('cancel'); break;
+            case 13:     $scope.$broadcast('confirm'); break;
+        }
+    };
 
-	$scope.debug = function() {
-	//	Toggle debug interface visibilty.
-		settings.debugMode = !settings.debugMode;
-	};
+    $scope.debug = function() {
+    //  Toggle debug interface visibilty.
+        settings.debugMode = !settings.debugMode;
+    };
 
-	$scope.reverse = function() {
-	//	Flip the chessboard. Positions of squares and pieces will adjust to match settings.isReversed,
-	//	by watching changes on class `reversed-{{settings.isReversed}}`.
-		settings.isReversed = !settings.isReversed;
-	};
+    $scope.reverse = function() {
+    //  Flip the chessboard. Positions of squares and pieces will adjust to match settings.isReversed,
+    //  by watching changes on class `reversed-{{settings.isReversed}}`.
+        settings.isReversed = !settings.isReversed;
+    };
 
-	$scope.startGame = function(restart) {
-		console.log('%c\nSTART GAME\n', LOG.action);
-	//	restart == false: Start first game. Game model is already up-to-date.
-	//	restart == true: Restart game with current settings. Model update needed.
-		if (restart) {
-		//	Depending on current settings, switch colors / reverse chessboard.
-			if (settings.switchColorOnRestart) {
-				settings.switchControls();
-				console.log('%cSwitching sides...', LOG.action, settings);
-			}
-			game.initialize();
-			console.log('%cSetting up starting position...', LOG.action, game.currentPosition);
-		}			
-		$scope.$broadcast('startGame', !!restart);
-	};
+    $scope.startGame = function(restart) {
+        console.log('%c\nSTART GAME\n', LOG.action);
+    //  restart == false: Start first game. Game model is already up-to-date.
+    //  restart == true: Restart game with current settings. Model update needed.
+        if (restart) {
+        //  Depending on current settings, switch colors / reverse chessboard.
+            if (settings.switchColorOnRestart) {
+                settings.switchControls();
+                console.log('%cSwitching sides...', LOG.action, settings);
+            }
+            game.initialize();
+            console.log('%cSetting up starting position...', LOG.action, game.currentPosition);
+        }            
+        $scope.$broadcast('startGame', !!restart);
+    };
 
-	$scope.$on('gameOver', function(event, result) {
-		console.log('%cGame Over:', LOG.attention, result);
-		$scope.$digest();
-		console.debug('%ccurrentPosition:', LOG.attention, game.currentPosition);
-	});
+    $scope.$on('gameOver', function(event, result) {
+        console.log('%cGame Over:', LOG.attention, result);
+        $scope.$digest();
+        console.debug('%ccurrentPosition:', LOG.attention, game.currentPosition);
+    });
 
-	$scope.$on('restart', function() {
-		$timeout(function() {
-			$scope.startGame(true);
-		}, 100);		
-	});
+    $scope.$on('restart', function() {
+        $timeout(function() {
+            $scope.startGame(true);
+        }, 100);        
+    });
 
-	$timeout(function initialize() {
-		$scope.startGame(false);
-	}, 100);
+    $timeout(function initialize() {
+        $scope.startGame(false);
+    }, 100);
 
 
 });
