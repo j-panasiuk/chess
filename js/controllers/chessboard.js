@@ -8,7 +8,6 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	$scope.engine = engine;
 
 	$scope.squares = rules.SQUARES;
-	$scope.squaresState = {};
 
 	$scope.selectablePieces = [];
 	$scope.selectedPiece = null;
@@ -77,9 +76,9 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		console.log('%cEnabling selection...', LOG.ui, colorName);
 
 		if (colorName) {
-			$scope.selectablePieces = game.currentPosition.pieceLists[color];
+			$scope.selectablePieces = game.currentPosition.pieceList[color];
 		} else {
-			$scope.selectablePieces = game.currentPosition.pieceLists.all;
+			$scope.selectablePieces = game.currentPosition.pieceList.all;
 		}
 	};
 
@@ -111,27 +110,13 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		$scope.selectedPiece = null;
 	};
 
-	$scope.debug = function(show) {
-		console.assert((typeof(show) === 'boolean') || (show === undefined), 'Invalid debug value.', show);
-	//	Set debug interface visibilty.
-	//	debug(true/false): show/hide debug interface.
-	//	debug(undefined): toggle debug interface.
-		if (show === true) {
-			settings.debugMode = true;
-		} else if (show === false) {
-			settings.debugMode = false;
-		} else {
-			settings.debugMode = !settings.debugMode;
-		}
-		console.log('%cdebug:', LOG.state, settings.debugMode);
-	};
-
+	/*
 	$scope.updateSquaresState = function() {
 	//	`squaresState` hash tracks current status of each square on the board.
 	//	This includes keeping information about checks and pins.
 		var checkSquares, pinSquares, check, pin,
 			checks = game.currentPosition.checks,
-			pins = game.currentPosition.pinLists.all;
+			pins = game.currentPosition.pinList.all;
 
 		if (!checks.length) {
 			checkSquares = [];
@@ -159,6 +144,7 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 			$scope.squaresState[square] = 0 | check | pin;
 		}
 	};
+	*/
 
 	$scope.selectMoveUser = function(color) {
 		console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
@@ -192,9 +178,12 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 				console.log('%cMove promise resolved:', LOG.promise, san);
 				move = _.find(position.moves, function(move) {
 					return move.san === san;
-				}) || _.sample(position.moves);
+				}); 	// || _.sample(position.moves);
 
 				$scope.handleMove(move);
+			}, 
+			function(error) {
+				console.log('%cError:', LOG.warn, error);
 			});
 
 		}, delay);
@@ -209,7 +198,11 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 
 	//	Update game logic.
 		game.currentPosition.update(move);
-		game.history.update(move);		
+		game.history.update(move);
+
+	//	Update chessboardState object to represent current position.
+	//	This is used as model for UI elements (for example in debug mode).
+		game.chessboardState.update(game.currentPosition);		
 
 		$timeout(function() {
 			$scope.validatePieceData();
@@ -242,7 +235,7 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	Check game result.
 		var result;
 
-		$scope.updateSquaresState();
+		//$scope.updateSquaresState();
 		//$scope.$digest();		
 
 		result = game.currentPosition.result;
@@ -285,12 +278,12 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	Check if data across all representation types is compatible.
 	//	Position displayed on the user interface cannot differ from
 	//	internal position representation. Compare pieces on the board:
-	//	A.	currentPosition.pieceLists 		(internal game logic)
+	//	A.	currentPosition.pieceList 		(internal game logic)
 	//	B. 	$('.piece') 					(user interface DOM elements)
 		var validCount = true, 
 			validSquares = true,
 			displayedPieces = document.getElementsByClassName('piece'),
-			existingPieces = game.currentPosition.pieceLists.all;
+			existingPieces = game.currentPosition.pieceList.all;
 
 		if (displayedPieces.length !== existingPieces.length) {
 			console.log('%cPiece count does not match.', LOG.warn);
@@ -318,9 +311,8 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	In case of restarting a game, $digest of chessboard scope is needed
 	//	to let HTML chessboard template catch up with refreshed model.	
 		if (restart) {			
-			$scope.$digest();
 			if (settings.switchColorOnRestart) {
-				$scope.reverse(settings.isReversed);
+				$scope.settings.isReversed = !$scope.settings.isReversed;
 			}
 		}
 
@@ -336,6 +328,7 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 	//	Select next player to choose a move.
 	//	If the game is in progress (switchActive == true), always select opposite player.
 	//	On game's first move don't switch active player (switchActive == false).
+	//
 		if (switchActive) {
 			console.log('%c\nNEXT TURN\n', LOG.action);
 			game.switchActive();
@@ -353,17 +346,11 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 		$scope.$emit('gameOver', result);
 	};
 
-	$scope.restart = function() {
-		console.log($scope.game.activePlayer);
-		$scope.$emit('restart');
-	};
-
 	$scope.$on('startGame', function(event, restart) {
 		$scope.startGame(restart || false);		
 	});
 
 	$scope.$on('cancel', function() {
-		console.debug('Received broadcast');
 		if ($scope.selectedPiece) {
 			$scope.cancelSelection();
 		}

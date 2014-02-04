@@ -1,26 +1,16 @@
 'use strict';
 
-app.directive('chessboard', function($timeout, $animate, settings, rules, game, engine) {
-	function linkChessboard(scope, element, attributes) {
-
-		scope.reverse = function(isReversed) {
-			console.assert((typeof isReversed === 'boolean') || (isReversed === undefined), 'Invalid isReversed value.');
-			console.log('%cReversing chessboard...', LOG.ui);
-		//	Reverse chessboard. Adjust positions of all squares and pieces.
-			var elements = angular.element('.square, .piece');
-			switch (isReversed) {
-				case true: 		elements.addClass('reversed'); break;
-				case false: 	elements.removeClass('reversed'); break;
-				default: 		elements.toggleClass('reversed');
-			}
-		};
-
-	}
+app.directive('chessboard', function(settings, rules, game) {
 	return {
 		restrict: 'A',
 		replace: true,
 		templateUrl: 'template-chessboard.html',
-		link: linkChessboard
+		scope: true,
+		link: function(scope) {
+			scope.settings = settings;
+			scope.rules = rules;
+			scope.game = game;		
+		}
 	};
 });
 
