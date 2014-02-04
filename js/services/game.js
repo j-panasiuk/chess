@@ -8,15 +8,17 @@ app.factory('game', function(settings, rules) {
 //	currentPosition 		position object representing current game state.
 //	activeColor 			(Quick Access) Active color value: 0 | 1
 //	activePlayer 			(Quick Access) Pointer to active player object.
-//	pieces  				(Quick Access) currentPosition.pieceLists object.
+//	pieces  				(Quick Access) currentPosition.pieceList object.
 //	history 				object storing serialized moves and positions.
 //	result 					(Flag) game result.
+//	chessboardState 		object storing additional information about each square on
+//							the chessboard (useful for UI display).
 //
 //	player 					Factory function of player objects.
 //	switchActive 			Function. Changes active side to the opponent.
 
 //	Declare local variables (for factories).
-	var _player, _user, _ai, _history; // Prototypes.
+	var _player, _user, _ai, _history, _chessboardState; // Prototypes.
 
 	Object.defineProperties(game, {
 		'players': 			{ writable: true, enumerable: true, configurable: true },
@@ -25,7 +27,8 @@ app.factory('game', function(settings, rules) {
 		'activePlayer': 	{ writable: true, enumerable: true, configurable: true },
 		'pieces': 			{ writable: true, enumerable: true, configurable: true },	
 		'history': 			{ writable: true, enumerable: true, configurable: true },
-		'result': 			{ writable: true, enumerable: true, configurable: true }		
+		'result': 			{ writable: true, enumerable: true, configurable: true },
+		'chessboardState': 	{ writable: true, enumerable: true, configurable: true },		
 	});
 
 	Object.defineProperty(game, 'switchActive', {
@@ -41,7 +44,7 @@ app.factory('game', function(settings, rules) {
 			console.assert((fen === undefined) || fen.match(rules.validFen), 'Invalid FEN.');
 		//	Initialize game logic, based on supplied arguments and global settings.
 		//	Both arguments are optional; if not provided, fallback to default values.
-			var currentPosition;
+			var chessboardState;
 
 		//	Define players.
 			if (!players) {
@@ -54,21 +57,17 @@ app.factory('game', function(settings, rules) {
 
 		//	Create starting position.
 		//	Update all properties.
-			var fen = fen || settings.fen;
-			currentPosition = rules.createPosition(fen);
-			currentPosition.setPieceLists();
-			currentPosition.setPieceAttacks();
-			currentPosition.setAttacked();
-			currentPosition.setChecks();
-			currentPosition.setPins();
-			currentPosition.setMoves();
-			this.currentPosition = currentPosition;
+			this.currentPosition = rules.createPosition(fen || settings.fen);
 
-		//	Creating quick access properties.
+		//	Create quick access properties.
 			this.activeColor = this.currentPosition.activeColor;
 			this.activePlayer = this.players[this.activeColor];
-			this.pieces = this.currentPosition.pieceLists;
+			this.pieces = this.currentPosition.pieceList;
+
 			this.result = 0;
+
+		// 	Create chessboard state object.
+			this.chessboardState = createChessboardState();
 
 		//	Create game history.
 			this.history = createHistory();
@@ -188,6 +187,50 @@ app.factory('game', function(settings, rules) {
 		history_.sanList = [];
 
 		return history_;
+	}
+
+	_chessboardState = {};
+	Object.defineProperty(_chessboardState, 'update', {
+		value: function(position) {
+			var squares, // Array of squares to modify.
+				self = this;
+
+		//	Reset old values.
+			rules.SQUARES.forEach(function(square) {
+				self[square].check = false;
+				self[square].pin = false;
+			});
+		//	Update checks.
+			if (_.size(position.checks)) {
+				squares = _.flatten(position.checks.map(function(check) { return check.ray; }));
+				squares.forEach(function(square) {
+					self[square].check = true;
+				});
+			}
+		//	Update pins.
+			if (_.size(position.pinList.all)) {
+				squares = _.flatten(position.pinList.all.map(function(pin) { return pin.ray; }));
+				squares.forEach(function(square) {
+					self[square].pin = true;
+				});
+			}
+		}
+	});
+
+	function createChessboardState() {
+		var state;
+		function ChessboardState() {};
+		ChessboardState.prototype = _chessboardState;
+		state = new ChessboardState();
+
+		rules.SQUARES.forEach(function(square) {
+			state[square] = {
+				'check': false,
+				'pin': false
+			};
+		});
+
+		return state;
 	}
 
 //	Initialize default game model.
