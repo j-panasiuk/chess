@@ -11,36 +11,36 @@
     
 <!-- Template: chessboard -->
 <script type="text/ng-template" id="template-chessboard.html">
-<div class="chessboard debug-{{settings.debugMode}}" id="chessboard">
-    <div square="square" state="squaresState[square]" selectable="isSelectableSquare(square)" ng-repeat="square in squares"></div>
-    <div piece ng-model="piece" selectable="isSelectablePiece(piece)" selected="isSelected(piece)" ng-repeat="piece in game.currentPosition.pieceLists.all"></div>
+<div class="chessboard debug-{{settings.debugMode}} reversed-{{settings.isReversed}}" id="chessboard">
+    <div square="square" state="game.chessboardState[square]" selectable="isSelectableSquare(square)" ng-repeat="square in squares"></div>
+    <div piece ng-model="piece" selectable="isSelectablePiece(piece)" selected="isSelected(piece)" ng-repeat="piece in game.currentPosition.pieceList.all"></div>
 </div>
 </script>
 
 <!-- Template: square -->
 <script type="text/ng-template" id="template-square.html">
-<div ng-click="select()" class="square at-{{square}} {{square.complex}} selectable-{{isSelectable}} default-select-disabled" id={{square}}>
+<div ng-click="select()" class="square at-{{square}} {{square.complex}} selectable-{{isSelectable}} reversed-{{settings.isReversed}} default-select-disabled" id={{square}}>
     <div ng-show="settings.debugMode" class="subscript square-id default-select-disabled">{{square}}</div>
-    <div ng-show="settings.debugMode" class="square-outline state-{{state}}"></div>
-    <div ng-show="{{false}}" class="square-value default-select-disabled">{{game.currentPosition.attacked[square][0].join(',')}}</div>
+    <div ng-show="settings.debugMode" class="square-outline check-{{state.check}} pin-{{state.pin}}"></div>
+    <div ng-show="settings.debugMode" class="square-value default-select-disabled">{{game.currentPosition.attacked[square][0].join(',')}}</div>
 </div>
 </script>
 
 <!-- Template: piece -->
 <script type="text/ng-template" id="template-piece.html">
-<div ng-click="select()" class="piece {{color}} {{piece.name}} at-{{piece.square}} selectable-{{isSelectable}} selected-{{isSelected}}" at={{piece.square}}>
+<div ng-click="select()" class="piece {{color}} {{piece.name}} at-{{piece.square}} selectable-{{isSelectable}} selected-{{isSelected}} reversed-{{settings.isReversed}}" at={{piece.square}}>
     <div ng-show="settings.debugMode" class="subscript data default-select-disabled">{{piece.square}}</div>
 </div>
 </script>
 
-<div id="body-container">   
+<div id="body-container">
 
-    <div id="board-container" ng-controller="chessboardController">
-        <button ng-click="reverse()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
-        <button ng-click="debug()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
-        <button ng-click="restart()" ng-show="game.result" class="btn btn-sm btn-primary">New Game</button>
-        <!--<div chessboard ng-model="game.currentPosition"></div>-->
-        <div chessboard></div>
+    <button ng-click="debug()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
+    <button ng-click="reverse()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
+    <button ng-click="startGame(true)" ng-show="game.result" class="btn btn-sm btn-primary">New Game</button>
+
+    <div id="board-container">        
+        <div chessboard ng-controller="chessboardController"></div>
 	</div>
 
     <div id="console-container" ng-controller="consoleController">
