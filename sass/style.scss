@@ -179,7 +179,7 @@ body {
 	}
 
 	.square-outline {
-		visibility: hidden;
+		opacity: 0;
 	    position: absolute;
 	    left: 0;
 	    top: 0;
@@ -189,15 +189,20 @@ body {
 	    border-width: 2px;
 
 	  	&.check-true {
-	    	visibility: visible;
+	    	opacity: 1;
 	    	border-style: dashed;
 		    border-color: #f90;    
 		}
 		&.pin-true {
-			visibility: visible;
+			opacity: 1;
 			border-style: dashed;
 		    border-color: #333;    
 		}
+
+		-webkit-transition: opacity .25s, border-color .25s;
+		-moz-transition: opacity .25s, border-color .25s;
+		-o-transiton: opacity .25s, border-color .25s;
+		transition: opacity .25s, border-color .25s;
 	}
 
 }
