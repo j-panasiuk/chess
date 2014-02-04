@@ -1974,7 +1974,7 @@ app.factory('rules', function(settings) {
     function createMove(position, from, to, special) {
         console.assert(_position.isPrototypeOf(position), 'Invalid position.', position);
         console.assert(from.onBoard && to.onBoard, 'Invalid from/to square index.');
-        console.assert(_.contains(MOVE_SPECIAL_VALUES, special)), 'Invalid special value.', special);
+        console.assert(_.contains(MOVE_SPECIAL_VALUES, special), 'Invalid special value.', special);
     //  Move factory function.
     //  position: current position object
     //  from, to: (int)[0..119]

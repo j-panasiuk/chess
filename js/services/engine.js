@@ -28,7 +28,6 @@ app.factory('engine', function($q, rules, game) {
         'isMin':       	{ get: function() { return !!(this.depth % 2); } },
         'ramify': {
             value: function() {
-                console.debug('Ramify...', this.position);
                 var childNodes,
                     self = this;
 
