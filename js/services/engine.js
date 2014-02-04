@@ -28,6 +28,7 @@ app.factory('engine', function($q, rules, game) {
 		'isMin': 		{ get: function() { return !!(this.depth % 2); } },
 		'ramify': {
 			value: function() {
+				console.debug('Ramify...', this.position);
 				var childNodes,
 					self = this;
 
@@ -145,37 +146,50 @@ app.factory('engine', function($q, rules, game) {
 				var childNodes, node, move,
 					deferred = $q.defer();
 
-			//	Reset game tree to current position.
-				this.plant(position);
+				try {
 
-			//	Branch out the tree up to given depth.
-				this.grow();
+				//	Reset game tree to current position.
+					this.plant(position);
 
-			//	Assign values to all tree nodes.
-				this.analyze();
+				//	Branch out the tree up to given depth.
+					this.grow();
 
-			//	Sort best available moves, based on computed values.
-				childNodes = this.root.children;
-				childNodes = _.sortBy(childNodes, 'value');
+				//	Assign values to all tree nodes.
+					this.analyze();
 
-			//	Select highest or lowest valued move, depending on color.
-				node = game.activeColor ? _.first(childNodes) : _.last(childNodes);
+				//	Sort best available moves, based on computed values.
+					childNodes = this.root.children;
+					childNodes = _.sortBy(childNodes, 'value');
 
-				console.log('%cOptimal move:', LOG.state, node.move, node.value);
+				//	Select highest or lowest valued move, depending on color.
+					node = game.activeColor ? _.first(childNodes) : _.last(childNodes);
+					move = node.move;									
 
-				deferred.resolve(node.move);
+				} catch (e) {
+
+					console.log('%cCaught error during move selection.', LOG.warn, e.message);
+					deferred.reject(e);
+					//move = _.sample(position.moves);
+
+				} finally {
+
+					console.log('%cOptimal move:', LOG.state, move.san);
+
+				}
+
+				deferred.resolve(move);
 				return deferred.promise; 
 			}
 		}
 	});
 
 	function evaluation(position) {
-		console.assert(position.fen.match(rules.validFen), 'Invalid position.', position);
+		//console.assert(position.fen.match(rules.validFen), 'Invalid position.', position);
 	//	Evaluate position. Return computed value.
 		var sign,
 			colors = [0, 1], 
 			attacked = position.attacked,
-			pieces = position.pieceLists,
+			pieces = position.pieceList,
 			activity = rules.ACTIVITY,
 			proximity = rules.proximity,
 			value = 0;
