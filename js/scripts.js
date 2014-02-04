@@ -22,10 +22,7 @@ Object.defineProperties(Number.prototype, {
     "rank":             { get: function() { return this.valueOf() >> 4; } },
     "file":             { get: function() { return this.valueOf() % 16; } },
     "pieceType":        { get: function() { return this.valueOf() & 7; } },
-    "pieceColor":       { get: function() { return +!!(this.valueOf() & 8); } },
-    "isValidSpecial":   { get: function() { 
-                            return !!((0 <= this.valueOf()) && (this.valueOf() < 16) && (this.valueOf()>>1)^3); } 
-                        }
+    "pieceColor":       { get: function() { return +!!(this.valueOf() & 8); } }
 });
 Object.defineProperty(Number.prototype, 'complex', {
     get: function() { return (this.file + this.rank) % 2 ? 'light' : 'dark'; }

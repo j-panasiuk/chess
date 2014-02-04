@@ -45,7 +45,7 @@ app.factory('rules', function(settings) {
         QUEENING_RANK, QUEENING_RANK_INDEX, SEVENTH_RANK, SEVENTH_RANK_INDEX, FIRST_RANK, FIRST_RANK_INDEX, // Specific ranks.
         CENTER, SEMI_CENTER, // Specific chessboard regions.
         CASTLE_ROOKS, CASTLE_KING_TO, ENPASSANT_TARGET, // Special moves & square-specific stuff.
-        MOVE_SPECIAL_MASK, MOVE_SPECIAL, // Move special values.
+        MOVE_SPECIAL_VALUES, MOVE_SPECIAL_MASK, MOVE_SPECIAL, // Move special values.
         ACTIVITY, // Piece activity hash.
         validFen, // Regular expression.
         _position, _check, _pin, _piece, _move, // Object prototypes.
@@ -1880,6 +1880,7 @@ app.factory('rules', function(settings) {
         'capture': 4,
         'enpassant': 5,
     };
+    MOVE_SPECIAL_VALUES = [0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15];
 
     _move = {};
     Object.defineProperties(_move, {
@@ -1943,19 +1944,19 @@ app.factory('rules', function(settings) {
                 if (this.isCapture) {
                     switch (this.captured.pieceType) {
                     //  The more valueable captured piece the better.
-                        case PAWN:             value += 1; break;
-                        case KNIGHT:         value += 3; break;
-                        case BISHOP:         value += 3; break;
-                        case ROOK:             value += 5; break;
+                        case PAWN:          value += 1; break;
+                        case KNIGHT:        value += 3; break;
+                        case BISHOP:        value += 3; break;
+                        case ROOK:          value += 5; break;
                         case QUEEN:         value += 9; break;
-                        default:             throw new Error('King capture!');
+                        default:            throw new Error('King capture!');
                     }
                     switch (this.type) {
                     //  Less valuable attackers are better.
-                        case PAWN:             break;
-                        case KNIGHT:         value *= 0.75; break;
-                        case BISHOP:         value *= 0.75; break;
-                        case ROOK:             value *= 0.5; break;
+                        case PAWN:          break;
+                        case KNIGHT:        value *= 0.75; break;
+                        case BISHOP:        value *= 0.75; break;
+                        case ROOK:          value *= 0.5; break;
                         case QUEEN:         value *= 0.3; break;
                     }
                 }
@@ -1973,7 +1974,7 @@ app.factory('rules', function(settings) {
     function createMove(position, from, to, special) {
         console.assert(_position.isPrototypeOf(position), 'Invalid position.', position);
         console.assert(from.onBoard && to.onBoard, 'Invalid from/to square index.');
-        console.assert(special.isValidSpecial, 'Invalid special value.', special);
+        console.assert(_.contains(MOVE_SPECIAL_VALUES, special)), 'Invalid special value.', special);
     //  Move factory function.
     //  position: current position object
     //  from, to: (int)[0..119]
