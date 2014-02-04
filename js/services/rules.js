@@ -2,7 +2,7 @@
 
 //	Define standard chess rules.
 app.factory('rules', function(settings) {
-	//console.log('%cDefining basic data...', LOG.action);
+	console.log('%cDefining basic data...', LOG.action);
 //	Chess rules are precomputed and stored in `rules` object, which is a set of 
 //	(frozen) flags, arrays and hashtables. Anything regarding chess rules, move
 //	generation & validity etc, which may be of use to other modules is kept here.
@@ -25,9 +25,9 @@ app.factory('rules', function(settings) {
 //	validFen 				RegEx for FEN string validation.
 //
 //	createPosition(fen)		Factory function of position objects.
-//	check
-//	pin
-// 	piece
+//	createCheck
+//	createPin
+// 	createPiece
 //	move
 //
 //	opposite 				Returns opposite color code.
@@ -43,8 +43,9 @@ app.factory('rules', function(settings) {
 		MOVE_SPECIAL_MASK, MOVE_SPECIAL, // Move special values.
 		ACTIVITY, // Piece activity hash.
 		validFen, // Regular expression.
-		_check, _pin, _piece, _move, // Object prototypes.
+		_position, _check, _pin, _piece, _move, // Object prototypes.
 		_pawn, _knight, _bishop, _rook, _queen, _king, // Piece prototypes.
+		_pieceList, _pinList, // Object list prototypes.
 		WHITE = 0, BLACK = 1, // Color codes.
 		PAWN = 1, KNIGHT = 2, KING = 3, BISHOP = 5, ROOK = 6, QUEEN = 7, // Piece type codes.
 		W = 16, B = 24, RANGED_FLAG = 4; // Piece masks.
@@ -504,7 +505,7 @@ app.factory('rules', function(settings) {
 			ACTIVITY[B|KING][square] = 0;
 		});
 	}());
-	//console.log('%cACTIVITY', LOG.attention, ACTIVITY);
+	console.log('%cACTIVITY', LOG.attention, ACTIVITY);
 
 
 //	** POSITION REPRESENTATION
@@ -538,123 +539,30 @@ app.factory('rules', function(settings) {
 // 	.yields(move)			Returns modified copy
 //	.evaluate() 			Returns position's value
 //
-	//console.log('%cDefining positions...', LOG.action);
+	console.log('%cDefining positions...', LOG.action);
 
-//	validFen :: RegEx
-//	Create regular expression for validating FEN strings.	
-	validFen = /^([pnbrqkPNBRQK1-8\/]){17,71} ([wb]){1} ([kqKQ\-]){1,4} ([a-h36\-]){1,2} (\d){1,2} (\d){1,3}$/;
-	rules.validFen = validFen;
-
-//	position :: function()
-//	Factory function, returns position object based on given FEN string.
-	function createPosition(fen) {
-		console.assert(fen.match(validFen), 'Invalid FEN notation.');
-	//	Property 			Description 				Method 				Description
-	//	--------------------------------------------------------------------------------------------------
-	//	pieces 				(fen)
-	//	activeColor 		(fen)
-	//	castleRights 		(fen)
-	//	enpassantAt 		(fen)
-	//	halfMoveClock 		(fen)
-	//	fullMoveCount 		(fen)
-	//	fen 				getter
-	//	pieceLists 										setPieceLists
-	//													updatePieceLists(move)
-	//													setPieceAttacks
-	//													updatePieceAttacks(move)
-	//	attacked 										setAttacked
-	//	checks 											setChecks
-	//	pinLists 										setPins
-	//	moves 											setMoves
-	// 													updateMoves(move)
-	//	result 				getter
-	//													update(move)
-	//													yields(move)
-	//													evaluate
-	//
-		var position, pieces, active, castling, enpassant, halfmove, fullmove, occupied;
-		function Position() {};
-		Position.prototype = Object.prototype;
-
-		(function translateFEN() {
-		//	Translates FEN notation string to individual objects.
-			var tokens, rankTokens;
-
-			tokens = fen.split(' ');
-		//	tokens: 						["rnbqkbnr/...", "w", "KQkq", "-", "0", "1"]
-		//	tokens[0]: 		pieces 			"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-		//	tokens[1]: 		active 		 	"w"
-		//	tokens[2]: 		castling 		"KQkq"
-		//	tokens[3]: 		enpassant 		"-"
-		//	tokens[4]: 		halfmove 		"0"
-		//	tokens[5]: 		fullmove 		"1"
-
-			pieces = {};
-		//	Modify piece placement token, by replacing each integer with a sequence of
-		//	'-' characters, of length equal to the integer. ("2r4P" becomes "--r----P")
-		//	This way we can get 1-to-1 map between 64 squares and 64 symbols.
-			tokens[0] = tokens[0].split('/').reverse();
-			for (var i = 0; i < tokens[0].length; i++) {
-				rankTokens = tokens[0][i].split('');
-				rankTokens = rankTokens.map(function(symbol) {
-					var expandedSymbol = "";
-					if (symbol.match(/[1-8]/)) {
-						symbol = +(symbol);
-						while (symbol > 0) {
-							expandedSymbol += "-";
-							symbol -= 1;
-						}
-						return expandedSymbol;
-					} else {
-						return symbol;
-					}
-				});
-				tokens[0][i] = rankTokens.join('');				
-			}
-
-			(function setPieces() {
-			//	For each square on the board with its symbol different from '-' (non-empty),
-			//	create new piece object, with type determined by the symbol and bound to that square.
-				var symbol;
-				occupied = {};
-				for (var square in SQUARES) {
-					square = SQUARES[square];
-					symbol = tokens[0][square.rank].charAt(square.file);
-					pieces[square] = (symbol === "-") ? null : piece(FEN_TO_CODE[symbol], square);
-				}
-			}());
-
-		//	Translate remaining position properties from FEN tokens.
-			active = (tokens[1] === "w") ? 0 : 1;
-			castling = [0, 0];
-			for (var i = 0; i < tokens[2].length; i++) {
-				switch (tokens[2].charAt(i)) {
-					case "K": 		castling[0] += 1; break;
-					case "Q": 		castling[0] += 2; break;
-					case "k": 		castling[1] += 1; break;
-					case "q": 		castling[1] += 2; break;
-					default: 		break;
-				}
-			}
-			enpassant = (tokens[3] === "-") ? null : tokens[3];
-			halfmove = +(tokens[4]);
-			fullmove = +(tokens[5]);
-		}());
-
-		position = new Position();
-		Object.defineProperties(position, {
-			'pieces': 			{ value: pieces, writable: true, enumerable: true },
-			'activeColor':		{ value: active, writable: true, enumerable: true },
-			'castleRights': 	{ value: castling, writable: true, enumerable: true },
-			'enpassantAt': 		{ value: enpassant, writable: true, enumerable: true },
-			'halfMoveClock': 	{ value: halfmove, writable: true, enumerable: true },
-			'fullMoveCount': 	{ value: fullmove, writable: true, enumerable: true }		
-		});
-
-		Object.defineProperty(position, 'fen', {
+	_position = {};
+	Object.defineProperties(_position, {
+	//	Core position properties (FEN)
+		'pieces': 			{ writable: true, enumerable: true, configurable: true },
+		'activeColor':		{ writable: true, enumerable: true, configurable: true },
+		'castleRights': 	{ writable: true, enumerable: true, configurable: true },
+		'enpassantAt': 		{ writable: true, enumerable: true, configurable: true },
+		'halfMoveClock': 	{ writable: true, enumerable: true, configurable: true },
+		'fullMoveCount': 	{ writable: true, enumerable: true, configurable: true },
+	//	Derived properties (updated based on core properties)
+		'attacked':     	{ writable: true, enumerable: true, configurable: true },
+		'checks':       	{ writable: true, enumerable: true, configurable: true },
+		'moves':        	{ writable: true, enumerable: true, configurable: true },
+	//	List objects (hashtables with data for both colors)
+		'pieceList':    	{ writable: true, enumerable: true, configurable: true },
+		'pinList':      	{ writable: true, enumerable: true, configurable: true },
+	//	Accessor properties and methods
+		'fen': {
 			get: function() {
-				var fen = "", rank, isEmpty, emptyCount,
-				currentRank, pieceAtCurrentSquare;
+			// 	Return current position's FEN string representation.
+				var rank, isEmpty, emptyCount, currentRank, pieceAtCurrentSquare,
+					fen = "";
 			//	Piece placement.
 				for (var r = 7; r >= 0; r--) {
 					currentRank = RANKS[r];
@@ -702,207 +610,150 @@ app.factory('rules', function(settings) {
 
 				console.assert(fen.match(validFen), 'Invalid FEN string.', fen);
 				return fen;
-			}
-		});
+			},
+			set: function(fen) {
+			//	Update position object to match given fen string.
+				var iteration, ranks, pieces, castle,
+					tokens = {};
+				
+				iteration = 0;
+				fen.split(' ').forEach(function(token) { 
+					switch (iteration) {
+						case 0: 	tokens.pieces = token; break;
+						case 1: 	tokens.active = token; break;
+						case 2: 	tokens.castle = token; break;
+						case 3: 	tokens.enpassant = token; break;
+						case 4: 	tokens.halfmove = token; break;
+						case 5: 	tokens.fullmove = token; break;
+					}
+					iteration += 1;
+				});
 
-		(function definePieceLists() {
-		//	Piece lists (seperate lists for both colors) allow quicker access to piece
-		//	objects, without need to loop over entire board.
-		//	pieceLists :: { 0:[<white pieces>], 1:[<black pieces>] }
-		//	pieceLists.all == [<all pieces>]
-		//	pieceLists.filter(17) == [<white pawns>]
-		//	pieceLists.pinned == [[<white pinned>], [<black pinned>]]
-			var pieceLists = {};
-
-			Object.defineProperties(pieceLists, {
-				0: 			{ value: [], writable: true, enumerable: true },
-				1: 			{ value: [], writable: true, enumerable: true },
-				'pawns': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) { 
-							return piece.name === 'pawn';
-						});
-					}
-				},
-				'knights': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) { 
-							return piece.name === 'knight';
-						});
-					}
-				},
-				'bishops': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) { 
-							return piece.name === 'bishop';
-						});
-					}
-				},
-				'rooks': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) { 
-							return piece.name === 'rook';
-						});
-					}
-				},
-				'queens': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) { 
-							return piece.name === 'queen';
-						});
-					}
-				},
-				'kings': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) { 
-							return piece.name === 'king';
-						});
-					}
-				},
-				'pinned': {
-					value: function(color) {
-						return this[+!!color].filter(function(piece) {
-							return !!piece.pin;
-						});
-					}
-				},
-				'all': { 
-					get: function() {
-						return this[0].concat(this[1]);
-					} 
-				}
-			});
-
-			/*
-			Object.defineProperties(pieceLists, {
-				0: 				{ value: [], writable: true, enumerable: true },
-				1: 				{ value: [], writable: true, enumerable: true }
-			});
-			Object.defineProperty(pieceLists, 'all', {
-				get: function() { return this[0].concat(this[1]); }
-			});
-			Object.defineProperty(pieceLists, 'filter', {
-				value: function filterByCode(code) {
-					var color = code.pieceColor;
-					return this[color].filter(function(piece) {
-						return !!(piece.code === code);
+			//	Modify piece placement token, by replacing each integer with a sequence of
+			//	'-' characters, of length equal to the integer. ("2r4P" becomes "--r----P")
+			//	This way we can get 1-to-1 map between 64 squares and 64 symbols.
+				tokens.pieces = tokens.pieces.split('/').reverse();
+				for (var i = 0; i < tokens.pieces.length; i++) {
+					ranks = tokens.pieces[i].split('');
+					ranks = ranks.map(function translateDigits(symbol) {
+						var expandedSymbol = '';
+						if (symbol.match(/[1-8]/)) {
+							symbol = +(symbol);
+							while (symbol > 0) {
+								expandedSymbol += '-';
+								symbol -= 1;
+							}
+							return expandedSymbol;
+						} else {
+							return symbol;
+						}
 					});
+					tokens.pieces[i] = ranks.join('');				
 				}
-			});
-			Object.defineProperty(pieceLists, 'pinned', {
-				get: function() {
-					var pinnedPieces = [];
-					for (var color in COLORS) {
-						pinnedPieces[color] = this[color].filter(function(piece) {
-							return !!(piece.pin);
-						});
-					}
-					return pinnedPieces;
-				}
-			});
-			*/
-			Object.defineProperty(position, 'pieceLists', {
-				value: pieceLists, writable: true, enumerable: true, configurable: true
-			});
 
-		}());
-		Object.defineProperty(position, 'setPieceLists', {
-			value: function setPieceLists() {
-				var piece;
-				this.pieceLists[0] = [];
-				this.pieceLists[1] = [];
-				for (var square in SQUARES) {
-					square = SQUARES[square];
-					if (this.pieces[square]) {
-						piece = this.pieces[square];
-						this.pieceLists[piece.color].push(piece);
+				pieces = {};
+			//	For each square on the board with its symbol different from '-' (non-empty),
+			//	create new piece object, with type determined by the symbol and bound to that square.				
+				SQUARES.forEach(function(square) {
+					var symbol = tokens.pieces[square.rank].charAt(square.file);
+					pieces[square] = (symbol === '-') ? null : createPiece(FEN_TO_CODE[symbol], square);
+				});
+				this.pieces = pieces;
+
+			//	Translate remaining position properties from FEN tokens.
+				this.activeColor = (tokens.active === 'w') ? 0 : 1;
+				castle = [0, 0];
+				for (var i = 0; i < tokens.castle.length; i++) {
+					switch (tokens.castle.charAt(i)) {
+						case 'K': 		castle[0] += 1; break;
+						case 'Q': 		castle[0] += 2; break;
+						case 'k': 		castle[1] += 1; break;
+						case 'q': 		castle[1] += 2; break;
 					}
 				}
-				//console.log('%cpieceLists:', LOG.state, this.pieceLists);
+				this.castleRights = castle;
+				this.enpassantAt = (tokens.enpassant === '-') ? null : tokens.enpassant;
+				this.halfMoveClock = +tokens.halfmove;
+				this.fullMoveCount = +tokens.fullmove;
 			}
-		});
-		Object.defineProperty(position, 'updatePieceLists', {
-			value: function updatePieceLists(move) {
-			//	With an established position updating piece lists requires only checking for captures.
-			//	Also check for promotions. Replace pointer to pawn object with pointer to new piece.
-				var capturedPiece, enemy = opposite(move.color);
+		},
+		'setPieceList': {
+			value: function() {
+				this.pieceList = createPieceList(this);
+			}
+		},
+		'updatePieceList': {
+			value: function(move) {
+				var color = move.color,
+					enemy = +!color;
+
+				if (move.isQuiet || move.isDouble || move.isCastle) {
+					return;
+				}
 				if (move.isEnpassant) {
-					_.remove(this.pieceLists[enemy], function(piece) {
-						return !!(piece.square === ENPASSANT_TARGET[move.to]);
+					_.remove(this.pieceList[enemy], function(piece) {
+						return piece.square === ENPASSANT_TARGET[move.to];
 					});
-				} else if (move.isCapture) {
-					_.remove(this.pieceLists[enemy], function(piece) {
-						return !!(piece.square === move.to);
-					});					
+					return;
+				}
+				if (move.isCapture) {
+					_.remove(this.pieceList[enemy], function(piece) {
+						return piece.square === move.to;
+					});
+					return;
 				}
 				if (move.isPromote) {
-				//	Delete link to promoted pawn. Store new piece object.
-					_.remove(this.pieceLists[move.color], function(piece) {
-						return !!((piece.type === PAWN) && (piece.square.rank === QUEENING_RANK_INDEX[move.color]));
+				//	Replace captured piece object with promoted piece.
+					_.remove(this.pieceList[color], function(piece) {
+						return piece.square === move.to;
 					});
-					this.pieceLists[move.color].push(this.pieces[move.to]);
-					//console.log('%cRedirecting moveList pointer to...', LOG.action, _.last(this.pieceLists[move.color]).name);
+					this.pieceList[color].push(this.pieces[move.to]);
 				}
-				//console.log('%cpieceLists:', LOG.state, this.pieceLists);
 			}
-		});
-
-		Object.defineProperty(position, 'setPieceAttacks', {
-			value: function setPieceAttacks() {
-				for (var piece in this.pieceLists.all) {
-					piece = this.pieceLists.all[piece];
-					piece.updateAttacks(this);
+		},
+		'setPieceAttacks': {
+			value: function() {
+			//	Update all pieces' `attacks` values to match current position.
+				var pieces = this.pieceList.all;
+				for (var i = 0; i < pieces.length; i++) {
+					pieces[i].updateAttacks(this);
 				}
-				//console.log('%cSetting piece attacks...', LOG.action);
 			}
-		});
-		Object.defineProperty(position, 'updatePieceAttacks', {
-			value: function updatePieceAttacks(move) {
+		},
+		'updatePieceAttacks': {
+			value: function(move) {
 			//	Not all pieces require updating their attacks after a move.
-			//	Update only applies to: moved piece and all ranged pieces.
-				var pieceList = this.pieceLists.all;
-				pieceList = pieceList.filter(function(piece) {
+			//	Update only applies to the moved piece and all ranged pieces.
+				var pieces = this.pieceList.all.filter(function(piece) {
 					return (piece.isRanged) || (piece.square === move.to);
 				});
-				for (var piece in pieceList) {
-					piece = pieceList[piece];
-					piece.updateAttacks(this);
+				for (var i = 0; i < pieces.length; i++) {
+					pieces[i].updateAttacks(this);
 				}
 			}
-		});
-		
-		Object.defineProperty(position, 'attacked', {
-			writable: true, enumerable: true
-		});
-		Object.defineProperty(position, 'setAttacked', {
-			value: function setAttacked() {
+		},
+		'setAttacked': {
+			value: function() {
 				var attacked = {};
-				for (var square in SQUARES) {
-					square = SQUARES[square];
-					attacked[square] = [[], []];
-				}
-				for (var piece in this.pieceLists.all) {
-					piece = this.pieceLists.all[piece];
-					for (var square in piece.attacks) {
-						square = piece.attacks[square];
+				SQUARES.forEach(function(square) { attacked[square] = [[], []]; });
+				this.pieceList.all.forEach(function(piece) {
+					for (var i = 0; i < piece.attacks.length; i++) {
+						square = piece.attacks[i];
 						attacked[square][piece.color].push(piece.type);
 						attacked[square][piece.color].sort();
 					}
-				}
+				});
 				this.attacked = attacked;
 			}
-		});
-
-		Object.defineProperty(position, 'checks', {
-			writable: true, enumerable: true
-		});
-		Object.defineProperty(position, 'setChecks', {
-			value: function setChecks() {
-				var checks = [], attackerSquares, attackers, piece,
+		},
+		'setChecks': {
+			value: function() {
+				var attackerSquares, attackers, piece,
 					own = (this.activeColor) ? B : W,
 					enemy = (this.activeColor) ? W : B,
-					kingSquare = this.pieceLists.kings(this.activeColor)[0].square;
-					//kingSquare = this.pieceLists.filter(own|KING)[0].square;
+					king = this.pieceList.kings(this.activeColor)[0],
+					kingSquare = king.square,
+					checks = [];
 
 			//	Examine checks by knights. (At most one)
 				attackerSquares = ATTACK_FIELDSET[kingSquare][own|KNIGHT];
@@ -910,10 +761,10 @@ app.factory('rules', function(settings) {
 					square = attackerSquares[square];
 					piece = this.pieces[square];
 					if (piece && (piece.code === (enemy|KNIGHT))) {
-						checks.push(check([square]));
+						checks.push(createCheck([square]));
 						break;
 					}
-				}
+				}			
 			//	Examine checks by pawns. (At most one pawn check possible)
 			//	Skip this step if a knight check has been found. A pawn and a knight
 			//	cannot be checking the king simultaneously.
@@ -923,11 +774,11 @@ app.factory('rules', function(settings) {
 						square = attackerSquares[square];
 						piece = this.pieces[square];
 						if (piece && (piece.code === (enemy|PAWN))) {
-							checks.push(check([square]));
+							checks.push(createCheck([square]));
 							break;
 						}
 					}
-				}		
+				}
 			//	Examine checks along diagonals. (At most one)
 				attackerSquares = ATTACK_RAYS[kingSquare][own|BISHOP];
 				attackers = [enemy|BISHOP, enemy|QUEEN];
@@ -939,7 +790,7 @@ app.factory('rules', function(settings) {
 						if (piece) {
 							if (attackers.indexOf(piece.code) > -1) {
 								ray = ray.slice(0, i + 1);
-								checks.push(check(ray));
+								checks.push(createCheck(ray));
 								break diagonalChecks;
 							}
 							break;
@@ -959,7 +810,7 @@ app.factory('rules', function(settings) {
 							if (piece) {
 								if (attackers.indexOf(piece.code) > -1) {
 									ray = ray.slice(0, i + 1);
-									checks.push(check(ray));								
+									checks.push(createCheck(ray));								
 									break straightChecks;
 								}
 								break;
@@ -968,56 +819,39 @@ app.factory('rules', function(settings) {
 					}	
 				}
 				this.checks = checks;
-				this.pieces[kingSquare].checks = checks;
-				//console.log('%cchecks:', LOG.state, checks);
+				king.checks = checks;
+				//this.pieces[kingSquare].checks = checks;
+				console.log('%cchecks:', LOG.state, checks);
 			}
-		});
-
-		(function definePinLists() {
-		//	Pin lists (seperate lists for both colors) are arrays of current pins.
-		//	Purpose of this object is to quickly access pins.
-		//	pieceLists :: { 0:[<white pins>], 1:[<black pins>] }
-		//	pieceLists.all == [<all pins>]
-			var pinLists = {};
-			Object.defineProperties(pinLists, {
-				0: 				{ value: [], writable: true, enumerable: true },
-				1: 				{ value: [], writable: true, enumerable: true }
-			});
-			Object.defineProperty(pinLists, 'all', {
-				get: function() { return this[0].concat(this[1]); }
-			});
-			Object.defineProperty(position, 'pinLists', {
-				value: pinLists, writable: true, enumerable: true
-			});
-		}());
-		
-		Object.defineProperty(position, 'setPins', {
-			value: function setPins() {
-			//	Pins are updated automatically for both colors, every time the position changes.
-				var pins, newPin, attackerSquares, attackers, piece, pinnedPiece,
-					own, enemy, kingSquare;
+		},
+		'setPins': {
+			value: function() {
+				var pins, // Array with found pins: [[white pins], [black pins]]
+					pin, // Pin object.
+					own, // Color mask matching the pinned piece.
+					enemy, // Color mask of the attacker.
+					king, // King object.
+					kingSquare, // Square occupied by the king.
+					attackerSquares, // Array of possible attack vectors (rays)
+					                 // (One ray for each direction, including knight vectors)
+					attackers, // Array of attacker piece types.
+					piece, // Piece object.
+					pinnedPiece; // Piece object under pin.
 
 			//	Reset old pins, regardless of color.
-				this.pieceLists.all.forEach(function(piece) {
+				this.pieceList.all.forEach(function(piece) {
 					if (piece.pin) {
 						piece.pin = null;
 					}
 				});
 				pins = [[], []];
-
-				//pins = _.flatten(this.pieceLists.pinned);
-				//for (var piece in pins) {
-				//	piece = pins[piece];
-				//	piece.pin = null;
-				//}
-				//pins = [[], []];
-
+				
 				for (var color in COLORS) {
 					color = COLORS[color];
 					own = (color) ? B : W;
 					enemy = (color) ? W : B;
-					kingSquare = this.pieceLists.kings(this.activeColor)[0].square;
-					//kingSquare = this.pieceLists.filter(own|KING)[0].square;
+					king = this.pieceList.kings(this.activeColor)[0];
+					kingSquare = king.square;
 
 				//	Examine diagonals for possible pins.
 				//	Eliminate all rays shorter than 2 squares.
@@ -1041,9 +875,9 @@ app.factory('rules', function(settings) {
 									}
 									if (attackers.indexOf(piece.type) > -1) {
 									//	A pin has been found!
-										newPin = pin(ray.slice(0, i + 1));
-										pinnedPiece.pin = newPin;
-										pins[opposite(color)].push(newPin);
+										pin = createPin(ray.slice(0, i + 1));
+										pinnedPiece.pin = pin;
+										pins[opposite(color)].push(pin);
 										break;
 									} else {
 									//	Enemy piece of wrong type, cannot pin in this direction.
@@ -1062,199 +896,156 @@ app.factory('rules', function(settings) {
 						}
 					}
 				}
-			//	pinLists is an object of its own type, but its values pinLists[i] (i: 0,1),
+			//	pinList is an object of its own type, but its values pinList[i] (i: 0,1),
 			//	containing white and black pins respectively, are ordinary arrays.
-			//	Update explicitly those arrays, as pieceLists objects don't have custom 
-			//	constructor / factory function.		
-				this.pinLists[WHITE] = pins[WHITE];
-				this.pinLists[BLACK] = pins[BLACK];
-				//console.log('%cpins:', LOG.state, this.pinLists);
+			//	Update explicitly those arrays, as pieceList objects don't have custom 
+			//	constructor / factory function.
+				this.pinList = createPinList();		
+				this.pinList[0] = pins[0];
+				this.pinList[1] = pins[1];
+				console.log('%cpins:', LOG.state, this.pinList);
 			}
-		});
+		},
+		'setMoves': {
+			value: function() {
+				var piece, // Piece object.					
+					types, // Hashtable of piece objects, grouped by piece type names.
+					collisions,
+					pieces = this.pieceList[this.activeColor], // List of active piece objects.
+					moves = []; // List of move objects available in current position.
 
-		Object.defineProperty(position, 'moves', {
-			writable: true, enumerable: true
-		});
-		Object.defineProperty(position, 'setMoves', {
-			value: function setMoves() {
-				//console.time('Setting moves');
-			//	Generate array of all legal moves.
-			//	Note some useful rules for eliminating moves:
-			//	
-			//	Double check			Only king can move.
-			//	Check 					Non-king pieces can only move to checking ray.
-			// 							Pinned pieces can't move at all.
-			//	(Is pinned) 			Can only move along pinning ray.
-			// 	(Pawns) 				Can't slide when pinned horizontally/diagonally.
-			//							Can't capture when pinned vertically.
-			//	(Knights) 				Can't move when pinned.
-			// 	(Bishops) 				Can't move when pinned horizontally/vertically.
-			//	(Rooks) 				Can't move when pinned diagonally.
-				var ownPieceList = this.pieceLists[this.activeColor],
-					moves = [];
 
-				for (var piece in ownPieceList) {
-					piece = ownPieceList[piece];
+				for (var i = 0; i < pieces.length; i++) {
+					piece = pieces[i];
 					piece.updateMoves(this);
 					moves = moves.concat(piece.moves);
 				}
 
-				this.moves = moves;
-				//console.timeEnd('Setting moves');
-				//console.log('%cmoves:', LOG.state, this.moves);
-			}
-		});
-		Object.defineProperty(position, 'updateMoves', {
-			value: function updateMoves(move) {
-				//console.time('Updating moves');
-			//	*(Duplicate of setMoves() function, to be changed) 
-				var color = this.activeColor,
-					ownPieceList = this.pieceLists[color],
-					moves = [];
+			//	Update moves in current game context. Disambiguate move notation.	
+			//	(It is often possible for multiple pieces of the same kind to move to the same square.
+			//	Short Algebraic Notation (SAN) requires the moves to be uniquely represented to avoid
+			//	ambiguity. Namespace collisions can only be determined in the context of entire position,
+			//	thus `position.moves` object is disambiguated after every position change)
 
-				for (var piece in ownPieceList) {
-					piece = ownPieceList[piece];
-					piece.updateMoves(this);
-					moves = moves.concat(piece.moves);
-				}
+			//	Exclude pawns and king from list of examined pieces.
+			//	(Pawns capture ambiguity is already handled by adding file letter,
+			//	while the king is obviously a singleton).
+				pieces = _.reject(pieces, function(piece) {					
+					return (piece.name === 'pawn') || (piece.name === 'king');
+				});
+				//	EXPECT: pieces == [
+				//		N, N, B, B, Q, Q, Q
+				//	]
 
-			//	Update moves in current game context.
-			// 	Disambiguate move notation.
-				(function eliminateCollisions() {
-					//console.log('%cEliminating move collisions...', LOG.action);
-				//	Look for multiple:
-				//	+ Knights 
-				//	+ Opposite-color bishops
-				//	+ Rooks
-				//	+ Queens
-				//	For each category:
-				//		For each piece:
-				//			Map available moves to destination squares.
-				//		Intersect results.
-				//		If result is non-empty, there is ambiguity.
-				//			Pass moves in question to disambiguate()
-				//
-					var pieces, types, collisions;
+			//	Group own pieces by piece name. Result is a { <name>: <piece> } hash.
+			//	In case of bishops, split into 'dark' and 'light' complex groups.
+				types = _.groupBy(pieces, function(piece) {					
+					return (piece.name === 'bishop') ? piece.complex : piece.name; 
+				});
+				//	EXPECT: types == {
+				//		'knight': [N, N],
+				//		'dark': [B],
+				//		'light': [B],
+				//		'rook': [],
+				//		'queen': [Q, Q, Q],
+				//	}
 
-				//	Exclude pawns and king from list of examined pieces.
-				//	(Pawns capture ambiguity is already handled by adding file letter,
-				//	while the king is obviously a singleton).
-					pieces = _.reject(ownPieceList, function exclude(piece) {					
-						return (piece.name === 'pawn') || (piece.name === 'king');
-					});
-					//	pieces == [
-					//		N, N, B, B, Q, Q, Q
+			//	Exclude singular and empty arrays, as these are not going to create collisions.
+				types = _.omit(types, function exclude(type) {					
+					return type.length < 2;
+				});
+				//	EXPECT: types == {
+				//		'knight': [N, N],
+				//		'queen': [Q, Q, Q]
+				//	}
+
+				for (var type in types) {
+					type = types[type];
+					collisions = type.map(function(piece) { return piece.moves; });
+					//	EXPECT: colisions == [
+					//		[Ae4*, Ae6**, Af7], 
+					//		[Bd3, Be4*],
+					//		[Ce4*, Ce6**]
 					//	]
-
-				//	Group own pieces by piece name. Result is a { <name>: <piece> } hash.
-				//	In case of bishops, split into 'dark' and 'light' complex groups.
-					types = _.groupBy(pieces, function groupByName(piece) {					
-						return (piece.name === 'bishop') ? piece.complex : piece.name; 
-					});
-					//	types == {
-					//		'knight': [N, N],
-					//		'dark': [B],
-					//		'light': [B],
-					//		'rook': [],
-					//		'queen': [Q, Q, Q],
+					collisions = _.flatten(collisions);
+					//	EXPECT: collsions = [
+					//		Ae4*, Ae6**, Af7, Bd3, Be4*, Ce4*, Ce6**
+					//	]
+					collisions = _.groupBy(collisions, function(move) { return move.to });
+					//	EXPECT: collisions = {
+					//		'e4': [Ae4, Be4, Ce4],
+					//		'e6': [Ae6, Ce6],
+					//		'f7': [Af7],
+					//		'd3': [Bd3]
 					//	}
-
-				//	Exclude singular and empty arrays, as these are not going to create collisions.
-					types = _.omit(types, function exclude(type) {					
-						return type.length < 2;
+					collisions = _.omit(collisions, function exclude(collision) {
+						return collision.length < 2;
 					});
-					//	types == {
-					//		'knight': [N, N],
-					//		'queen': [Q, Q, Q]
+					//	EXPECT: collisions = {
+					//		'e4': [Ae4, Be4, Ce4],
+					//		'e6': [Ae6, Ce6]
 					//	}
-
-					for (var type in types) {
-						type = types[type];
-						collisions = type.map(function(piece) { return piece.moves; });
-						//	colisions == [
-						//		[Ae4*, Ae6**, Af7], 
-						//		[Bd3, Be4*],
-						//		[Ce4*, Ce6**]
-						//	]
-						collisions = _.flatten(collisions);
-						//	collsions = [
-						//		Ae4*, Ae6**, Af7, Bd3, Be4*, Ce4*, Ce6**
-						//	]
-						collisions = _.groupBy(collisions, function(move) { return move.to });
-						//	collisions = {
-						//		'e4': [Ae4, Be4, Ce4],
-						//		'e6': [Ae6, Ce6],
-						//		'f7': [Af7],
-						//		'd3': [Bd3]
-						//	}
-						collisions = _.omit(collisions, function exclude(collision) {
-							return collision.length < 2;
-						});
-						//	collisions = {
-						//		'e4': [Ae4, Be4, Ce4],
-						//		'e6': [Ae6, Ce6]
-						//	}
-						if (_.size(collisions) > 0) {
-							//console.log('%ccollisions:', LOG.state, collisions);
-						} else {
-							//console.log('%cNo collisions.', LOG.action);
-						}
-						
-
-
-						for (var collision in collisions) {
-							collision = collisions[collision];
-							disambiguate(collision);
-							//console.log('%cSolved collision...', LOG.action, _.values(collision).map(function(move) { return move.san; }));
-						}
+					if (_.size(collisions) > 0) {
+						console.log('%ccollisions:', LOG.state, collisions);
+					} else {
+						console.log('%cNo collisions.', LOG.action);
 					}
 
-				}());
+					_.values(collisions).forEach(function(collision) { disambiguate(collision); });
+				}
 
 				this.moves = moves;
-				//console.timeEnd('Updating moves');
-				//console.log('%cmoves:', LOG.state, this.moves);
+				console.timeEnd('Updating moves');
+				console.log('%cmoves:', LOG.state, this.moves.length);
 			}
-		});
-
-		Object.defineProperty(position, 'result', {
+		},
+		'result': {
 			get: function() {
+				console.log('%cChecking result. Legal moves:', LOG.action, this.moves.length);
 			//	Game results: 2bit integer [0..3]
 			// 	result = <checkmate flag>|<color flag>
 			//	0 		00 		Not over
 			//	1 		01 		Draw
 			//	2 		10 		White wins
-			//	3 		11 		Black win
-				//console.log('%cChecking result. Legal moves:', LOG.action, this.moves.length);
+			//	3 		11 		Black win				
 				if (this.moves.length) {
 					return 0;
 				}
 				if (this.checks.length) {
-					return 2|this.color; 
+					return 2|this.activeColor; 
 				} 
 				return 1;
 			}
-		});
-
-		/*
-		Object.defineProperties(position, {
-			'update': 			{ value: function(move) { //console.log('Updating position...'); } },
-			'yields': 			{ value: function(move) { //console.log('Yield new position...'); } },
-			'evaluate': 		{ value: function() { //console.log('Evaluate position...'); } }
-		});
-		*/
-
-		Object.defineProperty(position, 'update', {
-			value: function updatePosition(move) {
+		},
+		'update': {
+			value: function(move) {
 				console.assert(_move.isPrototypeOf(move), 'Invalid move.', move);
-				var from = move.from, to = move.to, special = move.special,
-					color = move.color, enemy = opposite(color);
+			//	Update position object to represent changes after given move.
+			//	Use the following order to update properties:
+			//		(Core properties)
+			//	1.	Update `pieces` and piece object `square` properties
+			//	2.	Update `activeColor`
+			//	3.	Update `castleRights`
+			//	4. 	Update `enpassantAt`
+			//	5. 	Update `halfMoveClock`
+			//	6. 	Update `fullMoveCount`
+			//		(Derived properties)
+			//	7. 	Update `pieceList`
+			//	8.	Update piece object `attacks` properties
+			//	9.	Update `attacked`
+			//	10.	Update `checks`
+			//	11.	Update `pins`
+			//	12.	Update `moves`
+			//
+				var from = move.from,
+					to = move.to,
+					special = move.special,
+					color = move.color,
+					enemy = +!color;
 
-				//console.log('%cUpdating position after move...', LOG.action, move.san);
-
-			//	1. Update pieces (& piece 'square' properties)
+			//	Update pieces & squares
 			//	Move piece to target square (occupying piece is lost). Empty initial square.
-			//	Also update 'square' property of affected pieces, so that it matches new square.
+			//	Also update `square` property of affected pieces, so that it matches new square.
 				this.pieces[to] = this.pieces[from];
 				this.pieces[to].square = to;
 				this.pieces[from] = null;
@@ -1274,18 +1065,17 @@ app.factory('rules', function(settings) {
 						this.pieces[ENPASSANT_TARGET[to]] = null;
 					} else if (move.isPromote) {
 					//	A pawn has promoted. Delete it and create new piece in its place.
-					//	!Important
-						//console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
+						console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
 						delete this.pieces[to];
-						this.pieces[to] = piece(move.promote, to);
-						//console.log('%cNew piece:', LOG.state, this.pieces[to]);
+						this.pieces[to] = createPiece(move.promote, to);
+						console.log('%cNew piece:', LOG.state, this.pieces[to]);
 					}
 				}
 
-			//	2.	Update activeColor
+			//	Update active color
 				this.activeColor = enemy;
 
-			//	3.	Update castleRights
+			//	Update castle rights
 			//	If castle is already illegal, there is no need to update.
 			//	Own castle rights can be lost, when king or rook moves.
 			//	Enemy castle can be disabled, when capturing a rook.
@@ -1307,162 +1097,183 @@ app.factory('rules', function(settings) {
 						this.castleRights[enemy] &= 1;
 					}
 				}
-				//console.log('%ccastleRights', LOG.state, this.castleRights);
+				console.log('%ccastleRights', LOG.state, this.castleRights);
 
-			//	4. 	Update enpassantAt
+			//	Update enpassant
 				if (move.isDouble) {
 					this.enpassantAt = (from + to) / 2;
 				} else {
 					this.enpassantAt = null;
 				}
-				//console.log('%cenpassantAt', LOG.state, this.enpassantAt);
+				console.log('%cenpassantAt', LOG.state, this.enpassantAt);
 
-			//	5. 	Update halfMoveClock
+			//	Update halfmove clock
 				if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
 					this.halfMoveClock += 1;
 				} else {
 					this.halfMoveClock = 0;
 				}
 
-			//	6. 	Update fullMoveCount
+			//	Update fullmove count
 				this.fullMoveCount += (color === WHITE) ? 0 : 1;
 
-			//	Essential information about the position have been updated.
-			//	Update remaining position properties:
-
-			//	7. 	Update pieceLists
-				this.updatePieceLists(move);
-
-			//	8.	Update piece attacks
+			//	Update derived position properties:
+				this.updatePieceList(move);
 				this.updatePieceAttacks(move);
-
-			//	9.	Update attacked
 				this.setAttacked();
-
-			//	10.	Update checks
 				this.setChecks();
-
-			//	11.	Update pins
 				this.setPins();
-
-			//	12.	Update moves
-				this.updateMoves(move);
+				this.setMoves();
 			}
-		});
-
-		Object.defineProperty(position, 'yields', {
-			value: function yieldPosition(move) {
-				//console.assert(_move.isPrototypeOf(move), 'Invalid move.', move);
-				var position = createPosition(this.fen),
-					from = move.from, 
-					to = move.to, 
-					special = move.special,
-					color = move.color, 
-					enemy = opposite(color);
-
-				//console.log('%cYielding position after move...', LOG.action, move.san);
-				//console.log('%cCloned position', LOG.attention, position, this);
-
-			//	1. Update pieces (& piece 'square' properties)
-			//	Move piece to target square (occupying piece is lost). Empty initial square.
-			//	Also update 'square' property of affected pieces, so that it matches new square.
-				position.pieces[to] = position.pieces[from];
-				position.pieces[to].square = to;
-				position.pieces[from] = null;
-				if (special) {
-					if (special === MOVE_SPECIAL.castles[0]) {
-					//	Kingside castle. Move the rook.
-						position.pieces[CASTLE_ROOKS[color][0].to] = position.pieces[CASTLE_ROOKS[color][0].from];
-						position.pieces[CASTLE_ROOKS[color][0].to].square = CASTLE_ROOKS[color][0].to;
-						position.pieces[CASTLE_ROOKS[color][0].from] = null;
-					} else if (special === MOVE_SPECIAL.castles[1]) {
-					//	Queenside castle. Move the rook.
-						position.pieces[CASTLE_ROOKS[color][1].to] = position.pieces[CASTLE_ROOKS[color][1].from];
-						position.pieces[CASTLE_ROOKS[color][1].to].square = CASTLE_ROOKS[color][1].to;
-						position.pieces[CASTLE_ROOKS[color][1].from] = null;	
-					} else if (special === MOVE_SPECIAL.enpassant) {
-					//	Enpassant. Om-nom-nom
-						position.pieces[ENPASSANT_TARGET[to]] = null;
-					} else if (move.isPromote) {
-					//	A pawn has promoted. Delete it and create new piece in its place.
-					//	!Important
-						//console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
-						delete position.pieces[to];
-						position.pieces[to] = piece(move.promote, to);
-						//console.log('%cNew piece:', LOG.state, position.pieces[to]);
-					}
-				}
-
-			//	2.	Update activeColor
-				position.activeColor = enemy;
-
-			//	3.	Update castleRights
-			//	If castle is already illegal, there is no need to update.
-			//	Own castle rights can be lost, when king or rook moves.
-			//	Enemy castle can be disabled, when capturing a rook.
-				if (position.castleRights[color]) {
-					if (move.piece.pieceType === KING) {
-						position.castleRights[color] = 0;
-					} else if (move.piece.pieceType === ROOK) {
-						if (from === CASTLE_ROOKS[color][0].from) {
-							position.castleRights[color] &= 2;
-						} else if (from === CASTLE_ROOKS[color][1].from) {
-							position.castleRights[color] &= 1;
-						}
-					}
-				}
-				if (position.castleRights[enemy] && move.isCapture) {
-					if (to === CASTLE_ROOKS[enemy][0].from) {
-						position.castleRights[enemy] &= 2
-					} else if (to === CASTLE_ROOKS[enemy][1].from) {
-						position.castleRights[enemy] &= 1;
-					}
-				}
-				//console.log('%ccastleRights', LOG.state, position.castleRights);
-
-			//	4. 	Update enpassantAt
-				if (move.isDouble) {
-					position.enpassantAt = (from + to) / 2;
-				} else {
-					position.enpassantAt = null;
-				}
-				//console.log('%cenpassantAt', LOG.state, position.enpassantAt);
-
-			//	5. 	Update halfMoveClock
-				if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
-					position.halfMoveClock += 1;
-				} else {
-					position.halfMoveClock = 0;
-				}
-
-			//	6. 	Update fullMoveCount
-				position.fullMoveCount += (color === WHITE) ? 0 : 1;
-
-			//	Essential information about the position have been updated.
-			//	Update remaining position properties:
-
-			//	7. 	Update pieceLists
-				position.setPieceLists();
-
-			//	8.	Update piece attacks
-				position.setPieceAttacks();
-
-			//	9.	Update attacked
-				position.setAttacked();
-
-			//	10.	Update checks
-				position.setChecks();
-
-			//	11.	Update pins
-				position.setPins();
-
-			//	12.	Update moves
-				position.updateMoves(move);
-
-			//	Returned modified shallow clone.
+		},
+		'yields': {
+			value: function(move) {
+				var position = createPosition(this.fen);
+				position.update(move);
 				return position;
 			}
+		}
+	});
+
+	_pieceList = {};
+	Object.defineProperties(_pieceList, {
+		0: 			{ value: [], writable: true, enumerable: true, configurable: true }, // Array containing white pieces.
+		1: 			{ value: [], writable: true, enumerable: true, configurable: true }, // Array containing black pieces.
+		'pawns': {
+		//	Returns array of pawns matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) { 
+					return piece.name === 'pawn';
+				});
+			}
+		},
+		'knights': {
+		//	Returns array of knights matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) { 
+					return piece.name === 'knight';
+				});
+			}
+		},
+		'bishops': {
+		//	Returns array of bishops matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) { 
+					return piece.name === 'bishop';
+				});
+			}
+		},
+		'rooks': {
+		//	Returns array of rooks matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) { 
+					return piece.name === 'rook';
+				});
+			}
+		},
+		'queens': {
+		//	Returns array of queens matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) { 
+					return piece.name === 'queen';
+				});
+			}
+		},
+		'kings': {
+		//	Returns array of kings matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) { 
+					return piece.name === 'king';
+				});
+			}
+		},
+		'pinned': {
+		//	Returns array of pinned pieces matching given color.
+			value: function(color) {
+				return this[+!!color].filter(function(piece) {
+					return !!piece.pin;
+				});
+			}
+		},
+		'all': {
+		//	Return array with all pieces on the board.
+			get: function() {
+				return this[0].concat(this[1]);
+			} 
+		}
+	});
+
+	function createPieceList(position) {
+	//	Piece list factory function.
+	//	Create and return pieceList object representing all pieces currently in play
+	//	(together with accompanying accessor methods).
+		var list;
+		function PieceList() {};
+		PieceList.prototype = _pieceList;
+		list = new PieceList();
+
+		list[0] = [];
+		list[1] = [];
+	//	Populate list to match position.
+		SQUARES.forEach(function(square) {
+			var piece = position.pieces[square];
+			if (piece) {
+				list[piece.color].push(piece);
+			}
 		});
+
+		return list;
+	}
+
+	_pinList = {};
+	Object.defineProperties(_pinList, {
+		0: 			{ value: [], writable: true, enumerable: true, configurable: true }, // Array containing white pieces under pin.
+		1: 			{ value: [], writable: true, enumerable: true, configurable: true }, // Array containing black pieces under pin.
+		'all': {
+			get: function() {
+			//	Returns array of all pins.
+				return this[0].concat(this[1]);
+			}
+		}
+	});
+
+	function createPinList() {
+	//	Pin list factory function.
+		var list;
+		function PinList() {};
+		PinList.prototype = _pinList;
+		list = new PinList();
+
+		list[0] = [];
+		list[1] = [];
+
+		return list;
+	}
+
+//	validFen :: RegEx
+//	Create regular expression for validating FEN strings.	
+	validFen = /^([pnbrqkPNBRQK1-8\/]){17,71} ([wb]){1} ([kqKQ\-]){1,4} ([a-h36\-]){1,2} (\d){1,2} (\d){1,3}$/;
+	rules.validFen = validFen;
+
+//	position :: function()
+//	Factory function, returns position object based on given FEN string.
+	function createPosition(fen) {
+		console.assert(fen.match(validFen), 'Invalid FEN notation.');
+
+		var position;
+		function Position() {};
+		Position.prototype = _position;
+		position = new Position();
+
+		position.fen = fen;
+		//position.pieceList = createPieceList(position);
+		//position.pinList = createPinList(position);
+		position.setPieceList();
+		position.setPieceAttacks();
+		position.setAttacked();
+		position.setChecks();
+		position.setPins();
+		position.setMoves();
 
 		return position;
 	}
@@ -1489,7 +1300,7 @@ app.factory('rules', function(settings) {
 		'isDirect': 	{ get: function() { return this.ray.length === 1; } }
 	});
 
-	function check(ray) {
+	function createCheck(ray) {
 		console.assert(ray.isRay(), 'Invalid checking ray.');
 	//	Check factory function.
 		var check;
@@ -1500,7 +1311,7 @@ app.factory('rules', function(settings) {
 		check.ray = ray;
 		Object.freeze(check);
 
-		//console.log('%cCreating new check...', LOG.action, check);
+		console.log('%cCreating new check...', LOG.action, check);
 		return check;
 	}
 
@@ -1519,7 +1330,7 @@ app.factory('rules', function(settings) {
 		'signature': 	{ get: function() { return signature(this.ray); } }
 	});
 
-	function pin(ray) {
+	function createPin(ray) {
 		console.assert(ray.isRay() && square.onBoard, 'Invalid pin.');
 	//	Pin factory function.
 		var pin;
@@ -1530,7 +1341,7 @@ app.factory('rules', function(settings) {
 		pin.ray = ray;
 		Object.freeze(pin);
 
-		//console.log('%cCreating new pin...', LOG.action, pin);
+		console.log('%cCreating new pin...', LOG.action, pin);
 		return pin;
 	}
 
@@ -1577,7 +1388,7 @@ app.factory('rules', function(settings) {
 //	Instead, a new instance of Piece is created on the promotion square.
 //	In general, 'code' property of a piece is meant to be immutable, whereas
 //	'square', 'attacks' and 'moves' are updated every time position changes.
-	//console.log('%cDefining pieces...', LOG.action);
+	console.log('%cDefining pieces...', LOG.action);
 
 //	Piece prototype.
 	_piece = {};
@@ -1643,7 +1454,7 @@ app.factory('rules', function(settings) {
 					break;
 				}
 				special = (i > 0) ? MOVE_SPECIAL.double : (0|promote);
-				moves.push(move(position, from, to, special));
+				moves.push(createMove(position, from, to, special));
 			}
 		//	Pawn captures.
 			squaresTo = this.attacks;
@@ -1662,10 +1473,10 @@ app.factory('rules', function(settings) {
 				to = squaresTo[i];
 				if (position.pieces[to] && (position.pieces[to].color !== this.color)) {
 				//	Enemy in capture range. Go for the eyes, Boo!
-					moves.push(move(position, from, to, 4|promote));
+					moves.push(createMove(position, from, to, 4|promote));
 				} else if (position.enpassantAt === to) {
 				//	Enpassant capture possible. Now quickly!
-					moves.push(move(position, from, to, 5));
+					moves.push(createMove(position, from, to, 5));
 				}
 			}
 			this.moves = moves;
@@ -1706,9 +1517,9 @@ app.factory('rules', function(settings) {
 				for (var square in squaresTo) {
 					to = squaresTo[square];
 					if (!position.pieces[to]) {
-						moves.push(move(position, from, to, 0))
+						moves.push(createMove(position, from, to, 0))
 					} else if (position.pieces[to].color !== this.color) {
-						moves.push(move(position, from, to, 4));
+						moves.push(createMove(position, from, to, 4));
 					}
 				}
 			}
@@ -1764,9 +1575,9 @@ app.factory('rules', function(settings) {
 			for (var square in squaresTo) {
 				to = squaresTo[square];
 				if (!position.pieces[to]) {
-					moves.push(move(position, from, to, 0));
+					moves.push(createMove(position, from, to, 0));
 				} else if (position.pieces[to].color !== this.color) {
-					moves.push(move(position, from, to, 4));
+					moves.push(createMove(position, from, to, 4));
 				}
 			}
 			this.moves = moves;
@@ -1820,9 +1631,9 @@ app.factory('rules', function(settings) {
 			for (var square in squaresTo) {
 				to = squaresTo[square];
 				if (!position.pieces[to]) {
-					moves.push(move(position, from, to, 0));
+					moves.push(createMove(position, from, to, 0));
 				} else if (position.pieces[to].color !== this.color) {
-					moves.push(move(position, from, to, 4));
+					moves.push(createMove(position, from, to, 4));
 				}
 			}
 			this.moves = moves;
@@ -1876,9 +1687,9 @@ app.factory('rules', function(settings) {
 			for (var square in squaresTo) {
 				to = squaresTo[square];
 				if (!position.pieces[to]) {
-					moves.push(move(position, from, to, 0));
+					moves.push(createMove(position, from, to, 0));
 				} else if (position.pieces[to].color !== this.color) {
-					moves.push(move(position, from, to, 4));
+					moves.push(createMove(position, from, to, 4));
 				}
 			}
 			this.moves = moves;
@@ -1911,9 +1722,9 @@ app.factory('rules', function(settings) {
 			for (var square in squaresTo) {
 				to = squaresTo[square];
 				if (!position.pieces[to]) {
-					moves.push(move(position, from, to, 0));
+					moves.push(createMove(position, from, to, 0));
 				} else if (position.pieces[to].color !== this.color) {
-					moves.push(move(position, from, to, 4));
+					moves.push(createMove(position, from, to, 4));
 				}
 			}
 		//	Castling.
@@ -1932,12 +1743,12 @@ app.factory('rules', function(settings) {
 							if (side === 0) {
 							//	Short castle legal.
 								to = CASTLE_KING_TO[this.color][0];
-								moves.push(move(position, from, to, 2));	
+								moves.push(createMove(position, from, to, 2));	
 							} else {
 							//	Long castle. Check if the rook is not blocked on 'b' file.
 								if (!position.pieces[this.square - 3]) {
 									to = CASTLE_KING_TO[this.color][1];
-									moves.push(move(position, from, to, 3));
+									moves.push(createMove(position, from, to, 3));
 								}	
 							}
 						}
@@ -1951,7 +1762,7 @@ app.factory('rules', function(settings) {
 
 //	piece :: function()
 //	Factory function, returns piece object based on piece code and square.
-	function piece(code, square) {
+	function createPiece(code, square) {
 		console.assert(code.pieceType, 'Invalid piece code.');
 		console.assert(square.onBoard, 'Invalid square index.');
 	//	Property 			Description 				Method 				Description
@@ -2031,7 +1842,7 @@ app.factory('rules', function(settings) {
 //	capture 	4
 //	enpassant 	1
 //
-	//console.log('%cDefining moves...', LOG.action);
+	console.log('%cDefining moves...', LOG.action);
 
 	MOVE_SPECIAL_MASK = {
 		'double': 1,
@@ -2055,208 +1866,135 @@ app.factory('rules', function(settings) {
 
 	_move = {};
 	Object.defineProperties(_move, {
-		'special': 		{ writable: true },
+		'from': 		{ writable: true, enumerable: true, configurable: true },
+		'to': 			{ writable: true, enumerable: true, configurable: true },
+		'special': 		{ writable: true, enumerable: true, configurable: true },
+		'piece': 		{ writable: true, enumerable: true, configurable: true },
+		'origin': 		{ value: '', writable: true, enumerable: true, configurable: true },		
+		'type': 		{ get: function() { return this.piece.pieceType; } },
+		'color': 		{ get: function() { return this.piece.pieceColor; } },
 		'isCapture': 	{ get: function() { return !!(this.special & MOVE_SPECIAL_MASK.capture); } },
 		'isPromote': 	{ get: function() { return !!(this.special & MOVE_SPECIAL_MASK.promote); } },
 		'isCastle': 	{ get: function() { return _.contains(MOVE_SPECIAL.castles, this.special); } },
 		'isEnpassant': 	{ get: function() { return !!(this.special === MOVE_SPECIAL.enpassant); } },
 		'isDouble': 	{ get: function() { return this.special === MOVE_SPECIAL.double; } },
-		'isQuiet': 		{ get: function() { return !this.special; } }
-	});
-	Object.defineProperty(_move, 'affectsOtherPieces', {
-		get: function() { return this.isCapture || this.isCastle; }
-	});
-	Object.defineProperty(_move, 'requiresCleanup', {
-		get: function() { return this.isCapture || this.isCastle || this.isPromote; }
+		'isQuiet': 		{ get: function() { return !this.special; } },
+		'san': { 
+			get: function() {
+			//	SAN: Standart Algebraic Notation.
+			//	[piece symbol][*disambiguation][*capture][to square][*promote to][**check(mate)]
+			//	Castle: O-O, O-O-O
+				var notation;
+				if (this.isCastle) {
+					notation = (this.castle === 0) ? 'O-O-O' : 'O-O';
+					return notation;
+				}
+			//	Piece symbol
+				notation = PIECE_TYPE_NOTATION[this.type];
+			//	Disambiguation
+				notation += this.origin;
+			//	Capture
+				if (this.isCapture) {
+					if (this.type === PAWN) {
+					//	Pawn capture disambiguation.
+						notation += FILE_NAMES[this.from.file];
+					}
+					notation += 'x';
+				}
+			//	Destination square
+				notation += SQUARE_NAME[this.to];
+			//	Promote
+				if (this.isPromote) {
+					notation += '=' + PIECE_TYPE_NOTATION[this.promote.pieceType];
+				}
+			//	Check / Checkmate
+			//	Requires position scan. Handled elsewhere.
+			//
+				return notation;
+			} 
+		},
+		'value': {
+			get: function() {
+			//	Move values allow for quick pre-sorting of moves, before doing
+			//	full evaluation. High value moves are evaluated first, the ones
+			//	with especially low values may get ignored (as, with large
+			//	probability, not worth analyzing). (Game tree pruning)
+				var value = 0;
+				if (this.isPromote) {
+					value += 8;
+				}
+				if (this.isCapture) {
+					switch (this.captured.pieceType) {
+					//	The more valueable captured piece the better.
+						case PAWN: 			value += 1; break;
+						case KNIGHT: 		value += 3; break;
+						case BISHOP: 		value += 3; break;
+						case ROOK: 			value += 5; break;
+						case QUEEN: 		value += 9; break;
+						default: 			throw new Error('King capture!');
+					}
+					switch (this.type) {
+					//	Less valuable attackers are better.
+						case PAWN: 			break;
+						case KNIGHT: 		value *= 0.75; break;
+						case BISHOP: 		value *= 0.75; break;
+						case ROOK: 			value *= 0.5; break;
+						case QUEEN: 		value *= 0.3; break;
+					}
+				}
+				if (this.isCastle) {
+					value += 0.5;
+				}
+				if (this.isDouble) {
+					value += 0.1;
+				}
+				return value;
+			}
+		}
 	});
 
-	function move(position, from, to, special) {
-		console.assert(position.fen.match(validFen), 'Invalid position.');
+	function createMove(position, from, to, special) {
+		console.assert(_position.isPrototypeOf(position), 'Invalid position.', position);
 		console.assert(from.onBoard && to.onBoard, 'Invalid from/to square index.');
-		console.assert((special.isValidSpecial) || (special === undefined), 'Invalid special value.');
+		console.assert(special.isValidSpecial, 'Invalid special value.', special);
 	//	Move factory function.
 	//	position: current position object
 	//	from, to: (int)[0..119]
-	//	*special: (optional) move special value
-	//
-	//	Special move value is only necessary in case of promoting pawns.
-	//	(To determine type of promoted piece). Otherwise, special value can
-	//	be derived form position and move coordinates.
+	//	special: move special value
 	// 
-		var move, color, pieceCode, pieceType;
+		var move, enemy;
 		function Move() {};
 		Move.prototype = _move;
-	
-		if (special === undefined) {
-		//	Calculate move special value, if missing.
-			special = (function getMoveSpecialValue() {
-				special = 0;
-				if (position.pieces[from].type !== PAWN) {
-				//	Non-pawn moves only have to take into account direct captures.
-				//	The only exception is king's castling.
-					if (position.pieces[to]) {
-					//	Normal capture.
-						return MOVE_SPECIAL.capture;
-					}
-					if ((position.pieces[from].type === KING) && (dist(from, to) > 1)) {
-					//	Castle.
-						return (to.file > from.file) ? MOVE_SPECIAL.castles[1] : MOVE_SPECIAL.castles[0];
-					}
-				} else {
-				//	In case of pawn moves there are three additional possibilities:
-				//	Double moves, captures enpassant and promotions.
-				//	Direct captures can also combine with promoting.
-					if (dist(from, to) === 2) {
-					//	Double move forward.
-						return MOVE_SPECIAL.double;
-					}
-					if (from.file !== to.file) {
-					//	Captue / Enpassant capture.
-						special = (position.pieces[to]) ? MOVE_SPECIAL.capture : MOVE_SPECIAL.enpassant;	
-					}
-					if (to.rank === QUEENING_RANK_INDEX[color]) {
-					//	Promotion. Default piece: Queen.
-						special |= MOVE_SPECIAL_MASK.promote | MOVE_SPECIAL_MASK.queen;	
-					}
-				}
-				return special;
-			}()); 
-		}
-
-		console.assert(position.pieces[from], 'Invalid code', from, position.pieces, position.pieces[from]);
-		color = position.activeColor;
-		pieceCode = position.pieces[from].code,
-		pieceType = pieceCode.pieceType;									
-
 		move = new Move();
-		Object.defineProperties(move, {
-			'from': 		{ value: from, enumerable: true },
-			'to': 			{ value: to, enumerable: true },
-			'special': 		{ value: special, enumerable: true },
-			'origin': 		{ value: '', writable: true, configurable: true },
-			'piece': 		{ get: function() { return pieceCode; } },
-			'type': 		{ get: function() { return pieceType; } },
-			'color': 		{ get: function() { return color; } },
-			'san': { 
-				get: function() {
-				//	SAN: Standart Algebraic Notation.
-				//	[piece symbol][*disambiguation][*capture][to square][*promote to][**check(mate)]
-				//	Castle: O-O, O-O-O
-					var notation;
-					if (this.isCastle) {
-						notation = (this.castle === 0) ? 'O-O-O' : 'O-O';
-						return notation;
-					}
-				//	Piece symbol
-					notation = PIECE_TYPE_NOTATION[pieceType];
-				//	Disambiguation
-					notation += this.origin;
-				//	Capture
-					if (this.isCapture) {
-						if (pieceCode.pieceType === PAWN) {
-						//	Pawn capture disambiguation.
-							notation += FILE_NAMES[from.file];
-						}
-						notation += 'x';
-					}
-				//	Destination square
-					notation += SQUARE_NAME[to];
-				//	Promote
-					if (this.isPromote) {
-						notation += '=' + PIECE_TYPE_NOTATION[this.promote.pieceType];
-					}
-				//	Check / Checkmate
-				//	Requires position scan. Handled elsewhere.
-				//
-					return notation;
-				} 
-			},
-			'value': { 
-				get: function() {
-				//	Move values allow for quick pre-sorting of moves, before doing
-				//	full evaluation. High value moves are evaluated first, the ones
-				//	with especially low values may get ignored (as, with large
-				//	probability, not worth analyzing). (Game tree pruning)
-					var value = 0;
-					if (this.isPromote) {
-						value += 8;
-					}
-					if (this.isCapture) {
-						switch (this.captured.pieceType) {
-						//	The more valueable captured piece the better.
-							case PAWN: 			value += 1; break;
-							case KNIGHT: 		value += 3; break;
-							case BISHOP: 		value += 3; break;
-							case ROOK: 			value += 5; break;
-							case QUEEN: 		value += 9; break;
-							default: 			throw new Error('King capture!');
-						}
-						switch (this.type) {
-						//	Less valuable attackers are better.
-							case PAWN: 			break;
-							case KNIGHT: 		value *= 0.75; break;
-							case BISHOP: 		value *= 0.75; break;
-							case ROOK: 			value *= 0.5; break;
-							case QUEEN: 		value *= 0.3; break;
-							default: 			break;
-						}
-					}
-					if (this.isCastle) {
-						value += 0.5;
-					}
-					if (this.isDouble) {
-						value += 0.1;
-					}
-					return value;
-				} 
-			}
-		});
+
+		move.from = from;
+		move.to = to;
+		move.special = special;
+		move.piece = position.pieces[from].code;
+		enemy = move.color ? W : B;									
 
 	//	Set additional properties, if applicable.	
-		if (move.isQuiet) {
+		if (move.isQuiet || move.isDouble) {
 			return move;
 		}
 		if (move.isCapture) {
-			(function() {
-				var capturedCode = (move.isEnpassant) ? opposite(color)|PAWN : position.pieces[to].code;				
-				Object.defineProperty(move, 'captured', {
-					value: capturedCode, enumerable: true
-				});
-			}());
-		}
-		if (move.isEnpassant) {
-			(function() {
-				var target = ENPASSANT_TARGET[to];				
-				Object.defineProperty(move, 'targetAt', {
-					value: target, enumerable: true
-				});
-			}());
-			return move;
+			move.captured = (move.isEnpassant) ? (enemy|PAWN) : position.pieces[to].code;
 		}
 		if (move.isCastle) {
-			(function() {
-				var castle = special % 2;				
-				Object.defineProperty(move, 'castle', {
-					value: castle, enumerable: true
-				});
-			}());
+			move.castle = special % 2;
 			return move;
 		}
 		if (move.isPromote) {
-			(function() {
-				var promoteTo, own = (color) ? B : W;
+			move.promoteTo = move.color ? B : W;
+			move.promoteTo |= (function() {
 				switch (special % 4) {
-					case MOVE_SPECIAL_MASK.knight: 		promoteTo = own|KNIGHT; break;
-					case MOVE_SPECIAL_MASK.bishop: 		promoteTo = own|BISHOP; break;
-					case MOVE_SPECIAL_MASK.rook: 		promoteTo = own|ROOK; break;
-					default: 							promoteTo = own|QUEEN;
-				}				
-				Object.defineProperty(move, 'promote', {
-					value: promoteTo, enumerable: true
-				});
+					case MOVE_SPECIAL_MASK.knight: return KNIGHT;
+					case MOVE_SPECIAL_MASK.bishop: return BISHOP;
+					case MOVE_SPECIAL_MASK.rook: return ROOK;
+					default: return QUEEN;
+				}
 			}());
-		}		
-
+		}
 		return move;
 	}
 
