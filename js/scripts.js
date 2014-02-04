@@ -1,13 +1,5 @@
 'use strict';
 
-/*
-$(function adjustBoardSize() {
-	var size = window.innerHeight - 120;
-	$('.chessboard').css('height', size).css('width', size);
-	console.log('Height adjusted:', size);
-});
-*/
-
 var LOG = {
 	action: "color:SlateBlue",
 	state: "color:BlueViolet; font-style:italic",
@@ -17,8 +9,6 @@ var LOG = {
 	warn: "color:DarkOrange",
 	attention: "color:Fuchsia; font-weight:bold; line-height:200%;"
 };
-
-var GAME, P, T;
 
 console.log('%cExtending prototypes...', LOG.action);
 //	*** EXTEND PROTOTYPES

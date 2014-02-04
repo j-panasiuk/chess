@@ -397,6 +397,5 @@ app.factory('engine', function($q, rules, game) {
 	}
 
 	engine.tree = tree;
-	T = tree;
 	return engine;
 });

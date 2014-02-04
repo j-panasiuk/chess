@@ -236,8 +236,5 @@ app.factory('game', function(settings, rules) {
 //	Initialize default game model.
 	game.initialize();
 
-	GAME = game;
-	P = game.currentPosition;
-
 	return game;
 });
