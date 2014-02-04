@@ -505,7 +505,6 @@ app.factory('rules', function(settings) {
 			ACTIVITY[B|KING][square] = 0;
 		});
 	}());
-	console.log('%cACTIVITY', LOG.attention, ACTIVITY);
 
 
 //	** POSITION REPRESENTATION
@@ -824,6 +823,11 @@ app.factory('rules', function(settings) {
 				console.log('%cchecks:', LOG.state, checks);
 			}
 		},
+		'setPinList': {
+			value: function() {
+				this.pinList = createPinList();
+			}
+		},
 		'setPins': {
 			value: function() {
 				var pins, // Array with found pins: [[white pins], [black pins]]
@@ -850,7 +854,7 @@ app.factory('rules', function(settings) {
 					color = COLORS[color];
 					own = (color) ? B : W;
 					enemy = (color) ? W : B;
-					king = this.pieceList.kings(this.activeColor)[0];
+					king = this.pieceList.kings(color)[0];
 					kingSquare = king.square;
 
 				//	Examine diagonals for possible pins.
@@ -859,11 +863,13 @@ app.factory('rules', function(settings) {
 				//	enemy piece matching this ray's attack pattern.
 					attackerSquares = ATTACK_RAYS[kingSquare][own|QUEEN].filter(function(ray) {
 						return ray.length > 1;
-					});				
+					});
+
 					for (var ray in attackerSquares) {
 						ray = attackerSquares[ray];
 						attackers = ray.isDiagonal() ? [BISHOP, QUEEN] : [ROOK, QUEEN];
 						pinnedPiece = null;
+
 						for (var i = 0; i < ray.length; i++) {
 							piece = this.pieces[ray[i]];
 							if (piece) {	
@@ -894,16 +900,18 @@ app.factory('rules', function(settings) {
 								}
 							}
 						}
+
 					}
 				}
+
 			//	pinList is an object of its own type, but its values pinList[i] (i: 0,1),
 			//	containing white and black pins respectively, are ordinary arrays.
 			//	Update explicitly those arrays, as pieceList objects don't have custom 
 			//	constructor / factory function.
-				this.pinList = createPinList();		
+				//this.pinList = createPinList();		
 				this.pinList[0] = pins[0];
 				this.pinList[1] = pins[1];
-				console.log('%cpins:', LOG.state, this.pinList);
+				console.log('%cpins:', LOG.state, this.pinList.all);
 			}
 		},
 		'setMoves': {
@@ -913,7 +921,6 @@ app.factory('rules', function(settings) {
 					collisions,
 					pieces = this.pieceList[this.activeColor], // List of active piece objects.
 					moves = []; // List of move objects available in current position.
-
 
 				for (var i = 0; i < pieces.length; i++) {
 					piece = pieces[i];
@@ -1227,8 +1234,8 @@ app.factory('rules', function(settings) {
 
 	_pinList = {};
 	Object.defineProperties(_pinList, {
-		0: 			{ value: [], writable: true, enumerable: true, configurable: true }, // Array containing white pieces under pin.
-		1: 			{ value: [], writable: true, enumerable: true, configurable: true }, // Array containing black pieces under pin.
+		0: 			{ writable: true, enumerable: true, configurable: true }, // Array containing white pieces under pin.
+		1: 			{ writable: true, enumerable: true, configurable: true }, // Array containing black pieces under pin.
 		'all': {
 			get: function() {
 			//	Returns array of all pins.
@@ -1266,9 +1273,10 @@ app.factory('rules', function(settings) {
 		position = new Position();
 
 		position.fen = fen;
-		//position.pieceList = createPieceList(position);
-		//position.pinList = createPinList(position);
+	//	Create list objects.
 		position.setPieceList();
+		position.setPinList();
+	//	Update objects.
 		position.setPieceAttacks();
 		position.setAttacked();
 		position.setChecks();
