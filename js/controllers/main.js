@@ -3,11 +3,27 @@
 app.controller('mainController', function($scope, $timeout, settings, rules, game) {
 	console.log('%cLoading mainController...', LOG.action);
 
+	$scope.settings = settings;
+	$scope.rules = rules;
+	$scope.game = game;
+
 	$scope.keypress = function(evt) {
 		console.log('%cKey pressed:', LOG.ui, evt.keyCode);
-		if (evt.keyCode === 32) {
-			$scope.$broadcast('cancel');
+		switch (evt.keyCode) {
+			case 32: 	$scope.$broadcast('cancel'); break;
+			case 13: 	$scope.$broadcast('confirm'); break;
 		}
+	};
+
+	$scope.debug = function() {
+	//	Toggle debug interface visibilty.
+		settings.debugMode = !settings.debugMode;
+	};
+
+	$scope.reverse = function() {
+	//	Flip the chessboard. Positions of squares and pieces will adjust to match settings.isReversed,
+	//	by watching changes on class `reversed-{{settings.isReversed}}`.
+		settings.isReversed = !settings.isReversed;
 	};
 
 	$scope.startGame = function(restart) {

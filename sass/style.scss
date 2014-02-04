@@ -49,11 +49,11 @@ body {
 	    	font-size: 11px;
 	    	line-height: 16px;
 	    	text-align:center;
-	    	color: #d90;
+	    	color: #d43;
 	    }
 
 	    &.selectable-true {
-	    	background: #ff9;
+	    	background: #ffa;
 	    }
 	}
 
@@ -113,7 +113,7 @@ body {
 				left: $j * $square-size;
 				top: (7 - $i) * $square-size;
 
-				&.reversed {
+				&.reversed-true {
 					left: (7 - $j) * $square-size;
 					top: $i * $square-size;
 				}
@@ -188,12 +188,12 @@ body {
 	    margin: 2px;
 	    border-width: 2px;
 
-	  	&.state-1 {
+	  	&.check-true {
 	    	visibility: visible;
 	    	border-style: dashed;
 		    border-color: #f90;    
 		}
-		&.state-2 {
+		&.pin-true {
 			visibility: visible;
 			border-style: dashed;
 		    border-color: #333;    

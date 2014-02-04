@@ -48,12 +48,6 @@ app.factory('settings', function() {
 		var t = +(settings.controlWhite);
 		settings.controlWhite = +(settings.controlBlack);
 		settings.controlBlack = t;
-
-		if (settings.controlBlack === settings.CONTROL_FLAGS.user) {
-			settings.isReversed = settings.reverseForBlack ? true : false;
-		} else {
-			settings.isReversed = false;
-		}
 	}
 	settings.switchControls = switchControls;
 
