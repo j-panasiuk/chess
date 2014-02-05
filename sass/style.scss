@@ -1,6 +1,8 @@
 $square-size: 65px;
 $nav-height: 50px;
 $nav-status-width: 260px;
+$left-nav-size: 50px;
+$left-nav-margin: 5px;
 
 
 /* ANGULAR BOOTSTRAP */
@@ -34,12 +36,17 @@ $nav-status-width: 260px;
 
 /* APP */
 
+html, body, #body-container {
+    height: 100%;
+}
+
 body {
     background: #bbb;
 }
 
 .navbar {
     margin: 0;
+    z-index: 10;
 
     li.action {
         font-weight: bold;        
@@ -68,6 +75,56 @@ body {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
 }
 
+
+#nav-left {
+    position: absolute;
+    display: block;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: $left-nav-size + 2 * $left-nav-margin;
+    max-width: $left-nav-size + 2 * $left-nav-margin;
+    height: 100%;
+    background: transparent;
+
+    .list-group {
+        position: relative;
+        width: $left-nav-size;
+        margin: 0 $left-nav-margin;
+        padding: 0;
+
+        &.top {
+            height: 8 * $square-size - $left-nav-size;
+            margin-top: 70px;
+        }
+        &.bottom {
+            height: $left-nav-size;
+        }
+    }
+
+    .list-group-item {
+        width: $left-nav-size;
+        height: $left-nav-size;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background: none;
+        color: #fff;
+
+        .option {
+            line-height: $left-nav-size;
+            font-size: 30px;
+
+            &:hover {
+                color: #666;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+
 .widget {
     margin: 10px;
 }
@@ -87,7 +144,7 @@ body {
 }
 
 #content-container {
-    margin: 10px;
+    margin: 10px 125px;
 }
 
 .chessboard {
@@ -193,14 +250,6 @@ body {
 			}
 		}
 	}
-
-	&.debug {
-    	background: #eee;
-    	
-    	.square {
-    		outline: 1px solid #bbb;
-    	}
-    }
 }
 
 
@@ -273,6 +322,22 @@ body {
 		transition: opacity .25s, border-color .25s;
 	}
 
+    &.debug {
+        background: #eee;
+        
+        .square {
+            outline: 1px solid #bbb;
+        }
+    }
+}
+
+body.debug {
+    ul, li,
+    .widget, .container, .container-fluid, .row, .modal, .panel, 
+    .navbar, .nav, .list-group, .list-group-item,
+    #content-container, #chessboard-container, #chessboard {
+        outline: 1px dotted rgba(0,0,0,.65);
+    }
 }
 
 

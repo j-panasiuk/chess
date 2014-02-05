@@ -7,7 +7,7 @@
 	<link href="lib/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
 	<link href="sassc/style.css" rel="stylesheet"/>
 </head>
-<body ng-keypress="keypress($event)">
+<body ng-keypress="keypress($event)" ng-class="{debug: settings.debugMode}">
     
 <!-- Template: chessboard -->
 <script type="text/ng-template" id="template-chessboard.html">
@@ -22,7 +22,7 @@
 <div ng-click="select()" class="square at-{{square}} {{square.complex}} default-select-disabled" ng-class="{selectable: isSelectable, reversed: settings.isReversed}" id={{square}}>
     <div ng-show="settings.debugMode" class="subscript square-id default-select-disabled">{{square}}</div>
     <div ng-show="settings.debugMode" class="square-outline" ng-class="{check: state.check, pin: state.pin}"></div>
-    <div ng-show="settings.debugMode" class="square-value default-select-disabled">{{game.currentPosition.attacked[square][0].join(',')}}</div>
+    <div ng-show="settings.debugMode" class="square-value default-select-disabled">{{}}</div>
 </div>
 </script>
 
@@ -50,8 +50,7 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-1">
 
                 <ul class="nav navbar-nav">
-                    <li class="action"><a ng-click="startGame(true)">New Game</a></li>
-                    <li><a ng-click="reverse()"><span class="glyphicon glyphicon-repeat grey"></span></a></li>
+                    <li><a ng-click="startGame(true)">New Game</a></li>
                 </ul>
 
                 <div id="nav-status-bar">
@@ -67,6 +66,20 @@
         </div><!-- /.container-fluid -->
     </nav>
     <!-- /Bootstrap navbar -->
+
+    <!-- Vertical menu -->
+    <div id="nav-left">
+        <ul class="list-group top">
+            <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center></li>
+            <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center></li>            
+            <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center></li>
+            <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span class="option glyphicon glyphicon-list"></span></center></li>
+        </ul>
+        <ul class="list-group bottom">
+            <li popover="Star" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span class="option glyphicon glyphicon-star"></span></center></li>
+        </ul>
+    </div>
+    <!-- /Vertical menu -->
 
     <div id="content-container">
 
