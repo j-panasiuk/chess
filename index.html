@@ -50,7 +50,8 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-1">
 
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Chess</a></li>
+                    <li class="action"><a ng-click="startGame(true)">New Game</a></li>
+                    <li><a ng-click="reverse()"><span class="glyphicon glyphicon-repeat grey"></span></a></li>
                 </ul>
 
                 <div id="nav-status-bar">
@@ -58,7 +59,6 @@
                 </div>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a ng-click="reverse()">Reverse</a></li>
                     <li><a ng-click="debug()"><span class="glyphicon glyphicon-wrench grey"></span> Debug</a></li>
                     <li><a ng-click="open()" ng-controller="optionsModalController"><span class="glyphicon glyphicon-cog grey"></span> Options</a></li>
                 </ul>
@@ -67,12 +67,6 @@
         </div><!-- /.container-fluid -->
     </nav>
     <!-- /Bootstrap navbar -->
-
-    <!--
-    <button ng-click="debug()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-wrench grey"></span> Debug</button>
-    <button ng-click="reverse()" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-cog grey"></span> Reverse</button>
-    <button ng-click="startGame(true)" ng-show="game.result" class="btn btn-sm btn-primary">New Game</button>
-    -->
 
     <div id="content-container">
 
