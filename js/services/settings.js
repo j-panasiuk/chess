@@ -17,9 +17,10 @@ app.factory('settings', function() {
 		'reverseForBlack': true,
         'autoRestart': true,
 		'switchColorOnRestart': true,
-		'debugMode': true,
+		'debugMode': false,
 		'animationTime': 400,
-		'delayAI': 500
+		'delayAI': 500,
+        'showMoveList': true
 	};
     Object.freeze(defaults);
 
@@ -114,7 +115,15 @@ app.factory('settings', function() {
                 type: 'checkbox'
             }
         },
-        'delayAI': {}
+        'delayAI': {},
+        'showMoveList': { 
+            enumerable: true, 
+            value: {
+                name: 'showMoveList',
+                label: 'Move list',
+                type: 'checkbox'
+            } 
+        }
     });
     Object.freeze(ui);
     settings.ui = ui;

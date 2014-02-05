@@ -27,6 +27,11 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
         settings.isReversed = !settings.isReversed;
     };
 
+    $scope.movelist = function() {
+    //  Toggle move list widget.
+        settings.showMoveList = !settings.showMoveList;
+    }
+
     $scope.startGame = function(restart) {
         console.log('%c\nSTART GAME\n', LOG.action);
     //  restart == false: Start first game. Game model is already up-to-date.

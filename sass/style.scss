@@ -112,8 +112,12 @@ body {
         background: none;
         color: #fff;
 
+        &.opened {
+            outline: 1px solid #fff;
+        }
+
         .option {
-            line-height: $left-nav-size;
+            line-height: $left-nav-size - 3px;
             font-size: 30px;
 
             &:hover {

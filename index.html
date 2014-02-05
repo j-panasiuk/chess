@@ -54,7 +54,7 @@
                 </ul>
 
                 <div id="nav-status-bar">
-                    Application Status
+                    App Status
                 </div>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -70,13 +70,23 @@
     <!-- Vertical menu -->
     <div id="nav-left">
         <ul class="list-group top">
-            <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center></li>
-            <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center></li>            
-            <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center></li>
-            <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span class="option glyphicon glyphicon-list"></span></center></li>
+            <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
+                <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
+            </li>
+            <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
+                <center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center>
+            </li>            
+            <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
+                <center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center>
+            </li>
+            <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
+                <center><span ng-click="movelist()" class="option glyphicon glyphicon-list"></span></center>
+            </li>
         </ul>
         <ul class="list-group bottom">
-            <li popover="Star" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item"><center><span class="option glyphicon glyphicon-star"></span></center></li>
+            <li popover="Star" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
+                <center><span class="option glyphicon glyphicon-star"></span></center>
+            </li>
         </ul>
     </div>
     <!-- /Vertical menu -->
@@ -87,9 +97,10 @@
         <div chessboard ng-controller="chessboardController"></div>
 	</div>
 
-    <div class="panel panel-default widget" id="movelist-container">
+    <div ng-show="settings.showMoveList" class="panel panel-default widget" id="movelist-container">
         <div class="panel-heading">
             <strong><span class="glyphicon glyphicon-list grey"></span> Move List</strong>
+            <button ng-click="settings.showMoveList = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
         </div>
         <div class="panel-body">
             <table class="table table-condensed table-bordered">
