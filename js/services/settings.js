@@ -4,7 +4,7 @@
 //	Set default values.
 app.factory('settings', function() {
 	console.log('%cCreating settings...', LOG.action);
-	var defaults, settings;
+	var defaults, ui, settings;
 
 	defaults = {
 		'fen': "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -15,12 +15,13 @@ app.factory('settings', function() {
 		'timeLimit': 0,
 		'isReversed': false,
 		'reverseForBlack': true,
+        'autoRestart': true,
 		'switchColorOnRestart': true,
 		'debugMode': true,
 		'animationTime': 400,
 		'delayAI': 500
 	};
-	Object.freeze(defaults);
+    Object.freeze(defaults);
 
 //	Create settings based on `defaults` keys and values.
 //	Settings can be modified later.
@@ -28,6 +29,95 @@ app.factory('settings', function() {
 	for (var property in defaults) {
 		settings[property] = defaults[property];
 	}
+
+//  Set editable properties (displayed in UI options).
+    ui = {};
+    Object.defineProperties(ui, {
+        'fen': {},
+        'controlWhite': { 
+            enumerable: true, 
+            value: {
+                name: 'controlWhite',
+                label: 'White player',
+                type: 'select',
+                options: [
+                    { label: 'User', value: 1 }, 
+                    { label: 'AI', value: 2}
+                ]
+            } 
+        },
+        'controlBlack': { 
+            enumerable: true, 
+            value: {
+                name: 'controlBlack',
+                label: 'Black player',
+                type: 'select',
+                options: [
+                    { label: 'User', value: 1 }, 
+                    { label: 'AI', value: 2}
+                ]
+            } 
+        },
+        'difficulty': { 
+            enumerable: true, 
+            value: {
+                name: 'difficulty',
+                label: 'Difficulty',
+                type: 'select',
+                options: [
+                    { label: 'Dizzy', value: 0 }, 
+                    { label: 'Dazed', value: 1 },
+                    { label: 'Confused', value: 2 }
+                ]
+            }
+        },
+        'mode': {},
+        'timeLimit': {},
+        'isReversed': {},
+        'reverseForBlack': { 
+            enumerable: true, 
+            value: {
+                name: 'reverseForBlack',
+                label: 'Reverse chessboard',
+                type: 'checkbox'
+            }
+        },
+        'autoRestart': { 
+            enumerable: true, 
+            value: {
+                name: 'autoRestart',
+                label: 'Automatic game restart',
+                type: 'checkbox'
+            } 
+        },
+        'switchColorOnRestart': { 
+            enumerable: true, 
+            value: {
+                name: 'switchColorOnRestart',
+                label: 'Switch sides on restart',
+                type: 'checkbox'
+            } 
+        },
+        'debugMode': { 
+            enumerable: true, 
+            value: {
+                name: 'debugMode',
+                label: 'Debug mode',
+                type: 'checkbox'
+            } 
+        },
+        'animationTime': { 
+            enumerable: true, 
+            value: {
+                name: 'animationTime',
+                label: 'Animations',
+                type: 'checkbox'
+            }
+        },
+        'delayAI': {}
+    });
+    Object.freeze(ui);
+    settings.ui = ui;
 
 //	Create flags to mark control of each color.
 	settings.CONTROL_FLAGS = {

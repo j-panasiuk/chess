@@ -10,6 +10,28 @@ $square-size: 65px;
 }
 
 
+/* ANGULAR BOOTSTRAP MODAL FIX */
+.modal {
+    display: block;
+    height: 0;
+    overflow: visible;
+}
+
+.modal-body:before,
+.modal-body:after {
+    display: table;
+    content: " ";
+}
+
+.modal-header:before,
+.modal-header:after {
+    display: table;
+    content: " ";
+}
+
+
+/* APP */
+
 body {
     background: #bbb;
 }
@@ -21,11 +43,7 @@ body {
 	position: relative;
 	display: block;
 	float: left;
-    padding: 20px;
-
-    .btn {
-    	margin-bottom: 8px;
-    }
+    margin: 0 20px;
 }
 
 .chessboard {
@@ -54,6 +72,7 @@ body {
 
 	    &.selectable-true {
 	    	background: #ffa;
+	    	cursor: pointer;
 	    }
 	}
 
@@ -100,10 +119,14 @@ body {
 		}
 
 		&.selectable-true {
-			box-shadow: inset 0 0 0 2px LightPink;
+			box-shadow: inset 0 0 0 2px CornFlowerBlue;
+			cursor: pointer;
+			&:hover {
+				box-shadow: inset 0 0 0 2px RoyalBlue;
+			}
 		}
 		&.selected-true {
-			box-shadow: inset 0 0 0 2px BlueViolet;
+			box-shadow: inset 0 0 0 2px Blue;
 		}
 	}
 
@@ -232,4 +255,18 @@ body {
 	}
 }
 
+/* MODAL */
 
+.modal-content {
+    width: 45%;
+    margin: 60px auto;
+}
+
+.modal select {
+    width: 100%;
+}
+
+.modal .current-value {
+    font-style: italic;
+    color: #999;
+}
