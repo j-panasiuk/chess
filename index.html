@@ -40,14 +40,14 @@
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span>
                 </button>
                 <a class="navbar-brand" href="#">Chess</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="navbar-collapse-1">
 
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#">Chess</a></li>
@@ -74,16 +74,49 @@
     <button ng-click="startGame(true)" ng-show="game.result" class="btn btn-sm btn-primary">New Game</button>
     -->
 
-    <div id="board-container">        
+    <div id="content-container">
+
+    <div class="widget" id="board-container">        
         <div chessboard ng-controller="chessboardController"></div>
 	</div>
 
-    <div id="console-container" ng-controller="consoleController">
-        <div ng-show="settings.debugMode" id="console">
-            <p class="top-move">{{engine.tree.root.move}} {{engine.tree.root.value/100}}</p>
-            <p ng-repeat="node in engine.tree.root.children | orderBy:'value'">{{node.move}}: {{node.value/100}}</p>
+    <div class="panel panel-default widget" id="movelist-container">
+        <div class="panel-heading">
+            <strong><span class="glyphicon glyphicon-list grey"></span> Move List</strong>
+        </div>
+        <div class="panel-body">
+            <table class="table table-condensed table-bordered">
+                <tr ng-repeat="move in game.history.fullMoveList">
+                    <td width="16%">{{move.index}}</td>
+                    <td width="42%">{{move.white}}</td>
+                    <td width="42%">{{move.black}}</td>
+                </tr>
+            </table>
         </div>
     </div>
+
+    <div ng-show="settings.debugMode" class="panel panel-default widget" id="console-container">
+        <div class="panel-heading">
+            <strong><span class="glyphicon glyphicon-wrench grey"></span> Console</strong>
+        </div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <td width="50%">Move</td>
+                        <td width="50%">Evaluation</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="node in engine.tree.root.children">
+                        <td width="50%">{{node.move}}</td>
+                        <td width="50%">{{node.value/100}}</td>
+                    </tr>
+                </tbody>                
+            </table>
+        </div>
+    </div>
+    <div class="clearfix"></div>
 
     <!-- Options modal -->
     <div class="modal-dialog" ng-controller="optionsModalController">
@@ -114,6 +147,8 @@
         </script>
     </div>
     <!-- /Options modal -->
+
+    </div>
 
 </div>
 <!-- Vendor Libraries -->

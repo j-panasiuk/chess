@@ -1,11 +1,12 @@
 'use strict';
 
-app.controller('mainController', function($scope, $timeout, settings, rules, game) {
+app.controller('mainController', function($scope, $timeout, settings, rules, game, engine) {
     console.log('%cLoading mainController...', LOG.action);
 
     $scope.settings = settings;
     $scope.rules = rules;
     $scope.game = game;
+    $scope.engine = engine;
 
     $scope.keypress = function(evt) {
         console.log('%cKey pressed:', LOG.ui, evt.keyCode);

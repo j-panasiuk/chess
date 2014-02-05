@@ -138,8 +138,9 @@ app.factory('game', function(settings, rules) {
 
     _history = {};
     Object.defineProperties(_history, {
-        'fenList':         { writable: true, enumerable: true, configurable: true },
-        'sanList':         { writable: true, enumerable: true, configurable: true },
+        'fenList':     		{ writable: true, enumerable: true, configurable: true },
+        'sanList':       	{ writable: true, enumerable: true, configurable: true },
+        'fullMoveList': 	{ writable: true, configurable: true },
         'pgn': { 
             get: function() {
             //  Return PGN (Portable Game Notation) string.
@@ -169,6 +170,14 @@ app.factory('game', function(settings, rules) {
             //  Update history after a move has been played.
                 this.sanList.push(move.san);
                 this.fenList.push(game.currentPosition.fen);
+                if (!move.color) {
+                    this.fullMoveList.push({ 
+                        index: game.currentPosition.fullMoveCount,
+                        white: move.san
+                    });
+                } else {
+                    _.last(this.fullMoveList).black = move.san;
+                }
                 console.log('%cUpdating game history...', LOG.action, this);
             }
         }
@@ -185,6 +194,7 @@ app.factory('game', function(settings, rules) {
     //  Set history to default (starting position).
         history_.fenList = [settings.fen];
         history_.sanList = [];
+        history_.fullMoveList = [];
 
         return history_;
     }
