@@ -702,13 +702,14 @@ app.factory('rules', function(settings) {
                     return;
                 }
                 if (move.isCapture) {
+                //  Remove captured piece from the list.
+                //  Do not return before checking promotions.
                     _.remove(this.pieceList[enemy], function(piece) {
                         return piece.square === move.to;
                     });
-                    return;
                 }
                 if (move.isPromote) {
-                //  Replace captured piece object with promoted piece.
+                //  Replace old piece object with promoted piece.
                     _.remove(this.pieceList[color], function(piece) {
                         return piece.square === move.to;
                     });
