@@ -237,12 +237,15 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
     //  Validate piece positions.
     //  Update debugging interace, if necessary.
     //  Check game result.
-        var result;
-
-        //$scope.updateSquaresState();
-        //$scope.$digest();        
-
+        var move, result, checks;
+        
+        move = game.history.move;
         result = game.currentPosition.result;
+        checks = game.currentPosition.checks;
+
+    //  Update last move's notation, to display check/checkmate if necessary.
+        rules.updateSufix(move, result, checks);
+
         if (result) {
 
             $scope.endGame(result);

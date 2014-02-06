@@ -170,15 +170,20 @@ app.factory('game', function(settings, rules) {
             //  Return last move's fullmove notation.
             //  For white: 1. Nf3
             //  For black: 1. ... d5
-                var notation,
-                    fullmove = _.last(this.fullMoveList);
-
+                var fullmove = _.last(this.fullMoveList);
                 if (!fullmove) {
                     return null;
                 }
-                notation = fullmove.index + '. ';
-                notation += fullmove.black ? '... ' + fullmove.black : fullmove.white;
-                return notation;
+                return fullmove.black ? fullmove.black : fullmove.white;
+            //    var notation,
+            //        fullmove = _.last(this.fullMoveList);
+            //
+            //    if (!fullmove) {
+            //        return null;
+            //    }
+            //    notation = fullmove.index + '. ';
+            //    notation += fullmove.black ? '... ' + fullmove.black.san : fullmove.white.san;
+            //    return notation;
             },
             set: function(move) {
             //  Update history object after a move has been played.
@@ -187,10 +192,10 @@ app.factory('game', function(settings, rules) {
                 if (!move.color) {
                     this.fullMoveList.push({ 
                         index: game.currentPosition.fullMoveCount,
-                        white: move.san
+                        white: move
                     });
                 } else {
-                    _.last(this.fullMoveList).black = move.san;
+                    _.last(this.fullMoveList).black = move;
                 }
             }
         }

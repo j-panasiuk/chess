@@ -26,6 +26,8 @@ app.factory('rules', function(settings) {
 //  ----------------------------------------------------------------------------
 //  COLORS                      List of color codes [0, 1]
 //  COLOR_NAME                  Hash of color names {0:'white', 1:'black'}
+//  FILE_NAMES
+//  RANK_NAMES
 //  SQUARES                     List of square codes [0, 1... 119]
 //  SQUARE_NAME                 Hash of square names {0:'a1'... 119:'h8'}
 //  PIECE_NAME                  Hash of piece names {17:'pawn', 18:'knight'... 31:'queen'}
@@ -37,6 +39,7 @@ app.factory('rules', function(settings) {
 //  createPosition(fen)         Factory function of position objects.
 //  opposite                    Returns opposite color code.
 //  proximity                   Returns array of squares within given distance.
+//  updateSufix                 Adds check/checkmate sign to move notation.
 
 //  Declare local variables.
     var COLORS, COLOR_NAME, COLOR_MASK, SQUARES, FILE_NAMES, RANK_NAMES, SQUARE_NAME, RANKS, FILES, // Colors & squares.
@@ -80,6 +83,8 @@ app.factory('rules', function(settings) {
 //  FILE_NAMES, RANK_NAMES :: Array[8]
     FILE_NAMES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     RANK_NAMES = ['1', '2', '3', '4', '5', '6', '7', '8'];
+    rules.FILE_NAMES = FILE_NAMES;
+    rules.RANK_NAMES = RANK_NAMES;
 
 //  RANKS :: Array[8 * Array[8]]
 //  Stores squares arranged in ranks.
@@ -1889,7 +1894,8 @@ app.factory('rules', function(settings) {
         'to':           { writable: true, enumerable: true, configurable: true },
         'special':      { writable: true, enumerable: true, configurable: true },
         'piece':        { writable: true, enumerable: true, configurable: true },
-        'origin':       { value: '', writable: true, enumerable: true, configurable: true },        
+        'origin':       { value: '', writable: true, enumerable: true, configurable: true },
+        'sufix':        { value: '', writable: true, enumerable: true, configurable: true },
         'type':         { get: function() { return this.piece.pieceType; } },
         'color':        { get: function() { return this.piece.pieceColor; } },
         'isCapture':    { get: function() { return !!(this.special & MOVE_SPECIAL_MASK.capture); } },
@@ -1927,8 +1933,8 @@ app.factory('rules', function(settings) {
                     notation += '=' + PIECE_TYPE_NOTATION[this.promote.pieceType];
                 }
             //  Check / Checkmate
-            //  Requires position scan. Handled elsewhere.
-            //
+                notation += this.sufix;
+
                 return notation;
             } 
         },
@@ -2085,6 +2091,26 @@ app.factory('rules', function(settings) {
             }
         }
     }
+
+    function updateSufix(move, result, checks) {
+        console.assert(_move.isPrototypeOf(move), 'Invalid move', move);
+        console.assert(typeof result === 'number', 'Invalid result', result);
+        console.assert((checks === null) || _.isArray(checks), 'Invalid checks', checks);
+    //  Checkmate:      #
+    //  Check:          +
+    //  Double check:   ++
+        var checkmate = result & 2,
+            checks = _.size(checks);
+
+        if (checkmate) {
+            move.sufix = '#';
+            return;
+        }
+        if (checks) {
+            move.sufix = (checks === 1) ? '+' : '++';
+        }
+    }
+    rules.updateSufix = updateSufix;
 
     Object.freeze(rules);
     return rules;
