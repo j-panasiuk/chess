@@ -27,9 +27,14 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
         settings.isReversed = !settings.isReversed;
     };
 
-    $scope.movelist = function() {
+    $scope.moveList = function() {
     //  Toggle move list widget.
         settings.showMoveList = !settings.showMoveList;
+    }
+
+    $scope.moveEvaluation = function() {
+    //  Toggle move evaluation widget.
+        settings.showMoveEvaluation = !settings.showMoveEvaluation;
     }
 
     $scope.startGame = function(restart) {

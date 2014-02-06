@@ -54,7 +54,7 @@
                 </ul>
 
                 <div id="nav-status-bar">
-                    {{game.history.move}}
+                    {{game.history.move.san}}
                 </div>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -69,23 +69,39 @@
 
     <!-- Vertical menu -->
     <div id="nav-left">
-        <ul class="list-group top">
-            <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
-                <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
+        <ul class="list-group top">            
+            <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
+                <center><span ng-click="moveList()" class="option glyphicon glyphicon-list"></span></center>
             </li>
-            <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
-                <center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center>
-            </li>            
+            <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveEvaluation}">
+                <center><span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span></center>
+            </li>
             <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
                 <center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center>
             </li>
-            <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
-                <center><span ng-click="movelist()" class="option glyphicon glyphicon-list"></span></center>
+            <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
+                <center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center>
+            </li>
+            <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
+                <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
             </li>
         </ul>
         <ul class="list-group bottom">
-            <li popover="Star" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
-                <center><span class="option glyphicon glyphicon-star"></span></center>
+            <li popover="Black: {{settings.controlBlack}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control">
+                <center>
+                    <span ng-switch="settings.controlBlack">
+                    <span ng-switch-when="1" class="option glyphicon glyphicon-user option-black"></span>
+                    <span ng-switch-when="2" class="option glyphicon glyphicon-tower option-black"></span>
+                    </span>
+                </center>
+            </li>
+            <li popover="White: {{settings.controlWhite}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control">
+                <center>
+                    <span ng-switch="settings.controlWhite">
+                    <span ng-switch-when="1" class="option glyphicon glyphicon-user option-white"></span>
+                    <span ng-switch-when="2" class="option glyphicon glyphicon-tower option-white"></span>
+                    </span>
+                </center>
             </li>
         </ul>
     </div>
@@ -95,6 +111,8 @@
 
     <div class="widget" id="board-container">        
         <div chessboard ng-controller="chessboardController"></div>
+        <div ng-repeat="rank in rules.RANK_NAMES" class="coordinate rank-{{$index}}" ng-class="{reversed: settings.isReversed}">{{rank}}</div>
+        <div ng-repeat="file in rules.FILE_NAMES" class="coordinate file-{{$index}}" ng-class="{reversed: settings.isReversed}">{{file | uppercase}}</div>
 	</div>
 
     <div ng-show="settings.showMoveList" class="panel panel-default widget" id="movelist-container">
@@ -104,33 +122,26 @@
         </div>
         <div class="panel-body">
             <table class="table table-condensed table-bordered">
-                <tr ng-repeat="move in game.history.fullMoveList">
-                    <td width="16%">{{move.index}}</td>
-                    <td width="42%">{{move.white}}</td>
-                    <td width="42%">{{move.black}}</td>
+                <tr ng-repeat="fullmove in game.history.fullMoveList">
+                    <td width="16%">{{fullmove.index}}</td>
+                    <td width="42%">{{fullmove.white.san}}</td>
+                    <td width="42%">{{fullmove.black.san}}</td>
                 </tr>
             </table>
         </div>
     </div>
 
-    <div ng-show="settings.debugMode" class="panel panel-default widget" id="console-container">
+    <div ng-show="settings.showMoveEvaluation" class="panel panel-default widget" id="console-container">
         <div class="panel-heading">
-            <strong><span class="glyphicon glyphicon-wrench grey"></span> Console</strong>
+            <strong><span class="glyphicon glyphicon-sort-by-attributes-alt grey"></span> Move Evaluation</strong>
+            <button ng-click="settings.showMoveEvaluation = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
         </div>
         <div class="panel-body">
             <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <td width="50%">Move</td>
-                        <td width="50%">Evaluation</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="node in engine.tree.root.children">
-                        <td width="50%">{{node.move}}</td>
-                        <td width="50%">{{node.value/100}}</td>
-                    </tr>
-                </tbody>                
+                <tr ng-repeat="node in engine.tree.root.children">
+                    <td width="50%">{{node.move}}</td>
+                    <td width="50%">{{node.value/100}}</td>
+                </tr>               
             </table>
         </div>
     </div>

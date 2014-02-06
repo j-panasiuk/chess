@@ -21,7 +21,8 @@ app.factory('settings', function() {
 		'debugMode': false,
 		'animationTime': 400,
 		'delayAI': 500,
-        'showMoveList': true
+        'showMoveList': true,
+        'showMoveEvaluation': false
 	};
     Object.freeze(defaults);
 
@@ -122,6 +123,14 @@ app.factory('settings', function() {
             value: {
                 name: 'showMoveList',
                 label: 'Move list',
+                type: 'checkbox'
+            } 
+        },
+        'showMoveEvaluation': { 
+            enumerable: true, 
+            value: {
+                name: 'showMoveEvaluation',
+                label: 'Move evaluation',
                 type: 'checkbox'
             } 
         }
