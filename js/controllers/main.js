@@ -11,10 +11,14 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
     $scope.keypress = function(evt) {
         console.log('%cKey pressed:', LOG.ui, evt.keyCode);
         switch (evt.keyCode) {
-            case 32:     $scope.$broadcast('cancel'); break;
+            case 32:     $scope.cancel(); break;
             case 13:     $scope.$broadcast('confirm'); break;
         }
     };
+
+    $scope.cancel = function() {
+        $scope.$broadcast('cancel');
+    }
 
     $scope.debug = function() {
     //  Toggle debug interface visibilty.

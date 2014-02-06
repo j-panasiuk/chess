@@ -53,8 +53,12 @@
                     <li><a ng-click="startGame(true)">New Game</a></li>
                 </ul>
 
-                <div id="nav-status-bar">
-                    {{game.history.move.san}}
+                <div id="nav-status-bar" ng-class="{user: game.activePlayer.isUser, ai: game.activePlayer.isAI}">
+                    <span ng-switch="game.activePlayer.color">
+                    <span ng-switch-when="0" class="ui-white">White to move</span>
+                    <span ng-switch-when="1" class="ui-black">Black to move</span>
+                    <span ng-switch-default>{{game.result}}</span>
+                    </span>
                 </div>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -85,9 +89,12 @@
             <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
                 <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
             </li>
+            <li popover="Cancel (spacebar)" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
+                <center><span ng-click="cancel()" class="option glyphicon glyphicon-remove"></span></center>
+            </li>
         </ul>
         <ul class="list-group bottom">
-            <li popover="Black: {{settings.controlBlack}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control">
+            <li popover="Black: {{settings.controlBlack}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 1}">
                 <center>
                     <span ng-switch="settings.controlBlack">
                     <span ng-switch-when="1" class="option glyphicon glyphicon-user option-black"></span>
@@ -95,7 +102,7 @@
                     </span>
                 </center>
             </li>
-            <li popover="White: {{settings.controlWhite}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control">
+            <li popover="White: {{settings.controlWhite}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 0}">
                 <center>
                     <span ng-switch="settings.controlWhite">
                     <span ng-switch-when="1" class="option glyphicon glyphicon-user option-white"></span>
