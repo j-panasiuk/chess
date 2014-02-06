@@ -198,7 +198,7 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
 
     //  Update game logic.
         game.currentPosition.update(move);
-        game.history.update(move);
+        game.history.move = move;
 
     //  Update chessboardState object to represent current position.
     //  This is used as model for UI elements (for example in debug mode).

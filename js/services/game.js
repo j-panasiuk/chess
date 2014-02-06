@@ -165,9 +165,23 @@ app.factory('game', function(settings, rules) {
                 return pgn;
             } 
         },
-        'update': {
-            value: function(move) {
-            //  Update history after a move has been played.
+        'move': {
+            get: function() {
+            //  Return last move's fullmove notation.
+            //  For white: 1. Nf3
+            //  For black: 1. ... d5
+                var notation,
+                    fullmove = _.last(this.fullMoveList);
+
+                if (!fullmove) {
+                    return null;
+                }
+                notation = fullmove.index + '. ';
+                notation += fullmove.black ? '... ' + fullmove.black : fullmove.white;
+                return notation;
+            },
+            set: function(move) {
+            //  Update history object after a move has been played.
                 this.sanList.push(move.san);
                 this.fenList.push(game.currentPosition.fen);
                 if (!move.color) {
@@ -178,7 +192,6 @@ app.factory('game', function(settings, rules) {
                 } else {
                     _.last(this.fullMoveList).black = move.san;
                 }
-                console.log('%cUpdating game history...', LOG.action, this);
             }
         }
     });
