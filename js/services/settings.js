@@ -7,7 +7,8 @@ app.factory('settings', function() {
 	var defaults, ui, settings;
 
 	defaults = {
-		'fen': "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+		//'fen': "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        'fen': "n6k/PP6/2P5/8/8/7p/7p/KRR5 w - - 0 1",
 		'controlWhite': 1, 		// User
 		'controlBlack': 2,		// AI
 		'difficulty': 0,

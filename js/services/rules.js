@@ -307,7 +307,7 @@ app.factory('rules', function(settings) {
     };
 //  FIRST_RANK_INDEX :: Object{2}
 //  Stores 1st rank index for each color.
-    SEVENTH_RANK_INDEX = {
+    FIRST_RANK_INDEX = {
         0: 0,
         1: 7
     };
@@ -1441,7 +1441,7 @@ app.factory('rules', function(settings) {
                 checkCount = position.checks.length, moves = [];
         //  March forawrd!
         //  Account for pins and checks.
-        //  Look out for promotions.
+        //  Look out for promotions. In case of promotion, select queen.
             promote = (from.rank === SEVENTH_RANK_INDEX[this.color]) ? (MOVE_SPECIAL_MASK.promote|MOVE_SPECIAL_MASK.queen) : 0;
 
             squaresTo = _.flatten(PASSIVE_RAYS[from][this.code]);
@@ -2003,8 +2003,8 @@ app.factory('rules', function(settings) {
             return move;
         }
         if (move.isPromote) {
-            move.promoteTo = move.color ? B : W;
-            move.promoteTo |= (function() {
+            move.promote = move.color ? B : W;
+            move.promote |= (function() {
                 switch (special % 4) {
                     case MOVE_SPECIAL_MASK.knight: return KNIGHT;
                     case MOVE_SPECIAL_MASK.bishop: return BISHOP;
