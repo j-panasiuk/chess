@@ -22,6 +22,10 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
         return _.contains($scope.selectableSquares, square);
     };
 
+    $scope.isCapturablePiece = function(piece) {
+        return _.contains($scope.selectableSquares, piece.square);
+    };
+
     $scope.isSelected = function(piece) {
         return $scope.selectedPiece === piece;
     };

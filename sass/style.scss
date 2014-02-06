@@ -231,6 +231,12 @@ body {
 				background-color: #ccf;
 			}
 		}
+        &.capturable {
+            cursor: pointer;
+            &:hover {
+                background-color: #c9f;
+            }        
+        }
 		&.selected {
 			background-color: #fd8;
 		}
@@ -349,6 +355,7 @@ body.debug {
     position: relative;
     display: block;
     width: 260px;
+    height: 8 * $square-size;
     max-height: 8 * $square-size;
     float: left;
     overflow: hidden;    
@@ -363,7 +370,7 @@ body.debug {
 #console-container {
 	position: relative;
 	display: block;
-    width: 320px;
+    width: 260px;
     max-height: 8 * $square-size;
 	float: right;
     overflow: hidden;

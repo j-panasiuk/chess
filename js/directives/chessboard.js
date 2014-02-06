@@ -46,7 +46,8 @@ app.directive('piece', function(settings, rules) {
         scope: {
             piece: '=ngModel',
             isSelectable: '=selectable',
-            isSelected: '=selected'
+            isSelected: '=selected',
+            isCapturable: '=capturable'
         },
         link: function(scope) {
             scope.settings = settings;
