@@ -1,11 +1,13 @@
-$square-size: 65px;
+$square-size: 62px;
+$chessboard-margin: 25px;
 $nav-height: 50px;
 $nav-status-width: 260px;
 $left-nav-size: 50px;
 $left-nav-margin: 5px;
 
 $box-shadow-square: inset 0 0 0 1px rgba(255,255,255,.65), inset 0 0 0 2px #777; 
-$box-shadow-hover: inset 0 0 0 2px #444; 
+$box-shadow-hover: inset 0 0 0 2px #444;
+
 
 /* ANGULAR BOOTSTRAP */
 .nav, 
@@ -181,7 +183,7 @@ body {
 	position: relative;
 	display: block;
 	float: left;
-    padding: 0 0 25px 25px;
+    padding: 0 0 $chessboard-margin $chessboard-margin;
 
     .coordinate {
         position: absolute;
@@ -469,4 +471,68 @@ body.debug {
 .modal .current-value {
     font-style: italic;
     color: #999;
+}
+
+
+@import 'blueprint';
+
+
+@media screen and (max-height: 480px) {
+    $square-size: 45px;
+    @import 'blueprint';
+    body.debug {
+        .navbar {
+            background: #000;
+        }
+    }
+}
+
+@media screen and (min-height: 481px) and (max-height: 600px) {
+    $square-size: 50px;
+    @import 'blueprint';
+    body.debug {
+        .navbar {
+            background: #444;
+        }
+    }
+}
+
+@media screen and (min-height: 601px) and (max-height: 720px) {
+    $square-size: 55px;
+    @import 'blueprint';
+    body.debug {
+        .navbar {
+            background: #888;
+        }
+    }
+}
+
+@media screen and (min-height: 721px) and (max-height: 960px) {
+    $square-size: 64px;
+    @import 'blueprint';
+    body.debug {
+        .navbar {
+            background: #bbb;
+        }
+    }
+}
+
+@media screen and (min-height: 961px) and (max-height: 1200px) {
+    $square-size: 72px;
+    @import 'blueprint';
+    body.debug {
+        .navbar {
+            background: #fff;
+        }
+    }
+}
+
+@media screen and (min-height: 1201px) {
+    $square-size: 85px;
+    @import 'blueprint';
+    body.debug {
+        .navbar {
+            background: #ccf;
+        }
+    }
 }
