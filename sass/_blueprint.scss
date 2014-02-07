@@ -1,61 +1,122 @@
 /* 
 //  Blueprint contains responsive elements, which get replicated 
 //  for each @media breakpoint. The aim of this approach to generate
-//  multiple @media rules, ensuring that the chessboard retains doesn't
-//  "overflow" user's screen height.
+//  multiple @media rules, ensuring that the chessboard div doesn't
+//  "overflow" user's screen.
 */
 
-#board-container {
-    position: relative;
-    display: block;
-    float: left;
+
+/*  SIDE NAVBARS
+//  ------------------
+//  $side-nav-size
+//  $side-nav-margin
+//  $square-size
+//  ------------------
+*/
+
+.nav-side {
+    width: $side-nav-size + 2 * $side-nav-margin;
+    max-width: $side-nav-size + 2 * $side-nav-margin;
+
+    .nav-side-content {
+        height: 8 * $square-size;
+        margin-top: 70px;
+        outline: 1px dotted;
+
+        .list-group {
+            width: $side-nav-size;
+            margin: 0 $side-nav-margin;
+            outline: 1px dashed;
+
+            &.top {
+                top: 0;
+                .player-control {
+                    margin-top: $square-size * 0.5;
+                }
+            }
+            &.bottom {
+                bottom: 0;
+                .player-control {
+                    margin-bottom: $square-size * 0.5;
+                }
+            }
+
+            .list-group-item {
+                width: $side-nav-size;
+                height: $side-nav-size;
+            }
+        }
+
+    }
+}
+
+#nav-left {
+    left: 0;
+    top: 0;    
+}
+
+#nav-right {
+    right: 0;
+    top: 0;   
+}
+
+
+/*  MAIN CONTENT
+//  ------------------
+//  $side-nav-size
+//  $side-nav-margin
+//  $widget-margin
+//  ------------------
+*/
+
+#content-container {
+    margin: $widget-margin $side-nav-size + $side-nav-margin + $widget-margin;
+}
+
+
+/*  CHESSBOARD
+//  ------------------
+//  $square-size
+//  $chessboard-margin
+//  ------------------
+*/
+
+#chessboard-container {
     padding: 0 0 $chessboard-margin $chessboard-margin;
 
     .coordinate {
-        position: absolute;
-        display: block;
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        color: #fff;
+
     }
 
     @for $i from 0 through 7 {
         .coordinate.file-#{$i} {
-            left: $i * $square-size + 25px;
+            left: $i * $square-size + $chessboard-margin;
             bottom: 0;
             width: $square-size;
-            height: 25px;
-            line-height: 25px;
+            height: $chessboard-margin;
+            line-height: $chessboard-margin;
             &.reversed {
-                left: (7 - $i) * $square-size + 25px;
+                left: (7 - $i) * $square-size + $chessboard-margin;
             }
         }
         .coordinate.rank-#{$i} {
             left: 0;
-            bottom: $i * $square-size + 25px;
-            width: 25px;
+            bottom: $i * $square-size + $chessboard-margin;
+            width: $chessboard-margin;
             height: $square-size;
             line-height: $square-size;
             &.reversed {
-                bottom: (7 - $i) * $square-size + 25px;
+                bottom: (7 - $i) * $square-size + $chessboard-margin;
             }
         }
     }
 }
 
 .chessboard {
-    position: relative;
     width: 8 * $square-size;
     height: 8 * $square-size;
-    background: #eee;
-    background: url('../img/chessboard.jpg') no-repeat center center;
-    background-size: cover;
-    outline: 1px solid rgba(0,0,0,.06);
-    cursor: default;
 
     .square {
-        position: absolute;
         width: $square-size;
         height: $square-size;
 
@@ -64,78 +125,12 @@
             height: 16px;
             font-size: 11px;
             line-height: 16px;
-            text-align:center;
-            color: #d43;
-        }
-
-        &.selectable {
-            cursor: pointer;
-            box-shadow: $box-shadow-square;
-            &:hover {
-                background-color: rgba(255,205,55,.65);
-                box-shadow: $box-shadow-hover;
-            }
         }
     }
 
     .piece {
-        position: absolute;
         width: $square-size;
         height: $square-size;
-        background-repeat: no-repeat;
-        background-size: cover;
-
-        &.white.pawn { background-image: url('../img/pieces/white-pawn.png'); }
-        &.white.knight { background-image: url('../img/pieces/white-knight.png'); }
-        &.white.bishop { background-image: url('../img/pieces/white-bishop.png'); }
-        &.white.rook { background-image: url('../img/pieces/white-rook.png'); }
-        &.white.queen { background-image: url('../img/pieces/white-queen.png'); }
-        &.white.king { background-image: url('../img/pieces/white-king.png'); }
-        &.black.pawn { background-image: url('../img/pieces/black-pawn.png'); }
-        &.black.knight { background-image: url('../img/pieces/black-knight.png'); }
-        &.black.bishop { background-image: url('../img/pieces/black-bishop.png'); }
-        &.black.rook { background-image: url('../img/pieces/black-rook.png'); }
-        &.black.queen { background-image: url('../img/pieces/black-queen.png'); }
-        &.black.king { background-image: url('../img/pieces/black-king.png'); }
-
-        &.ng-enter,
-        &.ng-leave {
-            -webkit-transition: all .25s;
-            -moz-transition: all .25s;
-            -ms-transition: all .25s;
-            -o-transiton: all .25s;
-            transition: all .25s;
-        }
-        &.ng-enter,
-        &.ng-leave.ng-leave-active {
-            opacity: 0
-        }
-        &.ng-leave.ng-leave-active {
-            -webkit-transform: rotate(90deg);
-            -ms-transform: rotate(90deg);
-            transform: rotate(90deg);
-        }
-        &.ng-leave,
-        &.ng-enter.ng-enter-active {
-            opacity: 1;
-        }
-
-        &.selectable {
-            cursor: pointer;
-            &:hover {
-                box-shadow: $box-shadow-hover;
-            }
-        }
-        &.capturable {
-            cursor: pointer;
-            &:hover {
-                background-color: #f93;
-                box-shadow: $box-shadow-hover;
-            }        
-        }
-        &.selected {
-            background-color: #fd8;
-        }
     }
 
     @for $i from 0 through 7 {
@@ -148,11 +143,6 @@
                     left: (7 - $j) * $square-size;
                     top: $i * $square-size;
                 }
-
-                -webkit-transition: left .4s, top .4s;
-                -moz-transition: left .4s, top .4s;
-                -o-transiton: left .4s, top .4s;
-                transition: left .4s, top .4s;
             }
         }
     }
@@ -161,85 +151,36 @@
 .chessboard {
 
     .subscript.square-id {
-        position: absolute;
-        bottom: 1px;
-        right: 3px;
-        font-size: 11px;
-        line-height: 100%;
-        color: #999;
+
     }   
     .subscript.data {
-        position: absolute;
-        bottom: 1px;
-        left: 2px;
-        font-size: 11px;
-        line-height: 100%;
-        color: #444;
+
     }
 
     .square-outline {
-        opacity: 0;
-        position: absolute;
-        left: 0;
-        top: 0;
         width: $square-size - 4px;
         height: $square-size - 4px;
         margin: 2px;
         border-width: 2px;
-
-        &.check{
-            opacity: 1;
-            border-style: dashed;
-            border-color: #f90;    
-        }
-        &.pin {
-            opacity: 1;
-            border-style: dashed;
-            border-color: #333;    
-        }
-
-        -webkit-transition: opacity .25s, border-color .25s;
-        -moz-transition: opacity .25s, border-color .25s;
-        -o-transiton: opacity .25s, border-color .25s;
-        transition: opacity .25s, border-color .25s;
-    }
-
-    &.debug {
-        background: #eee;
-        
-        .square {
-            outline: 1px solid #bbb;
-        }
     }
 }
 
 #movelist-container {
-    position: relative;
-    display: block;
     width: 260px;
     height: 8 * $square-size;
-    max-height: 8 * $square-size;
-    float: left;
-    overflow: hidden;    
+    max-height: 8 * $square-size;   
 
     .panel-body {
         max-height: 8 * $square-size - 40px;
-        overflow-y: scroll;
     }
 }
 
-
 #console-container {
-    position: relative;
-    display: block;
     width: 260px;
     min-height: 200px;
     max-height: 8 * $square-size;
-    float: left;
-    overflow: hidden;
 
     .panel-body {
         max-height: 8 * $square-size - 40px;
-        overflow-y: scroll;
     }
 }

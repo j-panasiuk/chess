@@ -2,8 +2,9 @@ $square-size: 62px;
 $chessboard-margin: 25px;
 $nav-height: 50px;
 $nav-status-width: 260px;
-$left-nav-size: 50px;
-$left-nav-margin: 5px;
+$side-nav-size: 54px;
+$side-nav-margin: 8px;
+$widget-margin: 10px;
 
 $box-shadow-square: inset 0 0 0 1px rgba(255,255,255,.65), inset 0 0 0 2px #777; 
 $box-shadow-hover: inset 0 0 0 2px #444;
@@ -45,12 +46,13 @@ html, body, #body-container {
 }
 
 body {
-    background: #bbb;
+    background: #555;
 }
 
 .navbar {
     margin: 0;
     z-index: 10;
+    border-radius: 0;
 
     li.action {
         font-weight: bold;        
@@ -96,72 +98,61 @@ body {
 }
 
 
-#nav-left {
+.nav-side {
     position: absolute;
     display: block;
     z-index: 1;
-    left: 0;
-    top: 0;
-    width: $left-nav-size + 2 * $left-nav-margin;
-    max-width: $left-nav-size + 2 * $left-nav-margin;
     height: 100%;
-    background: transparent;
+    background: rgba(0,0,0,.3);
 
-    .list-group {
+    .nav-side-content {
         position: relative;
-        width: $left-nav-size;
-        margin: 0 $left-nav-margin;
-        padding: 0;
 
-        &.top {
-            height: 8 * $square-size - 2 * $left-nav-size;
-            margin-top: 70px;
-        }
-        &.bottom {
-            height: 2 * $left-nav-size;
-        }
-    }
+        .list-group {
+            position: absolute;
 
-    .list-group-item {
-        width: $left-nav-size;
-        height: $left-nav-size;
-        margin: 0 0 1px 0;
-        padding: 0;
-        border: none;
-        border-radius: 0;
-        background: none;
-        color: #fff;
-
-        &.opened {
-            outline: 1px solid #fff;
-        }
-        &.player-control {
-            &.active {
-                background: #aaa;
-                outline: 1px solid;
-                -webkit-transition: background .4s;
-                -moz-transition: background .4s;
-                -ms-transition: background .4s;
-                -o-transiton: background .4s;
-                transition: background .4s;
-            }            
-        }
-
-        .option {
-            line-height: $left-nav-size - 3px;
-            font-size: 30px;
-
-            &:hover {
-                color: #666;
-                cursor: pointer;
-            }
-
-            &.option-white {
+            .list-group-item {
+                margin: 0 0 1px 0;
+                padding: 0;
+                border: none;
+                border-radius: 0;
+                text-align: center;
+                background: none;
                 color: #fff;
+
+                &.opened {
+                    outline: 1px solid #fff;
+                }
+                &.player-control {
+                    &.active {
+                        background: #aaa;
+                        outline: 1px solid;
+                        -webkit-transition: background .4s;
+                        -moz-transition: background .4s;
+                        -ms-transition: background .4s;
+                        -o-transiton: background .4s;
+                        transition: background .4s;
+                    }            
+                }
+
+                .option {
+                    line-height: $side-nav-size - 3px;
+                    font-size: 30px;
+
+                    &:hover {
+                        color: #666;
+                        cursor: pointer;
+                    }
+
+                    &.option-white {
+                        color: #fff;
+                    }
+                    &.option-black {
+                        color: #333;
+                    }
+                }
             }
-            &.option-black {
-                color: #333;
-            }
+
         }
     }
 }
@@ -179,7 +170,7 @@ body {
     padding: 0 4px;
 }
 
-#board-container {
+#chessboard-container {
 	position: relative;
 	display: block;
 	float: left;
@@ -219,7 +210,7 @@ body {
 }
 
 #content-container {
-    margin: 10px 10px 10px 125px;
+    margin: 0 95px;
 }
 
 .chessboard {
