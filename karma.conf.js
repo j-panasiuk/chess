@@ -15,8 +15,6 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
     //  vendor libraries
-        'lib/js/jquery-2.0.2-min.js',
-        'lib/js/jquery-ui-1.10.3.custom.min.js',
         'lib/js/lodash.min.js',
         'lib/js/angular.min.js',
         'lib/js/angular-mocks.js',
@@ -33,7 +31,7 @@ module.exports = function(config) {
         'js/controllers/chessboard.js',
         'js/directives/chessboard.js',
     //  test suites
-        'test/unit-tests.js'
+        'test/unit/*.spec.js'
     ],
 
 
