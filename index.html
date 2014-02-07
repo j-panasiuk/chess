@@ -72,51 +72,61 @@
     <!-- /Bootstrap navbar -->
 
     <!-- Vertical menu -->
-    <div id="nav-left">
-        <ul class="list-group top">            
-            <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
-                <center><span ng-click="moveList()" class="option glyphicon glyphicon-list"></span></center>
-            </li>
-            <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveEvaluation}">
-                <center><span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span></center>
-            </li>
-            <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
-                <center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center>
-            </li>
-            <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
-                <center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center>
-            </li>
-            <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
-                <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
-            </li>
-            <li popover="Cancel (spacebar)" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
-                <center><span ng-click="cancel()" class="option glyphicon glyphicon-remove"></span></center>
-            </li>
-        </ul>
-        <ul class="list-group bottom">
-            <li popover="Black: {{settings.controlBlack}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 1}">
-                <center>
+    <div class="nav-side" id="nav-left">
+        <div class="nav-side-content">
+
+            <ul class="list-group" ng-class="settings.isReversed ? 'bottom' : 'top'">
+                <li popover="Black: {{settings.controlBlack}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 1}">
                     <span ng-switch="settings.controlBlack">
                     <span ng-switch-when="1" class="option glyphicon glyphicon-user option-black"></span>
                     <span ng-switch-when="2" class="option glyphicon glyphicon-tower option-black"></span>
                     </span>
-                </center>
-            </li>
-            <li popover="White: {{settings.controlWhite}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 0}">
-                <center>
+                </li>
+            </ul>
+
+            <ul class="list-group" ng-class="settings.isReversed ? 'top' : 'bottom'">
+                <li popover="White: {{settings.controlWhite}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 0}">
                     <span ng-switch="settings.controlWhite">
                     <span ng-switch-when="1" class="option glyphicon glyphicon-user option-white"></span>
                     <span ng-switch-when="2" class="option glyphicon glyphicon-tower option-white"></span>
                     </span>
-                </center>
-            </li>
-        </ul>
+                </li>
+            </ul>
+
+        </div>
     </div>
     <!-- /Vertical menu -->
 
+    <div class="nav-side" id="nav-right">
+        <div class="nav-side-content">
+
+            <ul class="list-group top">
+                <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
+                    <center><span ng-click="moveList()" class="option glyphicon glyphicon-list"></span></center>
+                </li>
+                <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveEvaluation}">
+                    <center><span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span></center>
+                </li>
+                <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
+                    <center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center>
+                </li>
+                <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
+                    <center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center>
+                </li>
+                <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
+                    <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
+                </li>
+                <li popover="Cancel (spacebar)" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
+                    <center><span ng-click="cancel()" class="option glyphicon glyphicon-remove"></span></center>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
     <div id="content-container">
 
-    <div class="widget" id="board-container">        
+    <div class="widget" id="chessboard-container">        
         <div chessboard ng-controller="chessboardController"></div>
         <div ng-repeat="rank in rules.RANK_NAMES" class="coordinate rank-{{$index}}" ng-class="{reversed: settings.isReversed}">{{rank}}</div>
         <div ng-repeat="file in rules.FILE_NAMES" class="coordinate file-{{$index}}" ng-class="{reversed: settings.isReversed}">{{file | uppercase}}</div>
