@@ -114,42 +114,6 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
         $scope.selectedPiece = null;
     };
 
-    /*
-    $scope.updateSquaresState = function() {
-    //  `squaresState` hash tracks current status of each square on the board.
-    //  This includes keeping information about checks and pins.
-        var checkSquares, pinSquares, check, pin,
-            checks = game.currentPosition.checks,
-            pins = game.currentPosition.pinList.all;
-
-        if (!checks.length) {
-            checkSquares = [];
-        } else {
-            checkSquares = checks.map(function(check) {
-                return check.ray;
-            });
-            checkSquares = _.flatten(checkSquares);
-        }
-
-        if (!pins.length) {
-            pinSquares = [];
-        } else {
-            pinSquares = pins.map(function(pin) {
-                return pin.ray;
-            });
-            pinSquares = _.flatten(pinSquares);
-        }
-
-        for (var square in rules.SQUARES) {
-            square = rules.SQUARES[square];
-            check = _.contains(checkSquares, square) ? 1 : 0;
-            pin = _.contains(pinSquares, square) ? 2 : 0;
-
-            $scope.squaresState[square] = 0 | check | pin;
-        }
-    };
-    */
-
     $scope.selectMoveUser = function(color) {
         console.assert(rules.COLORS.indexOf(color) > -1, 'Invalid color value.', color);
         console.log('%cUser selects a move...', LOG.action, rules.COLOR_NAME[color]);
@@ -237,14 +201,7 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
     //  Validate piece positions.
     //  Update debugging interace, if necessary.
     //  Check game result.
-        var move, result, checks;
-        
-        move = game.history.move;
-        result = game.currentPosition.result;
-        checks = game.currentPosition.checks;
-
-    //  Update last move's notation, to display check/checkmate if necessary.
-        rules.updateSufix(move, result, checks);
+        var result = game.currentPosition.result;
 
         if (result) {
 
@@ -315,12 +272,9 @@ app.controller('chessboardController', function($scope, $timeout, $q, settings, 
     };
 
     $scope.startGame = function(restart) {
-    //  In case of restarting a game, $digest of chessboard scope is needed
-    //  to let HTML chessboard template catch up with refreshed model.    
-        if (restart) {            
-            if (settings.switchColorOnRestart) {
-                $scope.settings.isReversed = !$scope.settings.isReversed;
-            }
+    //  Reset chessboard orientation according to current settings.  
+        if (restart) {
+            $scope.settings.isReversed = !game.players[0].isUser && game.players[1].isUser && settings.reverseForBlack;
         }
 
     //  Wait for initial animations to finish.

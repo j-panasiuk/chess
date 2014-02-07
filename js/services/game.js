@@ -187,16 +187,20 @@ app.factory('game', function(settings, rules) {
             },
             set: function(move) {
             //  Update history object after a move has been played.
+                var position = game.currentPosition;
+
                 this.sanList.push(move.san);
-                this.fenList.push(game.currentPosition.fen);
+                this.fenList.push(position.fen);
                 if (!move.color) {
                     this.fullMoveList.push({ 
-                        index: game.currentPosition.fullMoveCount,
+                        index: position.fullMoveCount,
                         white: move
                     });
                 } else {
                     _.last(this.fullMoveList).black = move;
                 }
+            //  Append check/checkmate sign to move notation if necessary.
+                move.updateSufix(position);
             }
         }
     });

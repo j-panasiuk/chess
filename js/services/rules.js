@@ -1975,6 +1975,25 @@ app.factory('rules', function(settings) {
                 }
                 return value;
             }
+        },
+        'updateSufix': {
+            value: function(position) {
+                console.assert(_position.isPrototypeOf(position), 'Invalid position', position);
+            //  Update move's notation with a sufix if necessary.
+            //  Checkmate:      #
+            //  Check:          +
+            //  Double check:   ++
+                var checkmate = position.result & 2,
+                    checks = _.size(position.checks);
+
+                if (checkmate) {
+                    this.sufix = '#';
+                    return;
+                }
+                if (checks) {
+                    this.sufix = (checks === 1) ? '+' : '++';
+                }
+            }
         }
     });
 
@@ -2091,26 +2110,6 @@ app.factory('rules', function(settings) {
             }
         }
     }
-
-    function updateSufix(move, result, checks) {
-        console.assert(_move.isPrototypeOf(move), 'Invalid move', move);
-        console.assert(typeof result === 'number', 'Invalid result', result);
-        console.assert((checks === null) || _.isArray(checks), 'Invalid checks', checks);
-    //  Checkmate:      #
-    //  Check:          +
-    //  Double check:   ++
-        var checkmate = result & 2,
-            checks = _.size(checks);
-
-        if (checkmate) {
-            move.sufix = '#';
-            return;
-        }
-        if (checks) {
-            move.sufix = (checks === 1) ? '+' : '++';
-        }
-    }
-    rules.updateSufix = updateSufix;
 
     Object.freeze(rules);
     return rules;
