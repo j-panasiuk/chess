@@ -43,7 +43,7 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span>
                 </button>
-                <a class="navbar-brand" href="#">Chess</a>
+                <a class="navbar-brand" href="#">...</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -51,6 +51,7 @@
 
                 <ul class="nav navbar-nav">
                     <li><a ng-click="startGame(true)">New Game</a></li>
+                    <li><button class="btn" ng-click="startGame(true)">Stop Game</button></li>
                 </ul>
 
                 <div id="nav-status-bar" ng-class="{user: game.activePlayer.isUser, ai: game.activePlayer.isAI}">

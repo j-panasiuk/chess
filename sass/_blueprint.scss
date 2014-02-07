@@ -6,6 +6,48 @@
 */
 
 
+/*  TOP NAVBAR
+//  ------------------
+//  $top-nav-size
+//  $top-nav-padding
+//  $top-nav-status-width
+//  $side-nav-size
+//  $side-nav-margin
+//  ------------------
+*/
+
+.navbar {
+    height: $top-nav-size;
+
+    .navbar-brand {
+        width: $side-nav-size ;
+        margin: 0 $side-nav-margin;
+    }
+
+    li {
+        font-weight: bold;        
+
+        a {
+            color: #000;
+        }
+        .btn {
+            height: $top-nav-size - 2 * $top-nav-padding;
+            margin: $top-nav-padding;
+        }
+    }
+}
+
+#nav-status-bar {
+    width: $nav-status-width;
+    height: $top-nav-size - 2 * $top-nav-padding;
+    left: 50%;
+    margin-left: -$nav-status-width / 2;
+    margin-top: $top-nav-padding;
+    margin-bottom: $top-nav-padding;
+    line-height: $top-nav-size - 2 * $top-nav-padding;
+}
+
+
 /*  SIDE NAVBARS
 //  ------------------
 //  $side-nav-size
@@ -21,12 +63,10 @@
     .nav-side-content {
         height: 8 * $square-size;
         margin-top: 70px;
-        outline: 1px dotted;
 
         .list-group {
             width: $side-nav-size;
             margin: 0 $side-nav-margin;
-            outline: 1px dashed;
 
             &.top {
                 top: 0;
@@ -44,6 +84,13 @@
             .list-group-item {
                 width: $side-nav-size;
                 height: $side-nav-size;
+                margin: 0 0 1px 0;
+                padding: 0;
+
+                .option {
+                    line-height: $side-nav-size;
+                    font-size: $side-nav-size - 16px;
+                }
             }
         }
 
@@ -158,6 +205,8 @@
     }
 
     .square-outline {
+        left: 0;
+        top: 0;
         width: $square-size - 4px;
         height: $square-size - 4px;
         margin: 2px;
@@ -165,8 +214,15 @@
     }
 }
 
+
+/*  WIDGETS
+//  ------------------
+//  $square-size
+//  ------------------
+*/
+
 #movelist-container {
-    width: 260px;
+    width: 250px;
     height: 8 * $square-size;
     max-height: 8 * $square-size;   
 
@@ -176,7 +232,7 @@
 }
 
 #console-container {
-    width: 260px;
+    width: 250px;
     min-height: 200px;
     max-height: 8 * $square-size;
 
