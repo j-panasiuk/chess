@@ -59,15 +59,19 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
 
     $scope.$on('gameOver', function(event, result) {
         console.log('%cGame Over:', LOG.attention, result);
-        $scope.$digest();
-        console.debug('%ccurrentPosition:', LOG.attention, game.currentPosition);
+        //$scope.$digest();
+        if ($scope.settings.autoRestart) {
+            $timeout(function() {
+                $scope.startGame(true);
+            }, 500);
+        }
     });
 
-    $scope.$on('restart', function() {
-        $timeout(function() {
-            $scope.startGame(true);
-        }, 100);        
-    });
+    //$scope.$on('restart', function() {
+    //    $timeout(function() {
+    //        $scope.startGame(true);
+    //    }, 100);        
+    //});
 
     $timeout(function initialize() {
         $scope.startGame(false);
