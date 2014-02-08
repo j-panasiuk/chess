@@ -1,17 +1,19 @@
 app.controller('optionsModalController', function($scope, $modal, settings) {
 
     $scope.settings = settings;
-    $scope.options = _.values($scope.settings.all);
 
     $scope.open = function() {
         var modalInstance = $modal.open({
             templateUrl: 'options-modal.html',
-            controller: modalInstanceController,
-            resolve: {
-                options: function() {
-                    return $scope.options;
-                }
-            }
+            controller: modalInstanceController
+            //resolve: {
+            //    gameplay: function() {
+            //        return $scope.gameplay;
+            //    },
+            //    chessboard: function() {
+            //        return $scope.chessboard;
+            //    } 
+            //}
         });
 
         modalInstance.result.then(function() {
@@ -23,10 +25,13 @@ app.controller('optionsModalController', function($scope, $modal, settings) {
 
 //  Please note that $modalInstance represents a modal window (instance) dependency.
 //  It is not the same as the $modal service used above.
-    function modalInstanceController($scope, $modalInstance, options, settings) {
+    function modalInstanceController($scope, $modalInstance, settings) {
 
         $scope.settings = settings;
-        $scope.options = options;  
+        $scope.gameplay = $scope.settings.gameplay;
+        $scope.chessboard = $scope.settings.chessboard;
+        $scope.widget = $scope.settings.widget;
+        $scope.advanced = $scope.settings.advanced;
 
         $scope.ok = function() {
             $modalInstance.close();

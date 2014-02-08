@@ -19,15 +19,17 @@ app.factory('settings', function() {
 //  RETURN
 
     var defaultSettings,
-        currentSettings;
+        currentSettings,
+        keywords;
 
     defaultSettings = [
 
         { 
             id: 'fen',
             value: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 
-            keywords: ['gameplay', 'chessboard'], 
-            label: 'Starting position' 
+            keywords: ['advanced'], 
+            label: 'Starting position',
+            input: 'textarea'
         },
 
         { 
@@ -39,7 +41,8 @@ app.factory('settings', function() {
                 'AI': 2
             },
             keywords: ['gameplay'], 
-            label: 'White player'
+            label: 'White player',
+            input: 'select'
         },
 
         { 
@@ -51,7 +54,8 @@ app.factory('settings', function() {
                 'AI': 2
             },
             keywords: ['gameplay'], 
-            label: 'Black player'
+            label: 'Black player',
+            input: 'select'
         },
 
         { 
@@ -59,7 +63,8 @@ app.factory('settings', function() {
             value: false,
             options: [true, false],
             keywords: ['gameplay'], 
-            label: 'Automatic game restart' 
+            label: 'Automatic game restart',
+            input: 'checkbox'
         },
 
         { 
@@ -67,7 +72,8 @@ app.factory('settings', function() {
             value: true,
             options: [true, false],
             keywords: ['gameplay', 'chessboard'], 
-            label: 'Switch colors on restart' 
+            label: 'Switch colors on restart',
+            input: 'checkbox' 
         },
 
         { 
@@ -75,7 +81,8 @@ app.factory('settings', function() {
             value: false,
             options: [true, false],
             keywords: ['chessboard'], 
-            label: 'Flip chessboard' 
+            label: 'Flip chessboard',
+            input: 'checkbox' 
         },
 
         { 
@@ -83,15 +90,17 @@ app.factory('settings', function() {
             value: true,
             options: [true, false],
             keywords: ['chessboard'], 
-            label: 'Flip chessboard for black' 
+            label: 'Flip chessboard for black',
+            input: 'checkbox' 
         },
 
         { 
             id: 'animationTime',  
             value: 400,
             options: [0, 250, 400],
-            keywords: ['animation'], 
-            label: 'Animation time' 
+            keywords: ['chessboard'], 
+            label: 'Animation time',
+            input: 'select' 
         },
 
         { 
@@ -99,7 +108,8 @@ app.factory('settings', function() {
             value: true,
             options: [true, false],
             keywords: ['widget'], 
-            label: 'Show move list' 
+            label: 'Show move list',
+            input: 'checkbox' 
         },
 
         { 
@@ -107,10 +117,17 @@ app.factory('settings', function() {
             value: false,
             options: [true, false],
             keywords: ['widget'], 
-            label: 'Show move evaluation'
+            label: 'Show move evaluation',
+            input: 'checkbox'
         }
 
     ];
+
+    keywords = defaultSettings.map(function(setting) {
+        return setting.keywords;
+    }).reduce(function(a, b) {
+        return _.union(a, b);
+    });
 
     defaultSettings = _.indexBy(defaultSettings, 'id');
     currentSettings = clone(defaultSettings);
@@ -124,11 +141,45 @@ app.factory('settings', function() {
         });        
     });
 
+    _.forEach(keywords, function(keyword) {
+        Object.defineProperty(settings, ''+keyword, {
+            get: function() {
+                return _.filter(currentSettings, function(setting) { 
+                    return _.contains(setting.keywords, keyword); 
+                });
+            }
+        });
+    });
+
     Object.defineProperty(settings, 'all', {
         get: function() {
             return _.values(currentSettings);
         }
     });
+
+    /*
+    Object.defineProperty(settings, 'gameplay', {
+        get: function() {
+            return _.filter(currentSettings, function(setting) { 
+                return _.contains(setting.keywords, 'gameplay'); 
+            });
+        }
+    });
+    Object.defineProperty(settings, 'chessboard', {
+        get: function() {
+            return _.filter(currentSettings, function(setting) { 
+                return _.contains(setting.keywords, 'chessboard'); 
+            });
+        }
+    });
+    Object.defineProperty(settings, 'widget', {
+        get: function() {
+            return _.filter(currentSettings, function(setting) { 
+                return _.contains(setting.keywords, 'widget'); 
+            });
+        }
+    });
+    */
 
     Object.defineProperty(settings, 'reset', {
         value: function(keyword) {

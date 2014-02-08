@@ -170,20 +170,110 @@
         <script type="text/ng-template" id="options-modal.html">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><span class="glyphicon glyphicon-cog grey"></span> Game Settings</h3>
+                <h4><span class="glyphicon glyphicon-cog grey"></span> Game Settings</h4>
             </div>
             <div class="modal-body">
-                <table class="table table-condensed table-striped table-bordered">
-                    <tr ng-repeat="option in options">
-                        <td width="70%">{{option.label}}<span class="pull-right current-value">{{settings[option.name]}}</span></td>
-                        <td width="30%">
-                            <span ng-switch="option.type">
-                            <span ng-switch-when="checkbox"><input ng-model="settings[option.name]" type="checkbox"/></span>
-                            <span ng-switch-when="select"><select ng-model="settings[option.name]" ng-options="o.label for o in option.options"></select></span>
-                            </span>                            
-                        </td>
-                    </tr>
-                </table>
+
+                <tabset justified="true">
+
+                    <tab heading="Gameplay">
+                        <table class="table table-condensed table-striped table-bordered">
+                            <tr ng-repeat="option in gameplay">
+                                <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
+                                <td width="30%">
+                                    <span ng-switch="option.input">
+                                    <span ng-switch-when="checkbox">
+                                        <input ng-model="option.value" type="checkbox"/>
+                                    </span>
+                                    <span ng-switch-when="select">
+                                        <select ng-model="option.value" ng-options="o.label for o in option.options"></select>
+                                    </span>
+                                    <span ng-switch-when="text">
+                                        <input ng-model="option.value" type="text"/>
+                                    </span>
+                                    <span ng-switch-when="textarea">
+                                        <textarea ng-model="option.value"></textarea>
+                                    </span>
+                                    </span>                            
+                                </td>
+                            </tr>
+                        </table>
+                    </tab>
+
+                    <tab heading="Chessboard">
+                        <table class="table table-condensed table-striped table-bordered">
+                            <tr ng-repeat="option in chessboard">
+                                <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
+                                <td width="30%">
+                                    <span ng-switch="option.input">
+                                    <span ng-switch-when="checkbox">
+                                        <input ng-model="option.value" type="checkbox"/>
+                                    </span>
+                                    <span ng-switch-when="select">
+                                        <select ng-model="option.value" ng-options="o.label for o in option.options"></select>
+                                    </span>
+                                    <span ng-switch-when="text">
+                                        <input ng-model="option.value" type="text"/>
+                                    </span>
+                                    <span ng-switch-when="textarea">
+                                        <textarea ng-model="option.value"></textarea>
+                                    </span>
+                                    </span>                            
+                                </td>
+                            </tr>
+                        </table>
+                    </tab>
+
+                    <tab heading="Widgets">
+                        <table class="table table-condensed table-striped table-bordered">
+                            <tr ng-repeat="option in widget">
+                                <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
+                                <td width="30%">
+                                    <span ng-switch="option.input">
+                                    <span ng-switch-when="checkbox">
+                                        <input ng-model="option.value" type="checkbox"/>
+                                    </span>
+                                    <span ng-switch-when="select">
+                                        <select ng-model="option.value" ng-options="o.label for o in option.options"></select>
+                                    </span>
+                                    <span ng-switch-when="text">
+                                        <input ng-model="option.value" type="text"/>
+                                    </span>
+                                    <span ng-switch-when="textarea">
+                                        <textarea ng-model="option.value"></textarea>
+                                    </span>
+                                    </span>                            
+                                </td>
+                            </tr>
+                        </table>
+                    </tab>
+
+                    <tab heading="Advanced">
+                        <table class="table table-condensed table-striped table-bordered">
+                            <tr ng-repeat="option in advanced">
+                                <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
+                                <td width="30%">
+                                    <span ng-switch="option.input">
+                                    <span ng-switch-when="checkbox">
+                                        <input ng-model="option.value" type="checkbox"/>
+                                    </span>
+                                    <span ng-switch-when="select">
+                                        <select ng-model="option.value" ng-options="o.label for o in option.options"></select>
+                                    </span>
+                                    <span ng-switch-when="text">
+                                        <input ng-model="option.value" type="text"/>
+                                    </span>
+                                    <span ng-switch-when="textarea">
+                                        <textarea ng-model="option.value"></textarea>
+                                    </span>
+                                    </span>                            
+                                </td>
+                            </tr>
+                        </table>
+                    </tab>
+
+                </tabset>
+
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default pull-left" ng-click="defaults()">Restore defaults</button>
@@ -200,7 +290,7 @@
         <script type="text/ng-template" id="new-game-modal.html">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><span class="glyphicon glyphicon-cog grey"></span> New Game</h3>
+                <h4><span class="glyphicon glyphicon-cog grey"></span> New Game</h4>
             </div>
             <div class="modal-body">
 
