@@ -1,8 +1,7 @@
 /* 
 //  Blueprint contains responsive elements, which get replicated 
-//  for each @media breakpoint. The aim of this approach to generate
-//  multiple @media rules, ensuring that the chessboard div doesn't
-//  "overflow" user's screen.
+//  for each @media breakpoint. The main goal here is to ensure 
+//  that the chessboard div doesn't "overflow" user's screen.
 */
 
 
@@ -20,19 +19,23 @@
     height: $top-nav-size;
 
     .navbar-brand {
-        width: $side-nav-size ;
+        width: $side-nav-size;
         margin: 0 $side-nav-margin;
     }
 
-    li {
-        font-weight: bold;        
+    .nav.navbar-nav {
+        margin-left: $widget-margin;
+    }
 
-        a {
-            color: #000;
-        }
+    .nav.navbar-right {
+        margin-right: $side-nav-size;
+    }
+
+    li {
         .btn {
             height: $top-nav-size - 2 * $top-nav-padding;
-            margin: $top-nav-padding;
+            margin-top: $top-nav-padding;
+            margin-bottom: $top-nav-padding;
         }
     }
 }
@@ -217,9 +220,19 @@
 
 /*  WIDGETS
 //  ------------------
-//  $square-size
+//  $widget-margin
 //  ------------------
 */
+
+.widget {
+    margin: $widget-margin;
+
+    &.panel {
+        .panel-body {
+            padding: $widget-margin;
+        }
+    }
+}
 
 #movelist-container {
     width: 250px;

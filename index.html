@@ -50,8 +50,7 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-1">
 
                 <ul class="nav navbar-nav">
-                    <li><a ng-click="startGame(true)">New Game</a></li>
-                    <li><button class="btn" ng-click="startGame(true)">Stop Game</button></li>
+                    <li><button ng-click="startGame(true)" class="btn btn-info">New Game</button></li>
                 </ul>
 
                 <div id="nav-status-bar" ng-class="{user: game.activePlayer.isUser, ai: game.activePlayer.isAI}">
@@ -102,23 +101,23 @@
         <div class="nav-side-content">
 
             <ul class="list-group top">
-                <li popover="Move list" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
-                    <center><span ng-click="moveList()" class="option glyphicon glyphicon-list"></span></center>
+                <li popover="Move list" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
+                    <span ng-click="moveList()" class="option glyphicon glyphicon-list"></span>
                 </li>
-                <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveEvaluation}">
-                    <center><span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span></center>
+                <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveEvaluation}">
+                    <span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span>
                 </li>
-                <li popover="Game settings" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
-                    <center><span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span></center>
+                <li popover="Game settings" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item">
+                    <span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span>
                 </li>
-                <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
-                    <center><span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span></center>
+                <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
+                    <span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span>
                 </li>
-                <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
-                    <center><span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span></center>
+                <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
+                    <span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span>
                 </li>
-                <li popover="Cancel (spacebar)" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item">
-                    <center><span ng-click="cancel()" class="option glyphicon glyphicon-remove"></span></center>
+                <li popover="Cancel (spacebar)" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item">
+                    <span ng-click="cancel()" class="option glyphicon glyphicon-remove"></span>
                 </li>
             </ul>
 
