@@ -36,6 +36,7 @@
 //  Element sizes, margins and positions may will be handled later.
 */
 
+$box-shadow-lastmove: inset 0 0 0 2px rgba(125,125,255,.8);
 $box-shadow-square: inset 0 0 0 1px rgba(255,255,255,.65), inset 0 0 0 2px #777; 
 $box-shadow-hover: inset 0 0 0 2px #444;
 
@@ -196,6 +197,10 @@ body {
 	    	color: #d43;
 	    }
 
+        &.lastmove {
+            box-shadow: $box-shadow-lastmove;
+        }
+
 	    &.selectable {
             cursor: pointer;
             box-shadow: $box-shadow-square;
@@ -323,15 +328,16 @@ body {
 		opacity: 0;
 	    position: absolute;
 
-	  	&.check{
+	  	&.check {
 	    	opacity: 1;
-	    	border-style: dashed;
-		    border-color: #f90;    
+	    	border-style: solid;
+		    border-color: #fa3; 
+            outline: 1px solid #fa3;  
 		}
 		&.pin {
 			opacity: 1;
 			border-style: dashed;
-		    border-color: #333;    
+		    border-color: #777;    
 		}
 
 		-webkit-transition: opacity .25s, border-color .25s;

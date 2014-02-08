@@ -212,10 +212,10 @@
     .square-outline {
         left: 0;
         top: 0;
-        width: $square-size - 4px;
-        height: $square-size - 4px;
-        margin: 2px;
-        border-width: 2px;
+        width: $square-size - 2px;
+        height: $square-size - 2px;
+        margin: 1px;
+        border-width: 1px;
     }
 }
 
