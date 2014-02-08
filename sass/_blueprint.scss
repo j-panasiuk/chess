@@ -32,6 +32,8 @@
     }
 
     li {
+        margin-right: $top-nav-padding;
+
         .btn {
             height: $top-nav-size - 2 * $top-nav-padding;
             margin-top: $top-nav-padding;
