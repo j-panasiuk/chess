@@ -1,142 +1,155 @@
 'use strict';
+var S;
 
 //	Define settings for game rules.
 //	Set default values.
 app.factory('settings', function() {
 	console.log('%cCreating settings...', LOG.action);
-	var defaults, ui, settings;
+    var settings = {};
 
-	defaults = {
-		'fen': "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        //'fen': "n6k/PP6/2P5/8/8/7p/7p/KRR5 w - - 0 1",    Testing promotions.
-		'controlWhite': 1, 		// User
-		'controlBlack': 2,		// AI
-		'difficulty': 0,
-		'mode': 0,
-		'timeLimit': 0,
-		'isReversed': false,
-		'reverseForBlack': true,
-        'autoRestart': true,
-		'switchColorOnRestart': true,
-		'debugMode': false,
-		'animationTime': 400,
-		'delayAI': 500,
-        'showMoveList': true,
-        'showMoveEvaluation': false
-	};
-    Object.freeze(defaults);
+//  DEFINE _setting
+//  DEFINE _settingList
+//
+//  CREATE defaults
+//  CREATE settings = CLONE(defaults)
+//  FREEZE(defaults)
+//
+//  settings.UPDATE(localStorage)
+//
+//  RETURN
 
-//	Create settings based on `defaults` keys and values.
-//	Settings can be modified later.
-	settings = {};
-	for (var property in defaults) {
-		settings[property] = defaults[property];
-	}
+    var defaultSettings,
+        currentSettings;
 
-//  Set editable properties (displayed in UI options).
-    ui = {};
-    Object.defineProperties(ui, {
-        'fen': {},
-        'controlWhite': { 
-            enumerable: true, 
-            value: {
-                name: 'controlWhite',
-                label: 'White player',
-                type: 'select',
-                options: [
-                    { label: 'User', value: 1 }, 
-                    { label: 'AI', value: 2}
-                ]
-            } 
+    defaultSettings = [
+
+        { 
+            id: 'fen',
+            value: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 
+            keywords: ['gameplay', 'chessboard'], 
+            label: 'Starting position' 
         },
-        'controlBlack': { 
-            enumerable: true, 
-            value: {
-                name: 'controlBlack',
-                label: 'Black player',
-                type: 'select',
-                options: [
-                    { label: 'User', value: 1 }, 
-                    { label: 'AI', value: 2}
-                ]
-            } 
+
+        { 
+            id: 'controlWhite', 
+            value: 1,
+            options: {
+                'None': 0,
+                'User': 1,
+                'AI': 2
+            },
+            keywords: ['gameplay'], 
+            label: 'White player'
         },
-        'difficulty': { 
-            enumerable: true, 
-            value: {
-                name: 'difficulty',
-                label: 'Difficulty',
-                type: 'select',
-                options: [
-                    { label: 'Dizzy', value: 0 }, 
-                    { label: 'Dazed', value: 1 },
-                    { label: 'Confused', value: 2 }
-                ]
-            }
+
+        { 
+            id: 'controlBlack', 
+            value: 2,
+            options: {
+                'None': 0,
+                'User': 1,
+                'AI': 2
+            },
+            keywords: ['gameplay'], 
+            label: 'Black player'
         },
-        'mode': {},
-        'timeLimit': {},
-        'isReversed': {},
-        'reverseForBlack': { 
-            enumerable: true, 
-            value: {
-                name: 'reverseForBlack',
-                label: 'Reverse chessboard',
-                type: 'checkbox'
-            }
+
+        { 
+            id: 'autoRestart',  
+            value: false,
+            options: [true, false],
+            keywords: ['gameplay'], 
+            label: 'Automatic game restart' 
         },
-        'autoRestart': { 
-            enumerable: true, 
-            value: {
-                name: 'autoRestart',
-                label: 'Automatic game restart',
-                type: 'checkbox'
-            } 
+
+        { 
+            id: 'switchColorOnRestart',  
+            value: true,
+            options: [true, false],
+            keywords: ['gameplay', 'chessboard'], 
+            label: 'Switch colors on restart' 
         },
-        'switchColorOnRestart': { 
-            enumerable: true, 
-            value: {
-                name: 'switchColorOnRestart',
-                label: 'Switch sides on restart',
-                type: 'checkbox'
-            } 
+
+        { 
+            id: 'isReversed',  
+            value: false,
+            options: [true, false],
+            keywords: ['chessboard'], 
+            label: 'Flip chessboard' 
         },
-        'debugMode': { 
-            enumerable: true, 
-            value: {
-                name: 'debugMode',
-                label: 'Debug mode',
-                type: 'checkbox'
-            } 
+
+        { 
+            id: 'reverseForBlack',  
+            value: true,
+            options: [true, false],
+            keywords: ['chessboard'], 
+            label: 'Flip chessboard for black' 
         },
-        'animationTime': { 
-            enumerable: true, 
-            value: {
-                name: 'animationTime',
-                label: 'Animations',
-                type: 'checkbox'
-            }
+
+        { 
+            id: 'animationTime',  
+            value: 400,
+            options: [0, 250, 400],
+            keywords: ['animation'], 
+            label: 'Animation time' 
         },
-        'delayAI': {},
-        'showMoveList': { 
-            enumerable: true, 
-            value: {
-                name: 'showMoveList',
-                label: 'Move list',
-                type: 'checkbox'
-            } 
+
+        { 
+            id: 'moveList',  
+            value: true,
+            options: [true, false],
+            keywords: ['widget'], 
+            label: 'Show move list' 
         },
-        'showMoveEvaluation': { 
-            enumerable: true, 
-            value: {
-                name: 'showMoveEvaluation',
-                label: 'Move evaluation',
-                type: 'checkbox'
-            } 
+
+        { 
+            id: 'moveEvaluation',  
+            value: false,
+            options: [true, false],
+            keywords: ['widget'], 
+            label: 'Show move evaluation'
+        }
+
+    ];
+
+    defaultSettings = _.indexBy(defaultSettings, 'id');
+    currentSettings = clone(defaultSettings);
+    Object.freeze(defaultSettings);
+
+
+    _.forEach(currentSettings, function(setting) {
+        Object.defineProperty(settings, ''+setting.id, {
+            get: function() { return setting.value; },
+            set: function(value) { setting.value = value; }
+        });        
+    });
+
+    Object.defineProperty(settings, 'all', {
+        get: function() {
+            return _.values(currentSettings);
         }
     });
-    Object.freeze(ui);
-    settings.ui = ui;
+
+    Object.defineProperty(settings, 'reset', {
+        value: function(keyword) {
+
+            if (keyword) {
+            //  Reset all settings, which contain given keyword.
+                for (var id in defaultSettings) {
+                    if (_.contains(defaultSettings[id].keywords, keyword)) {
+                        console.log('%cReset', LOG.action, keyword, ':', id);
+                        this[id] = defaultSettings[id].value;
+                    }
+                }
+
+            } else {
+            //  Reset all settings to default.
+                for (var id in defaultSettings) {
+                    this[id] = defaultSettings[id].value;
+                }
+            }
+        }
+    });
 
 //	Create flags to mark control of each color.
 	settings.CONTROL_FLAGS = {
@@ -160,5 +173,12 @@ app.factory('settings', function() {
 	}
 	settings.switchControls = switchControls;
 
+    function clone(o) {
+    //  Create shallow copy of an object.
+    //  Use to create an independent duplicate (without reference to original object)
+        return JSON.parse(JSON.stringify(o));
+    }
+
+    S = settings;
 	return settings;
 });

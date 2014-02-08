@@ -33,12 +33,12 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
 
     $scope.moveList = function() {
     //  Toggle move list widget.
-        settings.showMoveList = !settings.showMoveList;
+        settings.moveList = !settings.moveList;
     }
 
     $scope.moveEvaluation = function() {
     //  Toggle move evaluation widget.
-        settings.showMoveEvaluation = !settings.showMoveEvaluation;
+        settings.moveEvaluation = !settings.moveEvaluation;
     }
 
     $scope.startGame = function(restart) {
@@ -59,7 +59,6 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
 
     $scope.$on('gameOver', function(event, result) {
         console.log('%cGame Over:', LOG.attention, result);
-        //$scope.$digest();
         if ($scope.settings.autoRestart) {
             $timeout(function() {
                 $scope.startGame(true);
@@ -67,12 +66,7 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
         }
     });
 
-    //$scope.$on('restart', function() {
-    //    $timeout(function() {
-    //        $scope.startGame(true);
-    //    }, 100);        
-    //});
-
+//  Initialize first game.
     $timeout(function initialize() {
         $scope.startGame(false);
     }, 100);
