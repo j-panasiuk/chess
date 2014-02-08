@@ -13,7 +13,7 @@
 <script type="text/ng-template" id="template-chessboard.html">
 <div class="chessboard" ng-class="{debug: settings.debugMode, reversed: settings.isReversed}" id="chessboard">
     <div square="square" state="game.chessboardState[square]" selectable="isSelectableSquare(square)" ng-repeat="square in squares"></div>
-    <div piece ng-model="piece" selectable="isSelectablePiece(piece)" capturable="isCapturablePiece(piece)" selected="isSelected(piece)" ng-repeat="piece in game.currentPosition.pieceList.all"></div>
+    <div piece ng-model="piece" selectable="isSelectablePiece(piece)" capturable="isCapturablePiece(piece)" selected="isSelected(piece)" ng-repeat="piece in game.pieces.all"></div>
 </div>
 </script>
 
@@ -50,7 +50,8 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-1">
 
                 <ul class="nav navbar-nav">
-                    <li><button ng-click="startGame(true)" class="btn btn-info">New Game</button></li>
+                    <li><button ng-click="startGame(true)" class="btn btn-warning">Play!</button></li>
+                    <li><button ng-click="open()" ng-controller="newGameModalController" class="btn btn-info">New Game</button></li>
                 </ul>
 
                 <div id="nav-status-bar" ng-class="{user: game.activePlayer.isUser, ai: game.activePlayer.isAI}">
@@ -101,10 +102,10 @@
         <div class="nav-side-content">
 
             <ul class="list-group top">
-                <li popover="Move list" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveList}">
+                <li popover="Move list" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.moveList}">
                     <span ng-click="moveList()" class="option glyphicon glyphicon-list"></span>
                 </li>
-                <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.showMoveEvaluation}">
+                <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.moveEvaluation}">
                     <span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span>
                 </li>
                 <li popover="Game settings" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item">
@@ -132,10 +133,10 @@
         <div ng-repeat="file in rules.FILE_NAMES" class="coordinate file-{{$index}}" ng-class="{reversed: settings.isReversed}">{{file | uppercase}}</div>
 	</div>
 
-    <div ng-show="settings.showMoveList" class="panel panel-default widget" id="movelist-container">
+    <div ng-show="settings.moveList" class="panel panel-default widget" id="movelist-container">
         <div class="panel-heading">
             <strong><span class="glyphicon glyphicon-list grey"></span> Move List</strong>
-            <button ng-click="settings.showMoveList = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
+            <button ng-click="settings.moveList = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
         </div>
         <div class="panel-body">
             <table class="table table-condensed table-bordered">
@@ -148,10 +149,10 @@
         </div>
     </div>
 
-    <div ng-show="settings.showMoveEvaluation" class="panel panel-default widget" id="console-container">
+    <div ng-show="settings.moveEvaluation" class="panel panel-default widget" id="console-container">
         <div class="panel-heading">
             <strong><span class="glyphicon glyphicon-sort-by-attributes-alt grey"></span> Move Evaluation</strong>
-            <button ng-click="settings.showMoveEvaluation = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
+            <button ng-click="settings.moveEvaluation = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
         </div>
         <div class="panel-body">
             <table class="table table-condensed">
@@ -185,7 +186,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default pull-left" ng-click="">Restore defaults</button>
+                <button class="btn btn-default pull-left" ng-click="defaults()">Restore defaults</button>
                 <button class="btn btn-primary" ng-click="ok()">Accept</button>
                 <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
             </div>
@@ -193,6 +194,26 @@
         </script>
     </div>
     <!-- /Options modal -->
+
+    <!-- New Game modal -->
+    <div class="modal-dialog" ng-controller="newGameModalController">
+        <script type="text/ng-template" id="new-game-modal.html">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span class="glyphicon glyphicon-cog grey"></span> New Game</h3>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" ng-click="">Restore defaults</button>
+                <button class="btn btn-primary" ng-click="ok()">Accept</button>
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+            </div>
+        </div>
+        </script>
+    </div>
+    <!-- /New Game modal -->
 
     </div>
 
