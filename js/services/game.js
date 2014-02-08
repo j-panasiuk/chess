@@ -1,4 +1,4 @@
-'use strict';
+'use strict';var G;
 
 app.factory('game', function(settings, rules) {
     var game = {};
@@ -225,12 +225,14 @@ app.factory('game', function(settings, rules) {
     Object.defineProperty(_chessboardState, 'update', {
         value: function(position) {
             var squares, // Array of squares to modify.
+                lastMove,
                 self = this;
 
         //  Reset old values.
             rules.SQUARES.forEach(function(square) {
                 self[square].check = false;
                 self[square].pin = false;
+                self[square].lastMove = false;
             });
         //  Update checks.
             if (_.size(position.checks)) {
@@ -246,6 +248,13 @@ app.factory('game', function(settings, rules) {
                     self[square].pin = true;
                 });
             }
+        //  Update last move.
+            lastMove = game.history.move;
+            if (lastMove) {
+                console.debug('Updating lastMove', lastMove);
+                self[lastMove.from].lastMove = true;
+                self[lastMove.to].lastMove = true;
+            }            
         }
     });
 
@@ -258,7 +267,8 @@ app.factory('game', function(settings, rules) {
         rules.SQUARES.forEach(function(square) {
             state[square] = {
                 'check': false,
-                'pin': false
+                'pin': false,
+                'lastMove': false
             };
         });
 
@@ -268,5 +278,6 @@ app.factory('game', function(settings, rules) {
 //  Initialize default game model.
     game.initialize();
 
+    G = game;
     return game;
 });

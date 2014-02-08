@@ -20,9 +20,9 @@ app.directive('square', function(settings, game) {
         replace: true,
         templateUrl: 'template-square.html',
         scope: {
+            state: '=state',
             square: '=square',
-            isSelectable: '=selectable',
-            state: '=state'
+            isSelectable: '=selectable'
         },
         link: function(scope) {
             scope.settings = settings;

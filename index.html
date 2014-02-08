@@ -19,10 +19,10 @@
 
 <!-- Template: square -->
 <script type="text/ng-template" id="template-square.html">
-<div ng-click="select()" class="square at-{{square}} {{square.complex}} default-select-disabled" ng-class="{selectable: isSelectable, reversed: settings.isReversed}" id={{square}}>
+<div ng-click="select()" class="square at-{{square}} {{square.complex}} default-select-disabled" ng-class="{selectable: isSelectable, lastmove: settings.highlightLastMove&&state.lastMove, reversed: settings.isReversed}" id={{square}}>
     <div ng-show="settings.debugMode" class="subscript square-id default-select-disabled">{{square}}</div>
-    <div ng-show="settings.debugMode" class="square-outline" ng-class="{check: state.check, pin: state.pin}"></div>
-    <div ng-show="settings.debugMode" class="square-value default-select-disabled">{{}}</div>
+    <div ng-show="settings.highlightChecks" class="square-outline" ng-class="{check: state.check, pin: state.pin}"></div>
+    <div ng-show="settings.debugMode" class="square-value default-select-disabled"></div>
 </div>
 </script>
 
@@ -77,7 +77,7 @@
         <div class="nav-side-content">
 
             <ul class="list-group" ng-class="settings.isReversed ? 'bottom' : 'top'">
-                <li popover="Black: {{settings.controlBlack}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 1}">
+                <li tooltip="Black: {{settings.controlBlack}}" tooltip-trigger="mouseenter" tooltip-placement="right" tooltip-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 1}">
                     <span ng-switch="settings.controlBlack">
                     <span ng-switch-when="1" class="option glyphicon glyphicon-user option-black"></span>
                     <span ng-switch-when="2" class="option glyphicon glyphicon-tower option-black"></span>
@@ -86,7 +86,7 @@
             </ul>
 
             <ul class="list-group" ng-class="settings.isReversed ? 'top' : 'bottom'">
-                <li popover="White: {{settings.controlWhite}}" popover-trigger="mouseenter" popover-placement="right" popover-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 0}">
+                <li tooltip="White: {{settings.controlWhite}}" tooltip-trigger="mouseenter" tooltip-placement="right" tooltip-popup-delay=500 class="list-group-item player-control" ng-class="{active: game.activeColor === 0}">
                     <span ng-switch="settings.controlWhite">
                     <span ng-switch-when="1" class="option glyphicon glyphicon-user option-white"></span>
                     <span ng-switch-when="2" class="option glyphicon glyphicon-tower option-white"></span>
@@ -102,22 +102,22 @@
         <div class="nav-side-content">
 
             <ul class="list-group top">
-                <li popover="Move list" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.moveList}">
+                <li tooltip="Move list" tooltip-trigger="mouseenter" tooltip-placement="left" tooltip-popup-delay=500 class="list-group-item" ng-class="{opened: settings.moveList}">
                     <span ng-click="moveList()" class="option glyphicon glyphicon-list"></span>
                 </li>
-                <li popover="Move evaluation" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.moveEvaluation}">
+                <li tooltip="Move evaluation" tooltip-trigger="mouseenter" tooltip-placement="left" tooltip-popup-delay=500 class="list-group-item" ng-class="{opened: settings.moveEvaluation}">
                     <span ng-click="moveEvaluation()" class="option glyphicon glyphicon-sort-by-attributes-alt"></span>
                 </li>
-                <li popover="Game settings" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item">
+                <li tooltip="Game settings" tooltip-trigger="mouseenter" tooltip-placement="left" tooltip-popup-delay=500 class="list-group-item">
                     <span ng-click="open()" ng-controller="optionsModalController" class="option glyphicon glyphicon-cog"></span>
                 </li>
-                <li popover="Debug mode" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
+                <li tooltip="Debug mode" tooltip-trigger="mouseenter" tooltip-placement="left" tooltip-popup-delay=500 class="list-group-item" ng-class="{opened: settings.debugMode}">
                     <span ng-click="debug()" class="option glyphicon glyphicon-wrench"></span>
                 </li>
-                <li popover="Reverse board" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
+                <li tooltip="Reverse board" tooltip-trigger="mouseenter" tooltip-placement="left" tooltip-popup-delay=500 class="list-group-item" ng-class="{opened: settings.isReversed}">
                     <span ng-click="reverse()" class="option glyphicon glyphicon-repeat"></span>
                 </li>
-                <li popover="Cancel (spacebar)" popover-trigger="mouseenter" popover-placement="left" popover-popup-delay=500 class="list-group-item">
+                <li tooltip="Cancel (spacebar)" tooltip-trigger="mouseenter" tooltip-placement="left" tooltip-popup-delay=500 class="list-group-item">
                     <span ng-click="cancel()" class="option glyphicon glyphicon-remove"></span>
                 </li>
             </ul>
@@ -224,9 +224,9 @@
                         </table>
                     </tab>
 
-                    <tab heading="Widgets">
+                    <tab heading="Tools">
                         <table class="table table-condensed table-striped table-bordered">
-                            <tr ng-repeat="option in widget">
+                            <tr ng-repeat="option in tool">
                                 <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
                                 <td width="30%">
                                     <span ng-switch="option.input">
@@ -249,27 +249,15 @@
                     </tab>
 
                     <tab heading="Advanced">
-                        <table class="table table-condensed table-striped table-bordered">
-                            <tr ng-repeat="option in advanced">
-                                <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
-                                <td width="30%">
-                                    <span ng-switch="option.input">
-                                    <span ng-switch-when="checkbox">
-                                        <input ng-model="option.value" type="checkbox"/>
-                                    </span>
-                                    <span ng-switch-when="select">
-                                        <select ng-model="option.value" ng-options="o.label for o in option.options"></select>
-                                    </span>
-                                    <span ng-switch-when="text">
-                                        <input ng-model="option.value" type="text"/>
-                                    </span>
-                                    <span ng-switch-when="textarea">
-                                        <textarea ng-model="option.value"></textarea>
-                                    </span>
-                                    </span>                            
-                                </td>
-                            </tr>
-                        </table>
+
+                        <form role="form">
+                          <div ng-repeat="option in advanced" class="form-group">
+                            <label for="FEN-input">Starting position (FEN)</label>
+                            <input ng-model="option.value" type="text" class="form-control" id="FEN-input" placeholder="{{option.label}}">
+                            <p class="current-value">{{settings.defaultSettings[option.id].value}}</p>
+                          </div>
+                        </form>
+
                     </tab>
 
                 </tabset>
