@@ -29,7 +29,7 @@ app.factory('settings', function() {
             value: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 
             keywords: ['advanced'], 
             label: 'Starting position',
-            input: 'textarea'
+            input: 'text'
         },
 
         { 
@@ -71,7 +71,7 @@ app.factory('settings', function() {
             id: 'switchColorOnRestart',  
             value: true,
             options: [true, false],
-            keywords: ['gameplay', 'chessboard'], 
+            keywords: ['gameplay'], 
             label: 'Switch colors on restart',
             input: 'checkbox' 
         },
@@ -104,10 +104,28 @@ app.factory('settings', function() {
         },
 
         { 
+            id: 'highlightChecks',  
+            value: true,
+            options: [true, false],
+            keywords: ['chessboard'], 
+            label: 'Highlight checks',
+            input: 'checkbox' 
+        },
+
+        { 
+            id: 'highlightLastMove',  
+            value: true,
+            options: [true, false],
+            keywords: ['chessboard'], 
+            label: 'Highlight last move',
+            input: 'checkbox'
+        },
+
+        { 
             id: 'moveList',  
             value: true,
             options: [true, false],
-            keywords: ['widget'], 
+            keywords: ['tool'], 
             label: 'Show move list',
             input: 'checkbox' 
         },
@@ -116,7 +134,7 @@ app.factory('settings', function() {
             id: 'moveEvaluation',  
             value: false,
             options: [true, false],
-            keywords: ['widget'], 
+            keywords: ['tool'], 
             label: 'Show move evaluation',
             input: 'checkbox'
         }
@@ -132,6 +150,8 @@ app.factory('settings', function() {
     defaultSettings = _.indexBy(defaultSettings, 'id');
     currentSettings = clone(defaultSettings);
     Object.freeze(defaultSettings);
+    settings.defaultSettings = defaultSettings;
+    settings.currentSettings = currentSettings;
 
 
     _.forEach(currentSettings, function(setting) {
@@ -156,30 +176,6 @@ app.factory('settings', function() {
             return _.values(currentSettings);
         }
     });
-
-    /*
-    Object.defineProperty(settings, 'gameplay', {
-        get: function() {
-            return _.filter(currentSettings, function(setting) { 
-                return _.contains(setting.keywords, 'gameplay'); 
-            });
-        }
-    });
-    Object.defineProperty(settings, 'chessboard', {
-        get: function() {
-            return _.filter(currentSettings, function(setting) { 
-                return _.contains(setting.keywords, 'chessboard'); 
-            });
-        }
-    });
-    Object.defineProperty(settings, 'widget', {
-        get: function() {
-            return _.filter(currentSettings, function(setting) { 
-                return _.contains(setting.keywords, 'widget'); 
-            });
-        }
-    });
-    */
 
     Object.defineProperty(settings, 'reset', {
         value: function(keyword) {

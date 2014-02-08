@@ -30,7 +30,7 @@ app.controller('optionsModalController', function($scope, $modal, settings) {
         $scope.settings = settings;
         $scope.gameplay = $scope.settings.gameplay;
         $scope.chessboard = $scope.settings.chessboard;
-        $scope.widget = $scope.settings.widget;
+        $scope.tool = $scope.settings.tool;
         $scope.advanced = $scope.settings.advanced;
 
         $scope.ok = function() {
