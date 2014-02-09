@@ -191,6 +191,8 @@ app.factory('engine', function($q, rules, game) {
             pieces = position.pieceList,
             activity = rules.ACTIVITY,
             proximity = rules.proximity,
+            PSEUDO_HANGING_MODIFIER = 0.05,
+            HANGING_MODIFIER = 0.75,
             value = 0;
 
         sign = {};
@@ -209,7 +211,9 @@ app.factory('engine', function($q, rules, game) {
                 hanging = [],
                 value = 0;
 
-            pieces[color].filter(function(piece) { return attacked[piece.square][enemy].length; })
+            pieces[color].filter(function(piece) { 
+                return attacked[piece.square][enemy].length && (piece.name !== 'king'); 
+            })
             .forEach(function(piece) {
                 if (attacked[piece.square][piece.color].length) {
                 //  This piece is attacked and defended, which means an exchange (possibly a sequence
@@ -225,7 +229,28 @@ app.factory('engine', function($q, rules, game) {
                 }
             });
 
-            return sign[color] * value;
+        //  Evaluate hanging pieces.
+            if (!hanging.length) {
+                return 0;
+            }
+            if (hanging.length > 1) {
+                hanging = _.sortBy(hanging, function(x, y) { return x.points - y.points; });
+            }
+
+        //  Count hanging material.
+        //  Active side has a chance to save most valuable hanging piece.            
+            if (position.activeColor === color) {
+                value += PSEUDO_HANGING_MODIFIER * hanging.pop().points;
+            }
+            if (hanging.length) {
+                value += HANGING_MODIFIER * hanging.map(function(piece) {
+                    return piece.points;
+                }).reduce(function(x, y) {
+                    return x + y;
+                });                
+            }
+
+            return sign[enemy] * value;
         }
 
         function evaluateExchange(exchange) {
@@ -238,11 +263,12 @@ app.factory('engine', function($q, rules, game) {
         //                      pawn, knight, rook, pawn == [1, 1, 2, 5]
         //      defenders:      array of defending pieces, similar to above
         //  }
+            console.debug('Evaluating exchange');
             var value = 0;
 
-            for (;;) {
-                nextAttacker = exchange.attackers.shift();
-            }
+            //for (;;) {
+            //    nextAttacker = exchange.attackers.shift();
+            //}
             return value;
         }
 

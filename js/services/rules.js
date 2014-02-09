@@ -831,8 +831,7 @@ app.factory('rules', function(settings) {
                 }
                 this.checks = checks;
                 king.checks = checks;
-                //this.pieces[kingSquare].checks = checks;
-                console.log('%cchecks:', LOG.state, checks);
+                //console.log('%cchecks:', LOG.state, checks);
             }
         },
         'setPinList': {
@@ -920,10 +919,9 @@ app.factory('rules', function(settings) {
             //  containing white and black pins respectively, are ordinary arrays.
             //  Update explicitly those arrays, as pieceList objects don't have custom 
             //  constructor / factory function.
-                //this.pinList = createPinList();
                 this.pinList[0] = pins[0];
                 this.pinList[1] = pins[1];
-                console.log('%cpins:', LOG.state, this.pinList.all);
+                //console.log('%cpins:', LOG.state, this.pinList.all);
             }
         },
         'setMoves': {
@@ -1005,9 +1003,9 @@ app.factory('rules', function(settings) {
                     //        'e6': [Ae6, Ce6]
                     //    }
                     if (_.size(collisions) > 0) {
-                        console.log('%ccollisions:', LOG.state, collisions);
+                        //console.log('%ccollisions:', LOG.state, collisions);
                     } else {
-                        console.log('%cNo collisions.', LOG.action);
+                        //console.log('%cNo collisions.', LOG.action);
                     }
 
                     _.values(collisions).forEach(function(collision) { disambiguate(collision); });
@@ -1015,7 +1013,7 @@ app.factory('rules', function(settings) {
 
                 this.moves = moves;
                 console.timeEnd('Updating moves');
-                console.log('%cmoves:', LOG.state, this.moves.length);
+                //console.log('%cmoves:', LOG.state, this.moves.length);
             }
         },
         'result': {
@@ -1086,10 +1084,10 @@ app.factory('rules', function(settings) {
                         this.pieces[ENPASSANT_TARGET[to]] = null;
                     } else if (move.isPromote) {
                     //  A pawn has promoted. Delete it and create new piece in its place.
-                        console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
+                        //console.log('%cPromoting piece...', LOG.action, move.promote, move.promote.pieceType);
                         delete this.pieces[to];
                         this.pieces[to] = createPiece(move.promote, to);
-                        console.log('%cNew piece:', LOG.state, this.pieces[to]);
+                        //console.log('%cNew piece:', LOG.state, this.pieces[to]);
                     }
                 }
 
@@ -1118,7 +1116,7 @@ app.factory('rules', function(settings) {
                         this.castleRights[enemy] &= 1;
                     }
                 }
-                console.log('%ccastleRights', LOG.state, this.castleRights);
+                //console.log('%ccastleRights', LOG.state, this.castleRights);
 
             //  Update enpassant
                 if (move.isDouble) {
@@ -1126,7 +1124,7 @@ app.factory('rules', function(settings) {
                 } else {
                     this.enpassantAt = null;
                 }
-                console.log('%cenpassantAt', LOG.state, this.enpassantAt);
+                //console.log('%cenpassantAt', LOG.state, this.enpassantAt);
 
             //  Update halfmove clock
                 if ((move.isQuiet) && (move.piece.pieceType !== PAWN)) {
@@ -1334,7 +1332,7 @@ app.factory('rules', function(settings) {
         check.ray = ray;
         Object.freeze(check);
 
-        console.log('%cCreating new check...', LOG.action, check);
+        //console.log('%cCreating new check...', LOG.action, check);
         return check;
     }
 
@@ -1364,7 +1362,7 @@ app.factory('rules', function(settings) {
         pin.ray = ray;
         Object.freeze(pin);
 
-        console.log('%cCreating new pin...', LOG.action, pin);
+        //console.log('%cCreating new pin...', LOG.action, pin);
         return pin;
     }
 
