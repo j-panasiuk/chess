@@ -206,13 +206,6 @@ app.factory('settings', function() {
 	};
 	Object.freeze(settings.CONTROL_FLAGS);
 
-//	Create settings for Debug UI.
-	settings.debug = {
-		'displaySubscripts': true,
-		'displayOutlines': true
-		//'displayAttacked': false
-	};
-
 	function switchControls() {
 		var t = +(settings.controlWhite);
 		settings.controlWhite = +(settings.controlBlack);
