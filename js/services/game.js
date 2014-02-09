@@ -10,6 +10,7 @@ app.factory('game', function(settings, rules) {
 //  activePlayer          	(Quick Access) Pointer to active player object.
 //  pieces                  (Quick Access) currentPosition.pieceList object.
 //  history                 object storing serialized moves and positions.
+//  started                 (Quick Access) boolean
 //  result               	(Flag) game result.
 //  chessboardState         object storing additional information about each square on
 //                          the chessboard (useful for UI display).
@@ -29,6 +30,12 @@ app.factory('game', function(settings, rules) {
         'history':          	{ writable: true, enumerable: true, configurable: true },
         'result':           	{ writable: true, enumerable: true, configurable: true },
         'chessboardState':   	{ writable: true, enumerable: true, configurable: true },        
+    });
+
+    Object.defineProperty(game, 'started', {
+        get: function() {
+            return !!this.history.move;
+        }
     });
 
     Object.defineProperty(game, 'switchActive', {

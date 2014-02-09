@@ -54,12 +54,8 @@
                     <li><button ng-click="open()" ng-controller="newGameModalController" class="btn btn-info">New Game</button></li>
                 </ul>
 
-                <div id="nav-status-bar" ng-class="{user: game.activePlayer.isUser, ai: game.activePlayer.isAI}">
-                    <span ng-switch="game.activePlayer.color">
-                    <span ng-switch-when="0" class="ui-white">White to move</span>
-                    <span ng-switch-when="1" class="ui-black">Black to move</span>
-                    <span ng-switch-default>{{game.result}}</span>
-                    </span>
+                <div id="nav-status-bar">
+                    {{currentState()}}
                 </div>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -168,7 +164,7 @@
     <!-- Options modal -->
     <div class="modal-dialog" ng-controller="optionsModalController">
         <script type="text/ng-template" id="options-modal.html">
-        <div class="modal-content">
+        <div class="modal-content large-modal">
             <div class="modal-header">
                 <h4><span class="glyphicon glyphicon-cog grey"></span> Game Settings</h4>
             </div>
@@ -177,7 +173,8 @@
                 <tabset justified="true">
 
                     <tab heading="Gameplay">
-                        <table class="table table-condensed table-striped table-bordered">
+                        <div class="tab-content-wrapper">
+                        <table class="table table-striped-custom">
                             <tr ng-repeat="option in gameplay">
                                 <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
                                 <td width="30%">
@@ -198,12 +195,16 @@
                                 </td>
                             </tr>
                         </table>
+                        </div>
                     </tab>
 
                     <tab heading="Chessboard">
-                        <table class="table table-condensed table-striped table-bordered">
+                        <div class="tab-content-wrapper">
+                        <table class="table table-striped-custom">
                             <tr ng-repeat="option in chessboard">
-                                <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
+                                <td width="70%">
+                                    {{option.label}}<span class="pull-right current-value">{{option.value}}</span>
+                                </td>
                                 <td width="30%">
                                     <span ng-switch="option.input">
                                     <span ng-switch-when="checkbox">
@@ -222,10 +223,12 @@
                                 </td>
                             </tr>
                         </table>
+                        </div>
                     </tab>
 
                     <tab heading="Tools">
-                        <table class="table table-condensed table-striped table-bordered">
+                        <div class="tab-content-wrapper">
+                        <table class="table table-striped-custom">
                             <tr ng-repeat="option in tool">
                                 <td width="70%">{{option.label}}<span class="pull-right current-value">{{option.value}}</span></td>
                                 <td width="30%">
@@ -246,18 +249,19 @@
                                 </td>
                             </tr>
                         </table>
+                        </div>
                     </tab>
 
                     <tab heading="Advanced">
-
+                        <div class="tab-content-wrapper">
                         <form role="form">
-                          <div ng-repeat="option in advanced" class="form-group">
-                            <label for="FEN-input">Starting position (FEN)</label>
-                            <input ng-model="option.value" type="text" class="form-control" id="FEN-input" placeholder="{{option.label}}">
-                            <p class="current-value">{{settings.defaultSettings[option.id].value}}</p>
-                          </div>
+                            <div ng-repeat="option in advanced" class="form-group">
+                                <label for="FEN-input">Starting position (FEN)</label>
+                                <input ng-model="option.value" type="text" class="form-control" id="FEN-input" placeholder="{{option.label}}">
+                                <p class="current-value">{{settings.defaultSettings[option.id].value}}</p>
+                            </div>
                         </form>
-
+                        </div>
                     </tab>
 
                 </tabset>
@@ -276,15 +280,37 @@
     <!-- New Game modal -->
     <div class="modal-dialog" ng-controller="newGameModalController">
         <script type="text/ng-template" id="new-game-modal.html">
-        <div class="modal-content">
+        <div class="modal-content small-modal">
             <div class="modal-header">
                 <h4><span class="glyphicon glyphicon-cog grey"></span> New Game</h4>
             </div>
             <div class="modal-body">
 
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <div class="col-sm-1"></div>
+                        <label for="selectColor" class="col-sm-3 control-label">Color</label>
+                        <div class="col-sm-7">
+                            <select class="form-control">
+                                <option selected>White</option>
+                                <option>Black</option>
+                                <option>Random</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-1"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-1"></div>
+                        <label for="selectDifficulty" class="col-sm-3 control-label">Difficulty</label>
+                        <div class="col-sm-7">
+                            <p class="form-control frozen">Fast & Easy</p>
+                        </div>
+                        <div class="col-sm-1"></div>
+                    </div>
+                </form>
+
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default pull-left" ng-click="">Restore defaults</button>
                 <button class="btn btn-primary" ng-click="ok()">Accept</button>
                 <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
             </div>
