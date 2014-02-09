@@ -6,10 +6,16 @@ app.directive('chessboard', function(settings, rules, game) {
         replace: true,
         templateUrl: 'template-chessboard.html',
         scope: true,
-        link: function(scope) {
+        link: function(scope, element) {
             scope.settings = settings;
             scope.rules = rules;
-            scope.game = game;        
+            scope.game = game;
+
+            element.bind('contextmenu', function(evt) {
+                scope.$apply(function() {
+                    evt.preventDefault();
+                });
+            });       
         }
     };
 });

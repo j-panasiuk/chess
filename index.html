@@ -129,7 +129,7 @@
         <div ng-repeat="file in rules.FILE_NAMES" class="coordinate file-{{$index}}" ng-class="{reversed: settings.isReversed}">{{file | uppercase}}</div>
 	</div>
 
-    <div ng-show="settings.moveList" class="panel panel-default widget" id="movelist-container">
+    <div movelist ng-show="settings.moveList" class="panel panel-default widget" id="movelist-container">
         <div class="panel-heading">
             <strong><span class="glyphicon glyphicon-list grey"></span> Move List</strong>
             <button ng-click="settings.moveList = false" type="button" class="close pull-right" aria-hidden="true">&times;</button>
@@ -336,8 +336,9 @@
 <script src="js/services/engine.js" defer></script>
 <script src="js/controllers/main.js" defer></script>
 <script src="js/controllers/chessboard.js" defer></script>
-<script src="js/controllers/console.js" defer></script>
+<script src="js/controllers/tools.js" defer></script>
 <script src="js/controllers/options.js" defer></script>
 <script src="js/directives/chessboard.js" defer></script>
+<script src="js/directives/tools.js" defer></script>
 </body>
 </html>

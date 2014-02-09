@@ -258,7 +258,6 @@ app.factory('game', function(settings, rules) {
         //  Update last move.
             lastMove = game.history.move;
             if (lastMove) {
-                console.debug('Updating lastMove', lastMove);
                 self[lastMove.from].lastMove = true;
                 self[lastMove.to].lastMove = true;
             }            

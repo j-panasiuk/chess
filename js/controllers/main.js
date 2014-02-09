@@ -20,7 +20,7 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
         } else {
             return $scope.game.result ? RESULT[$scope.game.result] : ACTION[$scope.game.activePlayer.color];
         }
-    }
+    };
 
     $scope.keypress = function(evt) {
         console.log('%cKey pressed:', LOG.ui, evt.keyCode);
