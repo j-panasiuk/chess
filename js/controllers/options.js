@@ -6,14 +6,6 @@ app.controller('optionsModalController', function($scope, $modal, settings) {
         var modalInstance = $modal.open({
             templateUrl: 'options-modal.html',
             controller: modalInstanceController
-            //resolve: {
-            //    gameplay: function() {
-            //        return $scope.gameplay;
-            //    },
-            //    chessboard: function() {
-            //        return $scope.chessboard;
-            //    } 
-            //}
         });
 
         modalInstance.result.then(function() {
@@ -58,13 +50,14 @@ app.controller('newGameModalController', function($scope, $modal, settings) {
     $scope.open = function() {
         var modalInstance = $modal.open({
             templateUrl: 'new-game-modal.html',
-            controller: modalInstanceController,
-            resolve: {
-
-            }
+            controller: modalInstanceController
+        //  resolve: {
+        //
+        //  }
         });
 
         modalInstance.result.then(function() {
+            $scope.$emit('newGameConfirmed');
         //  Modal confirmed.
         }, function() {
         //  Modal dismissed.
