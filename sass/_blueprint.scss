@@ -255,3 +255,47 @@
         max-height: 8 * $square-size - 40px;
     }
 }
+
+
+/*  MODALS
+//  ------------------
+//  $widget-margin
+//  ------------------
+*/
+
+.modal-content {
+    margin: 60px auto;
+
+    &.small-modal {
+        width: 36%;
+    }
+    &.large-modal {
+        width: 48%;
+    }
+
+    .modal-body {
+
+        .tab-content-wrapper {
+            margin-top: -1px;
+        }
+
+        .table {
+            margin: 0;
+
+            tr {
+                td {
+                    &:first-child {
+                        padding-left: 15px;
+                    }
+                    &:last-child {
+                        padding-right: 15px;
+                    }
+                }
+            }
+        }
+
+        form {
+            padding: 10px 15px;
+        }
+    }
+}

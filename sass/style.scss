@@ -1,4 +1,6 @@
-/* ANGULAR BOOTSTRAP */
+/*  ANGULAR + BOOTSTRAP NAV FIX
+//  ---------------------------
+*/
 .nav, 
 .pagination, 
 .carousel, 
@@ -7,7 +9,9 @@
 }
 
 
-/* ANGULAR BOOTSTRAP MODAL FIX */
+/*  ANGULAR + BOOTSTRAP3 MODAL FIX
+//  ------------------------------
+*/
 .modal {
     display: block;
     height: 0;
@@ -24,6 +28,29 @@
 .modal-header:after {
     display: table;
     content: " ";
+}
+
+
+/*  HELPER CLASSES
+//  --------------
+*/
+
+.frozen {
+    background: #f7f7f7;
+    color: #bbb;  
+}
+
+.glyphicon.grey {
+    color: #bbb;
+}
+
+.default-select-disabled {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 
@@ -47,6 +74,11 @@ html, body, #body-container {
 body {
     background: #555;
 }
+
+
+/*  TOP NAVBAR
+//  ------------------
+*/
 
 .navbar {
     margin: 0;
@@ -79,19 +111,16 @@ body {
     font-weight: bold;
 
     color: #ccc;
-    background-color: rgba(0,0,0,.1);
-    border: 1px solid rgba(0,0,0,.05);
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
-
-    &.user {
-
-    }
-    &.ai {
-
-    }
+    background-color: rgba(0,0,0,.06);
+    border: 1px solid rgba(0,0,0,.04);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.04);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.04);
 }
 
+
+/*  SIDE NAVBARS
+//  ------------------
+*/
 
 .nav-side {
     position: absolute;
@@ -153,17 +182,10 @@ body {
 
 }
 
-.widget {
 
-    &.panel {
-        box-shadow: 0 0 10px rgba(0,0,0,.4);
-    }
-    
-}
-
-.widget .table.table-condensed td {
-    padding: 0 4px;
-}
+/*  CHESSBOARD
+//  ------------------
+*/
 
 #chessboard-container {
 	position: relative;
@@ -282,69 +304,124 @@ body {
 }
 
 
-.glyphicon.grey {
-	color: #bbb;
+/*  WIDGETS
+//  ------------------
+*/
+
+.widget {
+
+    &.panel {
+        box-shadow: 0 0 10px rgba(0,0,0,.4);
+
+        .panel-body {
+            font-size: 87.5%;
+        }
+    }
+    
+}
+
+.widget .table.table-condensed td {
+    padding: 0 4px;
+}
+
+#movelist-container {
+    position: relative;
+    display: block;
+    float: left;
+    overflow: hidden;    
+
+    .panel-body {
+        overflow-y: scroll;
+    }
+}
+
+#console-container {
+	position: relative;
+	display: block;
+	float: left;
+    overflow: hidden;
+
+    .panel-body {
+        overflow-y: scroll;
+    }
 }
 
 
-.default-select-disabled {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: moz-none;
-    -ms-user-select: none;
-    user-select: none;
+/*  MODALS
+//  ------------------
+*/
+
+.modal-content {
+
+    .modal-body {
+        .tab-content-wrapper {
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+
+        .table.table-striped-custom {
+            tr:nth-child(even) {
+                background: #f4f4f4;
+            }
+        }
+    }
+
 }
 
-/* HIGHLIGHTS */
-.ui-state-highlight { 
-	background: rgba(120,250,80,.45); 
-}
-.drag-hover { 
-	background: rgba(255,235,90,.7);
+.modal select {
+    width: 100%;
 }
 
-/* DEBUG TOOLS */
+.modal .current-value {
+    font-style: italic;
+    color: #999;
+}
+
+
+/*  DEBUG MODE
+//  ------------------
+*/
+
 .chessboard {
 
-	.subscript.square-id {
-	    position: absolute;
-	    bottom: 1px;
-	    right: 3px;
-	    font-size: 11px;
-	    line-height: 100%;
-	    color: #999;
-	}	
-	.subscript.data {
-	    position: absolute;
-	    bottom: 1px;
-	    left: 2px;
-	    font-size: 11px;
-	    line-height: 100%;
-	    color: #444;
-	}
+    .subscript.square-id {
+        position: absolute;
+        bottom: 1px;
+        right: 3px;
+        font-size: 11px;
+        line-height: 100%;
+        color: #999;
+    }   
+    .subscript.data {
+        position: absolute;
+        bottom: 1px;
+        left: 2px;
+        font-size: 11px;
+        line-height: 100%;
+        color: #444;
+    }
 
-	.square-outline {
-		opacity: 0;
-	    position: absolute;
+    .square-outline {
+        opacity: 0;
+        position: absolute;
 
-	  	&.check {
-	    	opacity: 1;
-	    	border-style: solid;
-		    border-color: #fa3; 
+        &.check {
+            opacity: 1;
+            border-style: solid;
+            border-color: #fa3; 
             outline: 1px solid #fa3;  
-		}
-		&.pin {
-			opacity: 1;
-			border-style: dashed;
-		    border-color: #777;    
-		}
+        }
+        &.pin {
+            opacity: 1;
+            border-style: dashed;
+            border-color: #777;    
+        }
 
-		-webkit-transition: opacity .25s, border-color .25s;
-		-moz-transition: opacity .25s, border-color .25s;
-		-o-transiton: opacity .25s, border-color .25s;
-		transition: opacity .25s, border-color .25s;
-	}
+        -webkit-transition: opacity .25s, border-color .25s;
+        -moz-transition: opacity .25s, border-color .25s;
+        -o-transiton: opacity .25s, border-color .25s;
+        transition: opacity .25s, border-color .25s;
+    }
 
     &.debug {
         background: #eee;
@@ -362,47 +439,6 @@ body.debug {
     #content-container, #chessboard-container, #chessboard {
         outline: 1px dotted rgba(0,0,0,.65);
     }
-}
-
-
-#movelist-container {
-    position: relative;
-    display: block;
-    float: left;
-    overflow: hidden;    
-
-    .panel-body {
-        overflow-y: scroll;
-    }
-}
-
-
-#console-container {
-	position: relative;
-	display: block;
-	float: left;
-    overflow: hidden;
-
-    .panel-body {
-        overflow-y: scroll;
-    }
-}
-
-
-/* MODAL */
-
-.modal-content {
-    width: 45%;
-    margin: 60px auto;
-}
-
-.modal select {
-    width: 100%;
-}
-
-.modal .current-value {
-    font-style: italic;
-    color: #999;
 }
 
 
