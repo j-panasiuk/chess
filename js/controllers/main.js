@@ -8,20 +8,6 @@ app.controller('mainController', function($scope, $timeout, settings, rules, gam
     $scope.game = game;
     $scope.engine = engine;
 
-    $scope.currentState = function() {
-        var RESULT, ACTION;
-        RESULT = {};                    ACTION = {};
-        RESULT[1] = 'Game drawn';      ACTION[0] = 'White to move';
-        RESULT[2] = 'White wins';      ACTION[1] = 'Black to move';
-        RESULT[3] = 'Black wins';
-
-        if (!$scope.game.started) {
-            return 'Game ready.';
-        } else {
-            return $scope.game.result ? RESULT[$scope.game.result] : ACTION[$scope.game.activePlayer.color];
-        }
-    };
-
     $scope.keypress = function(evt) {
         console.log('%cKey pressed:', LOG.ui, evt.keyCode);
         switch (evt.keyCode) {

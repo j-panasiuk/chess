@@ -54,9 +54,7 @@
                     <li><button ng-click="open()" ng-controller="newGameModalController" class="btn btn-info">New Game</button></li>
                 </ul>
 
-                <div id="nav-status-bar">
-                    {{currentState()}}
-                </div>
+                <div status id="nav-status-bar">{{currentState()}}</div>
 
                 <ul class="nav navbar-nav navbar-right">
                     <li><a ng-click="debug()"><span class="glyphicon glyphicon-wrench grey"></span> Debug</a></li>
