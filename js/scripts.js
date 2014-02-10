@@ -10,7 +10,7 @@ var LOG = {
     attention: "color:Fuchsia; font-weight:bold; line-height:200%;"
 };
 
-console.log('%cExtending prototypes...', LOG.action);
+//console.log('%cExtending prototypes...', LOG.action);
 //  *** EXTEND PROTOTYPES
 //  -----------------------------------------------------------------
 //  Squares on the chessboard are represented by numbers (integers).

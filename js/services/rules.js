@@ -34,12 +34,17 @@ app.factory('rules', function(settings) {
 //  CASTLE_ROOKS                Hash of rook move coordinates for castling.        
 //  ENPASSANT_TARGET            Hash of captured pawn's coordinate (captured enpassant).
 //  ACTIVITY                    Hash of piece activity at each square.
+//  PIECE_POINTS                Hash of piece point values.
 //  validFen                    RegEx for FEN string validation.
 //
 //  createPosition(fen)         Factory function of position objects.
 //  opposite                    Returns opposite color code.
 //  proximity                   Returns array of squares within given distance.
 //  updateSufix                 Adds check/checkmate sign to move notation.
+//
+//  *** Added for testing ******************************************************
+//  createPiece
+//
 
 //  Declare local variables.
     var COLORS, COLOR_NAME, COLOR_MASK, SQUARES, FILE_NAMES, RANK_NAMES, SQUARE_NAME, RANKS, FILES, // Colors & squares.
@@ -54,6 +59,7 @@ app.factory('rules', function(settings) {
         _position, _check, _pin, _piece, _move, // Object prototypes.
         _pawn, _knight, _bishop, _rook, _queen, _king, // Piece prototypes.
         _pieceList, _pinList, // Object list prototypes.
+        PIECE_POINTS, // Piece values hash.
         WHITE = 0, BLACK = 1, // Color codes.
         PAWN = 1, KNIGHT = 2, KING = 3, BISHOP = 5, ROOK = 6, QUEEN = 7, // Piece type codes.
         W = 16, B = 24, RANGED_FLAG = 4; // Piece masks.
@@ -1781,6 +1787,15 @@ app.factory('rules', function(settings) {
         }        
     });
 
+    PIECE_POINTS = {};
+    PIECE_POINTS[1] = _pawn.points;
+    PIECE_POINTS[2] = _knight.points;
+    PIECE_POINTS[3] = _king.points;
+    PIECE_POINTS[5] = _bishop.points;
+    PIECE_POINTS[6] = _rook.points;
+    PIECE_POINTS[7] = _queen.points;
+    rules.PIECE_POINTS = PIECE_POINTS;
+
 //  createPiece :: function()
 //  Factory function, returns piece object based on piece code and square.
     function createPiece(code, square) {
@@ -1821,6 +1836,7 @@ app.factory('rules', function(settings) {
 
         return piece;
     }
+    rules.createPiece = createPiece;
 
 //  ** MOVE REPRESENTATION
 //  -----------------------------------------------------
