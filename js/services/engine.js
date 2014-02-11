@@ -215,7 +215,7 @@ app.factory('engine', function($q, rules, game) {
                 value = 0;
             pieces[color].filter(function(piece) { return piece.isLight; }).forEach(function(piece) {
                 if (piece.square.rank === firstRank) {
-                    value -= 4;
+                    value -= 5;
                 }
             });
             return sign[color] * value;

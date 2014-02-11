@@ -377,6 +377,9 @@ app.factory('rules', function(settings) {
             ACTIVITY[B|PAWN][square] = activity + advancement(BLACK, square.rank);
         }
 
+        ACTIVITY[W|PAWN][19] -= 5;         ACTIVITY[B|PAWN][99] -= 5;
+        ACTIVITY[W|PAWN][20] -= 5;         ACTIVITY[B|PAWN][100] -= 5;
+
         function advancement(color, rank) {
         //  Return bonus for pawn advanced position.
         //  (Use multiplier later, if the pawn is passed!)
