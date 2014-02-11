@@ -191,85 +191,16 @@ app.factory('engine', function($q, rules, game) {
             pieces = position.pieceList,
             activity = rules.ACTIVITY,
             proximity = rules.proximity,
-            PSEUDO_HANGING_MODIFIER = 0.05,
-            HANGING_MODIFIER = 0.75,
             value = 0;
 
         sign = {};
         sign[0] = 1;
-        sign[1] = -1;        
+        sign[1] = -1;     
 
         function evaluateMaterial(color) {
             var value = 0;
             pieces[color].forEach(function(piece) { value += piece.points; });
             return sign[color] * value;
-        }
-
-        function evaluateAttacked(color) {
-            var enemy = +!color,
-                exchanges = [],
-                hanging = [],
-                value = 0;
-
-            pieces[color].filter(function(piece) { 
-                return attacked[piece.square][enemy].length && (piece.name !== 'king'); 
-            })
-            .forEach(function(piece) {
-                if (attacked[piece.square][piece.color].length) {
-                //  This piece is attacked and defended, which means an exchange (possibly a sequence
-                //  of exchanges) is possible on this square. Create exchange object to be evaluated later.
-                    exchanges.push({
-                        'piece': piece,
-                        'attackers': attacked[piece.square][enemy],
-                        'defenders': attacked[piece.square][piece.color]
-                    });
-                } else {
-                //  This piece is hanging, it's attacked and not defended.
-                    hanging.push(piece);
-                }
-            });
-
-        //  Evaluate hanging pieces.
-            if (!hanging.length) {
-                return 0;
-            }
-            if (hanging.length > 1) {
-                hanging = _.sortBy(hanging, function(x, y) { return x.points - y.points; });
-            }
-
-        //  Count hanging material.
-        //  Active side has a chance to save most valuable hanging piece.            
-            if (position.activeColor === color) {
-                value += PSEUDO_HANGING_MODIFIER * hanging.pop().points;
-            }
-            if (hanging.length) {
-                value += HANGING_MODIFIER * hanging.map(function(piece) {
-                    return piece.points;
-                }).reduce(function(x, y) {
-                    return x + y;
-                });                
-            }
-
-            return sign[enemy] * value;
-        }
-
-        function evaluateExchange(exchange) {
-        //  Returns expected outcome of exchanges at position occupied by given piece.
-        //  Exchanges are evaluated with optimal captures for both sides (always try to capture
-        //  a piece with the least valuable piece first, in case of enemy recapture).
-        //  exchange: {
-        //      piece:          piece object under attack
-        //      attackers:     	array of attacking piece types, sorted increasingly
-        //                      pawn, knight, rook, pawn == [1, 1, 2, 5]
-        //      defenders:      array of defending pieces, similar to above
-        //  }
-            console.debug('Evaluating exchange');
-            var value = 0;
-
-            //for (;;) {
-            //    nextAttacker = exchange.attackers.shift();
-            //}
-            return value;
         }
 
         function evaluateActivity(color) {
@@ -325,101 +256,352 @@ app.factory('engine', function($q, rules, game) {
             value -= 2 * Math.max(0, empty - 2);
             return sign[color] * value;
         }
-
         
         colors.forEach(function evaluateColor(color) {
             value += evaluateMaterial(color);
-            value += evaluateAttacked(color);
+            value += evaluateExchanges(position, color);
             value += evaluateActivity(color);
             value += evaluateDevelopment(color);
             value += evaluateKingSafety(color);
         });
 
-    /*
-    //  Modifiers for attacked pieces.
-    //  For every piece check whether it is attacked.
-    //  If so, look for defending pieces. Compare captured / recaptured piece values.
-    //  If not sufficiently defended, treat piece as hanging and decrease the evaluation.
-        hangingPiecesWhite = [];
-        hangingPiecesBlack = [];
-
-        for (var i = 0; i < piecesWhite.length; i++) {
-            square = piecesWhite[i].square;
-            if (attacked[square][1].length) {
-            //  This piece is under attack.
-                if (!attacked[square][0].length) {
-                //  This piece is hanging.
-                    //value -= hangingModifier * piecesWhite[i].points;
-                    hangingPiecesWhite.push(piecesWhite[i].points);
-                } else {
-                //  This piece is defended.
-                    leastValuableAttacker = _.min(attacked[square][1]);
-                    if (getPieceValue(leastValuableAttacker) < piecesWhite[i].points) {
-                        //value -= hangingModifier * (piecesWhite[i].points - getPieceValue(leastValuableAttacker));
-                        hangingPiecesWhite.push(piecesWhite[i].points - getPieceValue(leastValuableAttacker));
-                    }
-                }
-            }
-        }
-        for (var i = 0; i < piecesBlack.length; i++) {
-            square = piecesBlack[i].square;
-            if (attacked[square][0].length) {
-            //  This piece is under attack.
-                if (!attacked[square][1].length) {
-                //  This piece is hanging.
-                    //value += hangingModifier * piecesBlack[i].points;
-                    hangingPiecesBlack.push(piecesBlack[i].points);
-                } else {
-                //  This piece is defended.
-                    leastValuableAttacker = _.min(attacked[square][0]);
-                    if (getPieceValue(leastValuableAttacker) < piecesBlack[i].points) {
-                        //value += hangingModifier * (piecesBlack[i].points - getPieceValue(leastValuableAttacker));
-                        hangingPiecesBlack.push(piecesBlack[i].points - getPieceValue(leastValuableAttacker));
-                    }
-                }
-            }
-        }
-
-    //  Penalty for hanging pieces.
-        hangingPiecesWhite = hangingPiecesWhite.sort(function(x, y) { return y - x; });
-        hangingPiecesBlack = hangingPiecesBlack.sort(function(x, y) { return y - x; });
-        if (position.activeColor === 0) {
-        //  It's white's turn to play, so he has the chance to save the most valuable hanging piece.
-        //  Remaining attacked pieces count as hanging.
-            if (hangingPiecesWhite.length) {
-                value -= firstHangingModifier * hangingPiecesWhite[0];
-                if (hangingPiecesWhite.length > 1) {
-                    value -= hangingModifier * hangingPiecesWhite.slice(1).reduce(function(x, y) { 
-                        return x + (+y);
-                    });
-                }
-            }
-            if (hangingPiecesBlack.length) {
-                value += hangingModifier * hangingPiecesBlack.reduce(function(x, y) { 
-                    return x + (+y);
-                });
-            }            
-            
-        } else {
-
-            if (hangingPiecesBlack.length) {
-                value -= firstHangingModifier * hangingPiecesBlack[0];
-                if (hangingPiecesBlack.length > 1) {
-                    value -= hangingModifier * hangingPiecesBlack.slice(1).reduce(function(x, y) { 
-                        return x + (+y);
-                    });
-                }
-            }
-            if (hangingPiecesWhite.length) {
-                value += hangingModifier * hangingPiecesWhite.reduce(function(x, y) { 
-                    return x + (+y);
-                });
-            }
-
-        }
-    */
         return value;
     }
+
+//  Exchange evaluation.
+    function evaluateExchange(exchange) {
+    //  Returns expected outcome of exchanges at position occupied by given piece.
+    //  Exchanges are evaluated with optimal captures for both sides (always try to capture
+    //  a piece with the least valuable piece first, in case of enemy recapture).
+    //  
+        var defenders, // [target | sorted(defenders) | king]
+            attackers, // [sorted(attackers) | king]
+            isAttackersTurn, // Indicates who's next to capture.
+            fallback,
+            nextCapture,
+            nextTarget, // Piece to be captured next.
+            value, // Bodycount updated after each (re)capture.
+            POINTS = rules.PIECE_POINTS; // Piece values hash (PIECE_POINTS[1] == 100 ...)
+
+    //  Validate exchange object.
+    //  EXPECT exchange = {
+    //      target:         piece type under attack
+    //      attackers:      array of attacking piece types, sorted increasingly
+    //                      pawn, knight, rook, pawn == [1, 1, 2, 5]
+    //      defenders:      array of defending pieces, similar to above
+    //  }
+    //
+        try {
+            if (!exchange) throw 'Missing exchage object';
+            if (!exchange.target || !exchange.defenders || !exchange.attackers) throw 'Invalid exchage type';
+            if (!_.contains([1,2,5,6,7], exchange.target)) throw 'Invalid exchange target';
+
+            if (!exchange.attackers.length || exchange.attackers.some(function(attacker) {
+                return !_.contains([1,2,3,5,6,7], attacker);
+            })) throw 'Invalid attackers';
+        
+            if (exchange.defenders.length && exchange.defenders.some(function(defender) {
+                return !_.contains([1,2,3,5,6,7], defender);
+            })) throw 'Invalid defenders';
+        
+        } catch(e) {
+            console.log('%cCaught invalid evaluate exchange call', LOG.warn, e.message);
+            return undefined;
+        }
+
+    //  Check if there are any defenders. If not, the exchange is a simple capture.
+    //  In that case return target piece value, as it can be grabbed for free.
+    //
+        if (!exchange.defenders.length) {
+            return POINTS[exchange.target];
+        }
+
+    //  Arrange defenders array (at least 1 defender at this point).
+    //  Target piece has no choice, it's going to get captured first no matter what.
+    //  Following defenders are sorted in increasing value order, since less valuable
+    //  pieces should capture first. The king is always placed last, because it may
+    //  only take part in exchange when the square is not attacked anymore by the enemy.
+    //
+        defenders = exchange.defenders;
+        if (_.contains(defenders, 3)) {
+            _.pull(defenders, 3);
+            defenders.sort().push(3);
+        } else {
+            defenders.sort();
+        }
+        defenders.unshift(exchange.target);
+
+    //  Arrange attackers array.
+    //  Sort pieces in increasing value order.
+    //  The king goes last.
+    //
+        attackers = exchange.attackers;
+        if (_.contains(attackers, 3)) {
+            _.pull(attackers, 3);
+            attackers.sort().push(3);
+        } else {
+            attackers.sort();
+        }
+
+        isAttackersTurn = true; // Attacker captures first.
+        value = 0; // Nothing captured yet.
+        fallback = {
+            'attacker': 0,
+            'defender': null,
+            'sentinel': 'attacker'
+        }; // Fallback values in case the exchange goes horribly wrong.
+        nextCapture = canCapture(attackers[0], defenders[0]); // Check next capture legality.
+
+    //  Return if the first capture is illegal.
+    //  This is possible when a king tries to capture defended piece.
+        if (!nextCapture) {
+            return 0;
+        }
+
+        while (nextCapture) {
+
+        //  Set fallback values.
+            if (isAttackersTurn) {
+                if (value > fallback.attacker) {
+                //  Current value is an improvement over previous attacker fallback point.
+                //  Check if abandoning current fallback will not cede sentinel position to
+                //  a defender's inferior fallback. In that case, leave current sentinel in place.
+                //  Otherwise, set attacker fallback to current value.
+                //
+                    if ((fallback.sentinel === 'defender') || (fallback.defender >= fallback.attacker)) {
+                        fallback.attacker = value;
+                        fallback.sentinel = 'defender';
+                    }
+                }
+            } else {
+                if (fallback.defender === null) {
+                //  Establish first defender fallback (after first capture).
+                    fallback.defender = value;
+                }
+                if (value < fallback.defender) {
+                //  Current value is an improvement over previous defender fallback point.
+                //  Before abandoning sentinel position, compare with next attacker fallback.
+                //
+                    if ((fallback.sentinel === 'attacker') || (fallback.attacker <= fallback.defender)) {
+                        fallback.defender = value;
+                        fallback.sentinel = 'attacker';
+                    }
+                }
+            }
+
+            nextTarget = shiftNextTarget(isAttackersTurn);
+            value += isAttackersTurn ? POINTS[nextTarget] : -POINTS[nextTarget];
+            
+
+            if (!isAttackersTurn) {
+                nextCapture = canCapture(attackers[0], defenders[0]);
+            } else {
+                nextCapture = canCapture(defenders[0], attackers[0]);
+            }
+
+            isAttackersTurn = !isAttackersTurn;
+        }
+
+    //  Evaluate optimal exit point.
+    //
+    //  First established fallback point in the sequence is the sentinel.
+    //  The exchange is simulated from the beginning. 
+    //  Once reached, the sentinel has to make a decision. It can:
+    //  A.  Stop the exchange       (return current value)
+    //  B.  Continue exchanging     (let next fallback controller make the decision)
+    //
+    //  The sentinel makes its decision by comparing its current value with expected alternatives
+    //  + opponent's fallback point
+    //  + final value after all exchanges have been made
+    //
+    //  After continuing, exit point will be selected by the opponent.
+    //  This means that if at least one of the alternatives is inferior to the current
+    //  value, the opponent will choose it.
+    // 
+    //  Thus it only makes sense to continue, if both remaining exit values are superior. 
+    //
+        if (fallback.sentinel === 'attacker') {
+            if ((fallback.attacker < fallback.defender) && (fallback.attacker < value)) {
+            //  Continue. Defender goes for minimal losses.
+                return fallback.defender < value ? fallback.defender : value;
+            } else {
+            //  Attacker stops capturing here.
+                return fallback.attacker;
+            }
+        } else {
+            if ((fallback.defender > fallback.attacker) && (fallback.defender > value)) {
+            //  Continue. Attacker goes for maximal gain.
+                return fallback.defender > value ? fallback.defender : value;
+            } else {
+            //  Defender stops capturing here.
+                return fallback.defender;
+            } 
+        }
+
+        function canCapture(capturePiece, recapturePiece) {
+        //  A capture is possible as long as there is a capturing piece ready
+        //  and it's not king capturing a defended piece.
+            if (capturePiece) {
+                //if ((capturePiece === 3) && recapturePiece) {
+                //    return false;
+                //}
+                return true;
+            }
+            return false;
+        }
+
+        function shiftNextTarget(isAttackersTurn) {
+        //  Return next target (piece which will now be occupying target square).
+        //  Shift attackers/defenders array by one, since new target piece can't
+        //  be defending its own square.
+        //  
+            return isAttackersTurn ? defenders.shift() : attackers.shift();
+        }
+    }
+    engine.evaluateExchange = evaluateExchange;
+
+
+    function evaluateExchanges(position, color) {
+    //  Evaluate all potential exchanges.
+    //  Active side can choose to initiate any of available exchanges (and will
+    //  most likely go for the most advantageous one). Passive side, however, has
+    //  to wait one turn to initiate exchange, so its most advantageous option
+    //  will very likely have been prevented by the opponent. Because of this
+    //  passive side's best exchage receives penalty multiplier for being "threat
+    //  of exchange" rather than actual exchange possibility.
+    //
+    //  exchange: {                                 Required:
+    //      target: <captured piece type>           1
+    //      attackers: [<attacker piece types>]     1+
+    //      defenders: [<defender piece types>]     0+ 
+    //  }
+    //
+        var capturablePieces,
+            piece,
+            exchanges = [],
+            enemy = +!color,
+            sign = [1, -1],
+            attacked = position.attacked,
+            value = 0;
+
+        capturablePieces = position.pieceList[enemy].filter(function(piece) {
+            return attacked[piece.square][color].length && (piece.name !== 'king');
+        });
+
+        for (var i = 0; i < capturablePieces.length; i++) {
+            piece = capturablePieces[i];
+            exchanges.push({
+                'target': piece.type,
+                'attackers': attacked[piece.square][color],
+                'defenders': attacked[piece.square][enemy]
+            });  
+        }
+
+        if (!exchanges.length) {
+        //  Can't capture anything at the moment.
+            return 0;
+        }
+
+        for (var i = 0; i < exchanges.length; i++) {
+            value += evaluateExchange(exchanges[i]);
+        }
+
+        value *= (color === position.activeColor) ? 0.8 : 0.05;
+
+        return sign[color] * value;
+
+    /*
+        var exchangeDeltas,
+            EXCHANGES,
+            capturablePieces,
+            piece,
+            ATTACKED,
+            enemy,
+            sign = [1, -1], // Value multiplier (sign) for white (+) and black (-).
+            EXCHANGE_PRIMARY_MODIFIER = 0.9, // Multiplier for the first piece to capture.
+            EXCHANGE_PRIMARY_THREAT_MODIFIER = 0.04, // Multiplier for opponent's future exchange threat.
+            EXCHANGE_THREAT_MODIFIER = 0.5, // Multiplier for the rest of possible exchanges.
+            value = 0; // Final evaluation.
+
+    //  Look for enemy pieces under attack (exclude the king).
+    //  For each attacked piece, store information about the target, attacking and defending
+    //  pieces in an `exchange` object, to be evaluated later.
+    //
+        EXCHANGES = [];
+        ATTACKED = position.attacked;
+        enemy = +!color;
+
+        capturablePieces = position.pieceList[enemy].filter(function(piece) {
+            return ATTACKED[piece.square][color].length && (piece.name !== 'king');
+        });
+
+        for (var i = 0; i < capturablePieces.length; i++) {
+            piece = capturablePieces[i];
+            EXCHANGES.push({
+                'target': piece.type,
+                'attackers': ATTACKED[piece.square][color],
+                'defenders': ATTACKED[piece.square][enemy]
+            });  
+        }
+
+        if (!EXCHANGES.length) {
+        //  Can't capture anything at the moment.
+            return 0;
+        }
+
+    //  All potential captures for this color have been established
+    //  (at this point there must be at least one).
+    //
+    //  Evaluate every one of them
+    //  (exchange evaluation returns expected material change from the exchange,
+    //  where both sides keep recapturing as long as it's beneficial for them).
+    //
+    //  Discard negative (and neutral) deltas, as current side gains no benefit
+    //  from them, so they may well be ignored. If all exchanges are discarded,
+    //  return stop evaluation and return 0 value.
+    //
+    //  Finally, sort them in increasing order, since the larger deltas present
+    //  bigger threat to the opponent, and thus should be attended to first.
+    //
+        exchangeDeltas = EXCHANGES.map(function(exchange) {
+            return evaluateExchange(exchange);
+        });
+
+        exchangeDeltas = exchangeDeltas.filter(function(delta) {
+            return sign[color] * delta > 0;
+        });
+
+        exchangeDeltas = exchangeDeltas.map(function(delta) {
+            return Math.abs(delta);
+        });
+
+        if (!exchangeDeltas.length) {
+        //  No favorable captures. Abort.
+            return 0;
+        } 
+
+        exchangeDeltas.sort();
+
+    //  Threat of an exchange must be evaluated differently, depending on which side has
+    //  the next move. Active side can initiate the most beneficial exchange and gain
+    //  material advantage. Passive side, however, has to wait one turn, so it is very likely
+    //  that the opponent will have responded to the most dangerous exchange. Becuase of this
+    //  passive side's largest delta receives penalty multiplier for being "threat of exchange", 
+    //  rather than clear material gain.
+    //
+        if (position.activeColor !== color) {
+            value += EXCHANGE_PRIMARY_THREAT_MODIFIER * exchangeDeltas.pop();
+        } else {
+            value += EXCHANGE_PRIMARY_MODIFIER * exchangeDeltas.pop();
+        }        
+        for (var i = 0; i < exchangeDeltas.length; i++) {
+            value += EXCHANGE_THREAT_MODIFIER * evaluateExchange(exchangeDeltas[i]);
+        }
+
+        return sign[color] * value;
+        */
+    }
+    engine.evaluateExchanges = evaluateExchanges;    
 
     engine.tree = tree;
     return engine;
