@@ -1,0 +1,5058 @@
+.nav,
+.pagination,
+.carousel,
+.panel-title a {
+  cursor: pointer; }
+
+.modal {
+  display: block;
+  height: 0;
+  overflow: visible; }
+
+.modal-body:before,
+.modal-body:after {
+  display: table;
+  content: " "; }
+
+.modal-header:before,
+.modal-header:after {
+  display: table;
+  content: " "; }
+
+.frozen {
+  background: #f7f7f7;
+  color: #bbb; }
+
+.glyphicon.grey {
+  color: #bbb; }
+
+.default-select-disabled {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: moz-none;
+  -ms-user-select: none;
+  user-select: none; }
+
+/* APP */
+html, body, #body-container {
+  height: 100%; }
+
+body {
+  background: #555; }
+
+.navbar {
+  margin: 0;
+  z-index: 10;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.1); }
+  .navbar .nav li a {
+    font-weight: bold;
+    color: #ccc; }
+    .navbar .nav li a:hover {
+      color: #fff; }
+  .navbar .nav li .btn {
+    font-weight: bold; }
+
+#nav-status-bar {
+  position: absolute;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  color: #ccc;
+  background-color: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.04); }
+
+.nav-side {
+  position: absolute;
+  display: block;
+  z-index: 1;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); }
+  .nav-side .nav-side-content {
+    position: relative; }
+    .nav-side .nav-side-content .list-group {
+      position: absolute; }
+      .nav-side .nav-side-content .list-group .list-group-item {
+        border: none;
+        border-radius: 0;
+        text-align: center;
+        background: none;
+        color: #fff; }
+        .nav-side .nav-side-content .list-group .list-group-item.opened {
+          outline: 1px solid #fff; }
+        .nav-side .nav-side-content .list-group .list-group-item.player-control.active {
+          background: #aaa;
+          outline: 1px solid;
+          -webkit-transition: background .4s;
+          -moz-transition: background .4s;
+          -ms-transition: background .4s;
+          -o-transiton: background .4s;
+          transition: background .4s; }
+        .nav-side .nav-side-content .list-group .list-group-item .option:hover {
+          color: #666;
+          cursor: pointer; }
+        .nav-side .nav-side-content .list-group .list-group-item .option.option-white {
+          color: #fff; }
+        .nav-side .nav-side-content .list-group .list-group-item .option.option-black {
+          color: #333; }
+
+#chessboard-container {
+  position: relative;
+  display: block;
+  float: left; }
+  #chessboard-container .coordinate {
+    position: absolute;
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #bbb; }
+
+.chessboard {
+  position: relative;
+  background: #eee;
+  background: url("../img/chessboard.jpg") no-repeat center center;
+  background-size: cover;
+  outline: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  cursor: default; }
+  .chessboard .square {
+    position: absolute; }
+    .chessboard .square .square-value {
+      text-align: center;
+      color: #d43; }
+    .chessboard .square.lastmove {
+      box-shadow: inset 0 0 0 2px rgba(125, 125, 255, 0.8); }
+    .chessboard .square.selectable {
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65), inset 0 0 0 2px #777777; }
+      .chessboard .square.selectable:hover {
+        background-color: rgba(255, 205, 55, 0.65);
+        box-shadow: inset 0 0 0 2px #444444; }
+  .chessboard .piece {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: cover; }
+    .chessboard .piece.white.pawn {
+      background-image: url("../img/pieces/white-pawn.png"); }
+    .chessboard .piece.white.knight {
+      background-image: url("../img/pieces/white-knight.png"); }
+    .chessboard .piece.white.bishop {
+      background-image: url("../img/pieces/white-bishop.png"); }
+    .chessboard .piece.white.rook {
+      background-image: url("../img/pieces/white-rook.png"); }
+    .chessboard .piece.white.queen {
+      background-image: url("../img/pieces/white-queen.png"); }
+    .chessboard .piece.white.king {
+      background-image: url("../img/pieces/white-king.png"); }
+    .chessboard .piece.black.pawn {
+      background-image: url("../img/pieces/black-pawn.png"); }
+    .chessboard .piece.black.knight {
+      background-image: url("../img/pieces/black-knight.png"); }
+    .chessboard .piece.black.bishop {
+      background-image: url("../img/pieces/black-bishop.png"); }
+    .chessboard .piece.black.rook {
+      background-image: url("../img/pieces/black-rook.png"); }
+    .chessboard .piece.black.queen {
+      background-image: url("../img/pieces/black-queen.png"); }
+    .chessboard .piece.black.king {
+      background-image: url("../img/pieces/black-king.png"); }
+    .chessboard .piece.ng-enter, .chessboard .piece.ng-leave {
+      -webkit-transition: all .25s;
+      -moz-transition: all .25s;
+      -ms-transition: all .25s;
+      -o-transiton: all .25s;
+      transition: all .25s; }
+    .chessboard .piece.ng-enter, .chessboard .piece.ng-leave.ng-leave-active {
+      opacity: 0; }
+    .chessboard .piece.ng-leave.ng-leave-active {
+      -webkit-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg); }
+    .chessboard .piece.ng-leave, .chessboard .piece.ng-enter.ng-enter-active {
+      opacity: 1; }
+    .chessboard .piece.selectable {
+      cursor: pointer; }
+      .chessboard .piece.selectable:hover {
+        box-shadow: inset 0 0 0 2px #444444; }
+    .chessboard .piece.capturable {
+      cursor: pointer; }
+      .chessboard .piece.capturable:hover {
+        background-color: #f93;
+        box-shadow: inset 0 0 0 2px #444444; }
+    .chessboard .piece.selected {
+      background-color: #fd8; }
+  .chessboard .at-0 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-1 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-2 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-3 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-4 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-5 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-6 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-7 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-16 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-17 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-18 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-19 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-20 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-21 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-22 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-23 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-32 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-33 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-34 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-35 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-36 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-37 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-38 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-39 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-48 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-49 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-50 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-51 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-52 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-53 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-54 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-55 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-64 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-65 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-66 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-67 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-68 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-69 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-70 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-71 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-80 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-81 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-82 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-83 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-84 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-85 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-86 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-87 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-96 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-97 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-98 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-99 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-100 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-101 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-102 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-103 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-112 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-113 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-114 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-115 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-116 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-117 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-118 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+  .chessboard .at-119 {
+    -webkit-transition: left .4s, top .4s;
+    -moz-transition: left .4s, top .4s;
+    -o-transiton: left .4s, top .4s;
+    transition: left .4s, top .4s; }
+
+.widget.panel {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); }
+  .widget.panel .panel-body {
+    font-size: 87.5%; }
+
+.widget .table.table-condensed td {
+  padding: 0 4px; }
+
+#movelist-container {
+  position: relative;
+  display: block;
+  float: left;
+  overflow: hidden; }
+  #movelist-container .panel-body {
+    overflow-y: scroll; }
+
+#console-container {
+  position: relative;
+  display: block;
+  float: left;
+  overflow: hidden; }
+  #console-container .panel-body {
+    overflow-y: scroll; }
+
+.modal-content .modal-body .tab-content-wrapper {
+  border: 1px solid #ddd;
+  border-top: none; }
+.modal-content .modal-body .table.table-striped-custom tr:nth-child(even) {
+  background: #f4f4f4; }
+
+.modal select {
+  width: 100%; }
+
+.modal .current-value {
+  font-style: italic;
+  color: #999; }
+
+.chessboard .subscript.square-id {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 11px;
+  line-height: 100%;
+  color: #999; }
+.chessboard .subscript.data {
+  position: absolute;
+  bottom: 1px;
+  left: 2px;
+  font-size: 11px;
+  line-height: 100%;
+  color: #444; }
+.chessboard .square-outline {
+  opacity: 0;
+  position: absolute;
+  -webkit-transition: opacity .25s, border-color .25s;
+  -moz-transition: opacity .25s, border-color .25s;
+  -o-transiton: opacity .25s, border-color .25s;
+  transition: opacity .25s, border-color .25s; }
+  .chessboard .square-outline.check {
+    opacity: 1;
+    border-style: solid;
+    border-color: #fa3;
+    outline: 1px solid #fa3; }
+  .chessboard .square-outline.pin {
+    opacity: 1;
+    border-style: dashed;
+    border-color: #777; }
+.chessboard.debug {
+  background: #eee; }
+  .chessboard.debug .square {
+    outline: 1px solid #bbb; }
+
+body.debug ul, body.debug li,
+body.debug .widget, body.debug .container, body.debug .container-fluid, body.debug .row, body.debug .modal, body.debug .panel,
+body.debug .navbar, body.debug .nav, body.debug .list-group, body.debug .list-group-item,
+body.debug #content-container, body.debug #chessboard-container, body.debug #chessboard {
+  outline: 1px dotted rgba(0, 0, 0, 0.65); }
+
+.navbar {
+  height: 50px; }
+  .navbar .navbar-brand {
+    width: 54px;
+    margin: 0 8px; }
+  .navbar .nav.navbar-nav {
+    margin-left: 10px; }
+  .navbar .nav.navbar-right {
+    margin-right: 54px; }
+  .navbar li {
+    margin-right: 8px; }
+    .navbar li .btn {
+      height: 34px;
+      margin-top: 8px;
+      margin-bottom: 8px; }
+
+#nav-status-bar {
+  width: 260px;
+  height: 34px;
+  left: 50%;
+  margin-left: -130px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  line-height: 34px; }
+
+.nav-side {
+  width: 70px;
+  max-width: 70px; }
+  .nav-side .nav-side-content {
+    height: 512px;
+    margin-top: 70px; }
+    .nav-side .nav-side-content .list-group {
+      width: 54px;
+      margin: 0 8px; }
+      .nav-side .nav-side-content .list-group.top {
+        top: 0; }
+        .nav-side .nav-side-content .list-group.top .player-control {
+          margin-top: 32px; }
+      .nav-side .nav-side-content .list-group.bottom {
+        bottom: 0; }
+        .nav-side .nav-side-content .list-group.bottom .player-control {
+          margin-bottom: 32px; }
+      .nav-side .nav-side-content .list-group .list-group-item {
+        width: 54px;
+        height: 54px;
+        margin: 0 0 1px 0;
+        padding: 0; }
+        .nav-side .nav-side-content .list-group .list-group-item .option {
+          line-height: 54px;
+          font-size: 38px; }
+
+#nav-left {
+  left: 0;
+  top: 0; }
+
+#nav-right {
+  right: 0;
+  top: 0; }
+
+#content-container {
+  margin: 10px 72px; }
+
+#chessboard-container {
+  padding: 0 0 25px 25px; }
+  #chessboard-container .coordinate.file-0 {
+    left: 25px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-0.reversed {
+      left: 473px; }
+  #chessboard-container .coordinate.rank-0 {
+    left: 0;
+    bottom: 25px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-0.reversed {
+      bottom: 473px; }
+  #chessboard-container .coordinate.file-1 {
+    left: 89px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-1.reversed {
+      left: 409px; }
+  #chessboard-container .coordinate.rank-1 {
+    left: 0;
+    bottom: 89px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-1.reversed {
+      bottom: 409px; }
+  #chessboard-container .coordinate.file-2 {
+    left: 153px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-2.reversed {
+      left: 345px; }
+  #chessboard-container .coordinate.rank-2 {
+    left: 0;
+    bottom: 153px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-2.reversed {
+      bottom: 345px; }
+  #chessboard-container .coordinate.file-3 {
+    left: 217px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-3.reversed {
+      left: 281px; }
+  #chessboard-container .coordinate.rank-3 {
+    left: 0;
+    bottom: 217px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-3.reversed {
+      bottom: 281px; }
+  #chessboard-container .coordinate.file-4 {
+    left: 281px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-4.reversed {
+      left: 217px; }
+  #chessboard-container .coordinate.rank-4 {
+    left: 0;
+    bottom: 281px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-4.reversed {
+      bottom: 217px; }
+  #chessboard-container .coordinate.file-5 {
+    left: 345px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-5.reversed {
+      left: 153px; }
+  #chessboard-container .coordinate.rank-5 {
+    left: 0;
+    bottom: 345px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-5.reversed {
+      bottom: 153px; }
+  #chessboard-container .coordinate.file-6 {
+    left: 409px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-6.reversed {
+      left: 89px; }
+  #chessboard-container .coordinate.rank-6 {
+    left: 0;
+    bottom: 409px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-6.reversed {
+      bottom: 89px; }
+  #chessboard-container .coordinate.file-7 {
+    left: 473px;
+    bottom: 0;
+    width: 64px;
+    height: 25px;
+    line-height: 25px; }
+    #chessboard-container .coordinate.file-7.reversed {
+      left: 25px; }
+  #chessboard-container .coordinate.rank-7 {
+    left: 0;
+    bottom: 473px;
+    width: 25px;
+    height: 64px;
+    line-height: 64px; }
+    #chessboard-container .coordinate.rank-7.reversed {
+      bottom: 25px; }
+
+.chessboard {
+  width: 512px;
+  height: 512px; }
+  .chessboard .square {
+    width: 64px;
+    height: 64px; }
+    .chessboard .square .square-value {
+      width: 16px;
+      height: 16px;
+      font-size: 11px;
+      line-height: 16px; }
+  .chessboard .piece {
+    width: 64px;
+    height: 64px; }
+  .chessboard .at-0 {
+    left: 0px;
+    top: 448px; }
+    .chessboard .at-0.reversed {
+      left: 448px;
+      top: 0px; }
+  .chessboard .at-1 {
+    left: 64px;
+    top: 448px; }
+    .chessboard .at-1.reversed {
+      left: 384px;
+      top: 0px; }
+  .chessboard .at-2 {
+    left: 128px;
+    top: 448px; }
+    .chessboard .at-2.reversed {
+      left: 320px;
+      top: 0px; }
+  .chessboard .at-3 {
+    left: 192px;
+    top: 448px; }
+    .chessboard .at-3.reversed {
+      left: 256px;
+      top: 0px; }
+  .chessboard .at-4 {
+    left: 256px;
+    top: 448px; }
+    .chessboard .at-4.reversed {
+      left: 192px;
+      top: 0px; }
+  .chessboard .at-5 {
+    left: 320px;
+    top: 448px; }
+    .chessboard .at-5.reversed {
+      left: 128px;
+      top: 0px; }
+  .chessboard .at-6 {
+    left: 384px;
+    top: 448px; }
+    .chessboard .at-6.reversed {
+      left: 64px;
+      top: 0px; }
+  .chessboard .at-7 {
+    left: 448px;
+    top: 448px; }
+    .chessboard .at-7.reversed {
+      left: 0px;
+      top: 0px; }
+  .chessboard .at-16 {
+    left: 0px;
+    top: 384px; }
+    .chessboard .at-16.reversed {
+      left: 448px;
+      top: 64px; }
+  .chessboard .at-17 {
+    left: 64px;
+    top: 384px; }
+    .chessboard .at-17.reversed {
+      left: 384px;
+      top: 64px; }
+  .chessboard .at-18 {
+    left: 128px;
+    top: 384px; }
+    .chessboard .at-18.reversed {
+      left: 320px;
+      top: 64px; }
+  .chessboard .at-19 {
+    left: 192px;
+    top: 384px; }
+    .chessboard .at-19.reversed {
+      left: 256px;
+      top: 64px; }
+  .chessboard .at-20 {
+    left: 256px;
+    top: 384px; }
+    .chessboard .at-20.reversed {
+      left: 192px;
+      top: 64px; }
+  .chessboard .at-21 {
+    left: 320px;
+    top: 384px; }
+    .chessboard .at-21.reversed {
+      left: 128px;
+      top: 64px; }
+  .chessboard .at-22 {
+    left: 384px;
+    top: 384px; }
+    .chessboard .at-22.reversed {
+      left: 64px;
+      top: 64px; }
+  .chessboard .at-23 {
+    left: 448px;
+    top: 384px; }
+    .chessboard .at-23.reversed {
+      left: 0px;
+      top: 64px; }
+  .chessboard .at-32 {
+    left: 0px;
+    top: 320px; }
+    .chessboard .at-32.reversed {
+      left: 448px;
+      top: 128px; }
+  .chessboard .at-33 {
+    left: 64px;
+    top: 320px; }
+    .chessboard .at-33.reversed {
+      left: 384px;
+      top: 128px; }
+  .chessboard .at-34 {
+    left: 128px;
+    top: 320px; }
+    .chessboard .at-34.reversed {
+      left: 320px;
+      top: 128px; }
+  .chessboard .at-35 {
+    left: 192px;
+    top: 320px; }
+    .chessboard .at-35.reversed {
+      left: 256px;
+      top: 128px; }
+  .chessboard .at-36 {
+    left: 256px;
+    top: 320px; }
+    .chessboard .at-36.reversed {
+      left: 192px;
+      top: 128px; }
+  .chessboard .at-37 {
+    left: 320px;
+    top: 320px; }
+    .chessboard .at-37.reversed {
+      left: 128px;
+      top: 128px; }
+  .chessboard .at-38 {
+    left: 384px;
+    top: 320px; }
+    .chessboard .at-38.reversed {
+      left: 64px;
+      top: 128px; }
+  .chessboard .at-39 {
+    left: 448px;
+    top: 320px; }
+    .chessboard .at-39.reversed {
+      left: 0px;
+      top: 128px; }
+  .chessboard .at-48 {
+    left: 0px;
+    top: 256px; }
+    .chessboard .at-48.reversed {
+      left: 448px;
+      top: 192px; }
+  .chessboard .at-49 {
+    left: 64px;
+    top: 256px; }
+    .chessboard .at-49.reversed {
+      left: 384px;
+      top: 192px; }
+  .chessboard .at-50 {
+    left: 128px;
+    top: 256px; }
+    .chessboard .at-50.reversed {
+      left: 320px;
+      top: 192px; }
+  .chessboard .at-51 {
+    left: 192px;
+    top: 256px; }
+    .chessboard .at-51.reversed {
+      left: 256px;
+      top: 192px; }
+  .chessboard .at-52 {
+    left: 256px;
+    top: 256px; }
+    .chessboard .at-52.reversed {
+      left: 192px;
+      top: 192px; }
+  .chessboard .at-53 {
+    left: 320px;
+    top: 256px; }
+    .chessboard .at-53.reversed {
+      left: 128px;
+      top: 192px; }
+  .chessboard .at-54 {
+    left: 384px;
+    top: 256px; }
+    .chessboard .at-54.reversed {
+      left: 64px;
+      top: 192px; }
+  .chessboard .at-55 {
+    left: 448px;
+    top: 256px; }
+    .chessboard .at-55.reversed {
+      left: 0px;
+      top: 192px; }
+  .chessboard .at-64 {
+    left: 0px;
+    top: 192px; }
+    .chessboard .at-64.reversed {
+      left: 448px;
+      top: 256px; }
+  .chessboard .at-65 {
+    left: 64px;
+    top: 192px; }
+    .chessboard .at-65.reversed {
+      left: 384px;
+      top: 256px; }
+  .chessboard .at-66 {
+    left: 128px;
+    top: 192px; }
+    .chessboard .at-66.reversed {
+      left: 320px;
+      top: 256px; }
+  .chessboard .at-67 {
+    left: 192px;
+    top: 192px; }
+    .chessboard .at-67.reversed {
+      left: 256px;
+      top: 256px; }
+  .chessboard .at-68 {
+    left: 256px;
+    top: 192px; }
+    .chessboard .at-68.reversed {
+      left: 192px;
+      top: 256px; }
+  .chessboard .at-69 {
+    left: 320px;
+    top: 192px; }
+    .chessboard .at-69.reversed {
+      left: 128px;
+      top: 256px; }
+  .chessboard .at-70 {
+    left: 384px;
+    top: 192px; }
+    .chessboard .at-70.reversed {
+      left: 64px;
+      top: 256px; }
+  .chessboard .at-71 {
+    left: 448px;
+    top: 192px; }
+    .chessboard .at-71.reversed {
+      left: 0px;
+      top: 256px; }
+  .chessboard .at-80 {
+    left: 0px;
+    top: 128px; }
+    .chessboard .at-80.reversed {
+      left: 448px;
+      top: 320px; }
+  .chessboard .at-81 {
+    left: 64px;
+    top: 128px; }
+    .chessboard .at-81.reversed {
+      left: 384px;
+      top: 320px; }
+  .chessboard .at-82 {
+    left: 128px;
+    top: 128px; }
+    .chessboard .at-82.reversed {
+      left: 320px;
+      top: 320px; }
+  .chessboard .at-83 {
+    left: 192px;
+    top: 128px; }
+    .chessboard .at-83.reversed {
+      left: 256px;
+      top: 320px; }
+  .chessboard .at-84 {
+    left: 256px;
+    top: 128px; }
+    .chessboard .at-84.reversed {
+      left: 192px;
+      top: 320px; }
+  .chessboard .at-85 {
+    left: 320px;
+    top: 128px; }
+    .chessboard .at-85.reversed {
+      left: 128px;
+      top: 320px; }
+  .chessboard .at-86 {
+    left: 384px;
+    top: 128px; }
+    .chessboard .at-86.reversed {
+      left: 64px;
+      top: 320px; }
+  .chessboard .at-87 {
+    left: 448px;
+    top: 128px; }
+    .chessboard .at-87.reversed {
+      left: 0px;
+      top: 320px; }
+  .chessboard .at-96 {
+    left: 0px;
+    top: 64px; }
+    .chessboard .at-96.reversed {
+      left: 448px;
+      top: 384px; }
+  .chessboard .at-97 {
+    left: 64px;
+    top: 64px; }
+    .chessboard .at-97.reversed {
+      left: 384px;
+      top: 384px; }
+  .chessboard .at-98 {
+    left: 128px;
+    top: 64px; }
+    .chessboard .at-98.reversed {
+      left: 320px;
+      top: 384px; }
+  .chessboard .at-99 {
+    left: 192px;
+    top: 64px; }
+    .chessboard .at-99.reversed {
+      left: 256px;
+      top: 384px; }
+  .chessboard .at-100 {
+    left: 256px;
+    top: 64px; }
+    .chessboard .at-100.reversed {
+      left: 192px;
+      top: 384px; }
+  .chessboard .at-101 {
+    left: 320px;
+    top: 64px; }
+    .chessboard .at-101.reversed {
+      left: 128px;
+      top: 384px; }
+  .chessboard .at-102 {
+    left: 384px;
+    top: 64px; }
+    .chessboard .at-102.reversed {
+      left: 64px;
+      top: 384px; }
+  .chessboard .at-103 {
+    left: 448px;
+    top: 64px; }
+    .chessboard .at-103.reversed {
+      left: 0px;
+      top: 384px; }
+  .chessboard .at-112 {
+    left: 0px;
+    top: 0px; }
+    .chessboard .at-112.reversed {
+      left: 448px;
+      top: 448px; }
+  .chessboard .at-113 {
+    left: 64px;
+    top: 0px; }
+    .chessboard .at-113.reversed {
+      left: 384px;
+      top: 448px; }
+  .chessboard .at-114 {
+    left: 128px;
+    top: 0px; }
+    .chessboard .at-114.reversed {
+      left: 320px;
+      top: 448px; }
+  .chessboard .at-115 {
+    left: 192px;
+    top: 0px; }
+    .chessboard .at-115.reversed {
+      left: 256px;
+      top: 448px; }
+  .chessboard .at-116 {
+    left: 256px;
+    top: 0px; }
+    .chessboard .at-116.reversed {
+      left: 192px;
+      top: 448px; }
+  .chessboard .at-117 {
+    left: 320px;
+    top: 0px; }
+    .chessboard .at-117.reversed {
+      left: 128px;
+      top: 448px; }
+  .chessboard .at-118 {
+    left: 384px;
+    top: 0px; }
+    .chessboard .at-118.reversed {
+      left: 64px;
+      top: 448px; }
+  .chessboard .at-119 {
+    left: 448px;
+    top: 0px; }
+    .chessboard .at-119.reversed {
+      left: 0px;
+      top: 448px; }
+
+.chessboard .square-outline {
+  left: 0;
+  top: 0;
+  width: 62px;
+  height: 62px;
+  margin: 1px;
+  border-width: 1px; }
+
+.widget {
+  margin: 10px; }
+  .widget.panel .panel-body {
+    padding: 10px; }
+
+#movelist-container {
+  width: 250px;
+  height: 512px;
+  max-height: 512px; }
+  #movelist-container .panel-body {
+    max-height: 472px; }
+
+#console-container {
+  width: 250px;
+  min-height: 200px;
+  max-height: 512px; }
+  #console-container .panel-body {
+    max-height: 472px; }
+
+.modal-content {
+  margin: 60px auto; }
+  .modal-content.small-modal {
+    width: 36%; }
+  .modal-content.large-modal {
+    width: 48%; }
+  .modal-content .modal-body .tab-content-wrapper {
+    margin-top: -1px; }
+  .modal-content .modal-body .table {
+    margin: 0; }
+    .modal-content .modal-body .table tr td:first-child {
+      padding-left: 15px; }
+    .modal-content .modal-body .table tr td:last-child {
+      padding-right: 15px; }
+  .modal-content .modal-body form {
+    padding: 10px 15px; }
+
+@media screen and (max-height: 480px) {
+  .navbar {
+    height: 50px; }
+    .navbar .navbar-brand {
+      width: 54px;
+      margin: 0 8px; }
+    .navbar .nav.navbar-nav {
+      margin-left: 10px; }
+    .navbar .nav.navbar-right {
+      margin-right: 54px; }
+    .navbar li {
+      margin-right: 8px; }
+      .navbar li .btn {
+        height: 34px;
+        margin-top: 8px;
+        margin-bottom: 8px; }
+
+  #nav-status-bar {
+    width: 260px;
+    height: 34px;
+    left: 50%;
+    margin-left: -130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    line-height: 34px; }
+
+  .nav-side {
+    width: 70px;
+    max-width: 70px; }
+    .nav-side .nav-side-content {
+      height: 360px;
+      margin-top: 70px; }
+      .nav-side .nav-side-content .list-group {
+        width: 54px;
+        margin: 0 8px; }
+        .nav-side .nav-side-content .list-group.top {
+          top: 0; }
+          .nav-side .nav-side-content .list-group.top .player-control {
+            margin-top: 22.5px; }
+        .nav-side .nav-side-content .list-group.bottom {
+          bottom: 0; }
+          .nav-side .nav-side-content .list-group.bottom .player-control {
+            margin-bottom: 22.5px; }
+        .nav-side .nav-side-content .list-group .list-group-item {
+          width: 54px;
+          height: 54px;
+          margin: 0 0 1px 0;
+          padding: 0; }
+          .nav-side .nav-side-content .list-group .list-group-item .option {
+            line-height: 54px;
+            font-size: 38px; }
+
+  #nav-left {
+    left: 0;
+    top: 0; }
+
+  #nav-right {
+    right: 0;
+    top: 0; }
+
+  #content-container {
+    margin: 10px 72px; }
+
+  #chessboard-container {
+    padding: 0 0 25px 25px; }
+    #chessboard-container .coordinate.file-0 {
+      left: 25px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-0.reversed {
+        left: 340px; }
+    #chessboard-container .coordinate.rank-0 {
+      left: 0;
+      bottom: 25px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-0.reversed {
+        bottom: 340px; }
+    #chessboard-container .coordinate.file-1 {
+      left: 70px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-1.reversed {
+        left: 295px; }
+    #chessboard-container .coordinate.rank-1 {
+      left: 0;
+      bottom: 70px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-1.reversed {
+        bottom: 295px; }
+    #chessboard-container .coordinate.file-2 {
+      left: 115px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-2.reversed {
+        left: 250px; }
+    #chessboard-container .coordinate.rank-2 {
+      left: 0;
+      bottom: 115px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-2.reversed {
+        bottom: 250px; }
+    #chessboard-container .coordinate.file-3 {
+      left: 160px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-3.reversed {
+        left: 205px; }
+    #chessboard-container .coordinate.rank-3 {
+      left: 0;
+      bottom: 160px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-3.reversed {
+        bottom: 205px; }
+    #chessboard-container .coordinate.file-4 {
+      left: 205px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-4.reversed {
+        left: 160px; }
+    #chessboard-container .coordinate.rank-4 {
+      left: 0;
+      bottom: 205px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-4.reversed {
+        bottom: 160px; }
+    #chessboard-container .coordinate.file-5 {
+      left: 250px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-5.reversed {
+        left: 115px; }
+    #chessboard-container .coordinate.rank-5 {
+      left: 0;
+      bottom: 250px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-5.reversed {
+        bottom: 115px; }
+    #chessboard-container .coordinate.file-6 {
+      left: 295px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-6.reversed {
+        left: 70px; }
+    #chessboard-container .coordinate.rank-6 {
+      left: 0;
+      bottom: 295px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-6.reversed {
+        bottom: 70px; }
+    #chessboard-container .coordinate.file-7 {
+      left: 340px;
+      bottom: 0;
+      width: 45px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-7.reversed {
+        left: 25px; }
+    #chessboard-container .coordinate.rank-7 {
+      left: 0;
+      bottom: 340px;
+      width: 25px;
+      height: 45px;
+      line-height: 45px; }
+      #chessboard-container .coordinate.rank-7.reversed {
+        bottom: 25px; }
+
+  .chessboard {
+    width: 360px;
+    height: 360px; }
+    .chessboard .square {
+      width: 45px;
+      height: 45px; }
+      .chessboard .square .square-value {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px; }
+    .chessboard .piece {
+      width: 45px;
+      height: 45px; }
+    .chessboard .at-0 {
+      left: 0px;
+      top: 315px; }
+      .chessboard .at-0.reversed {
+        left: 315px;
+        top: 0px; }
+    .chessboard .at-1 {
+      left: 45px;
+      top: 315px; }
+      .chessboard .at-1.reversed {
+        left: 270px;
+        top: 0px; }
+    .chessboard .at-2 {
+      left: 90px;
+      top: 315px; }
+      .chessboard .at-2.reversed {
+        left: 225px;
+        top: 0px; }
+    .chessboard .at-3 {
+      left: 135px;
+      top: 315px; }
+      .chessboard .at-3.reversed {
+        left: 180px;
+        top: 0px; }
+    .chessboard .at-4 {
+      left: 180px;
+      top: 315px; }
+      .chessboard .at-4.reversed {
+        left: 135px;
+        top: 0px; }
+    .chessboard .at-5 {
+      left: 225px;
+      top: 315px; }
+      .chessboard .at-5.reversed {
+        left: 90px;
+        top: 0px; }
+    .chessboard .at-6 {
+      left: 270px;
+      top: 315px; }
+      .chessboard .at-6.reversed {
+        left: 45px;
+        top: 0px; }
+    .chessboard .at-7 {
+      left: 315px;
+      top: 315px; }
+      .chessboard .at-7.reversed {
+        left: 0px;
+        top: 0px; }
+    .chessboard .at-16 {
+      left: 0px;
+      top: 270px; }
+      .chessboard .at-16.reversed {
+        left: 315px;
+        top: 45px; }
+    .chessboard .at-17 {
+      left: 45px;
+      top: 270px; }
+      .chessboard .at-17.reversed {
+        left: 270px;
+        top: 45px; }
+    .chessboard .at-18 {
+      left: 90px;
+      top: 270px; }
+      .chessboard .at-18.reversed {
+        left: 225px;
+        top: 45px; }
+    .chessboard .at-19 {
+      left: 135px;
+      top: 270px; }
+      .chessboard .at-19.reversed {
+        left: 180px;
+        top: 45px; }
+    .chessboard .at-20 {
+      left: 180px;
+      top: 270px; }
+      .chessboard .at-20.reversed {
+        left: 135px;
+        top: 45px; }
+    .chessboard .at-21 {
+      left: 225px;
+      top: 270px; }
+      .chessboard .at-21.reversed {
+        left: 90px;
+        top: 45px; }
+    .chessboard .at-22 {
+      left: 270px;
+      top: 270px; }
+      .chessboard .at-22.reversed {
+        left: 45px;
+        top: 45px; }
+    .chessboard .at-23 {
+      left: 315px;
+      top: 270px; }
+      .chessboard .at-23.reversed {
+        left: 0px;
+        top: 45px; }
+    .chessboard .at-32 {
+      left: 0px;
+      top: 225px; }
+      .chessboard .at-32.reversed {
+        left: 315px;
+        top: 90px; }
+    .chessboard .at-33 {
+      left: 45px;
+      top: 225px; }
+      .chessboard .at-33.reversed {
+        left: 270px;
+        top: 90px; }
+    .chessboard .at-34 {
+      left: 90px;
+      top: 225px; }
+      .chessboard .at-34.reversed {
+        left: 225px;
+        top: 90px; }
+    .chessboard .at-35 {
+      left: 135px;
+      top: 225px; }
+      .chessboard .at-35.reversed {
+        left: 180px;
+        top: 90px; }
+    .chessboard .at-36 {
+      left: 180px;
+      top: 225px; }
+      .chessboard .at-36.reversed {
+        left: 135px;
+        top: 90px; }
+    .chessboard .at-37 {
+      left: 225px;
+      top: 225px; }
+      .chessboard .at-37.reversed {
+        left: 90px;
+        top: 90px; }
+    .chessboard .at-38 {
+      left: 270px;
+      top: 225px; }
+      .chessboard .at-38.reversed {
+        left: 45px;
+        top: 90px; }
+    .chessboard .at-39 {
+      left: 315px;
+      top: 225px; }
+      .chessboard .at-39.reversed {
+        left: 0px;
+        top: 90px; }
+    .chessboard .at-48 {
+      left: 0px;
+      top: 180px; }
+      .chessboard .at-48.reversed {
+        left: 315px;
+        top: 135px; }
+    .chessboard .at-49 {
+      left: 45px;
+      top: 180px; }
+      .chessboard .at-49.reversed {
+        left: 270px;
+        top: 135px; }
+    .chessboard .at-50 {
+      left: 90px;
+      top: 180px; }
+      .chessboard .at-50.reversed {
+        left: 225px;
+        top: 135px; }
+    .chessboard .at-51 {
+      left: 135px;
+      top: 180px; }
+      .chessboard .at-51.reversed {
+        left: 180px;
+        top: 135px; }
+    .chessboard .at-52 {
+      left: 180px;
+      top: 180px; }
+      .chessboard .at-52.reversed {
+        left: 135px;
+        top: 135px; }
+    .chessboard .at-53 {
+      left: 225px;
+      top: 180px; }
+      .chessboard .at-53.reversed {
+        left: 90px;
+        top: 135px; }
+    .chessboard .at-54 {
+      left: 270px;
+      top: 180px; }
+      .chessboard .at-54.reversed {
+        left: 45px;
+        top: 135px; }
+    .chessboard .at-55 {
+      left: 315px;
+      top: 180px; }
+      .chessboard .at-55.reversed {
+        left: 0px;
+        top: 135px; }
+    .chessboard .at-64 {
+      left: 0px;
+      top: 135px; }
+      .chessboard .at-64.reversed {
+        left: 315px;
+        top: 180px; }
+    .chessboard .at-65 {
+      left: 45px;
+      top: 135px; }
+      .chessboard .at-65.reversed {
+        left: 270px;
+        top: 180px; }
+    .chessboard .at-66 {
+      left: 90px;
+      top: 135px; }
+      .chessboard .at-66.reversed {
+        left: 225px;
+        top: 180px; }
+    .chessboard .at-67 {
+      left: 135px;
+      top: 135px; }
+      .chessboard .at-67.reversed {
+        left: 180px;
+        top: 180px; }
+    .chessboard .at-68 {
+      left: 180px;
+      top: 135px; }
+      .chessboard .at-68.reversed {
+        left: 135px;
+        top: 180px; }
+    .chessboard .at-69 {
+      left: 225px;
+      top: 135px; }
+      .chessboard .at-69.reversed {
+        left: 90px;
+        top: 180px; }
+    .chessboard .at-70 {
+      left: 270px;
+      top: 135px; }
+      .chessboard .at-70.reversed {
+        left: 45px;
+        top: 180px; }
+    .chessboard .at-71 {
+      left: 315px;
+      top: 135px; }
+      .chessboard .at-71.reversed {
+        left: 0px;
+        top: 180px; }
+    .chessboard .at-80 {
+      left: 0px;
+      top: 90px; }
+      .chessboard .at-80.reversed {
+        left: 315px;
+        top: 225px; }
+    .chessboard .at-81 {
+      left: 45px;
+      top: 90px; }
+      .chessboard .at-81.reversed {
+        left: 270px;
+        top: 225px; }
+    .chessboard .at-82 {
+      left: 90px;
+      top: 90px; }
+      .chessboard .at-82.reversed {
+        left: 225px;
+        top: 225px; }
+    .chessboard .at-83 {
+      left: 135px;
+      top: 90px; }
+      .chessboard .at-83.reversed {
+        left: 180px;
+        top: 225px; }
+    .chessboard .at-84 {
+      left: 180px;
+      top: 90px; }
+      .chessboard .at-84.reversed {
+        left: 135px;
+        top: 225px; }
+    .chessboard .at-85 {
+      left: 225px;
+      top: 90px; }
+      .chessboard .at-85.reversed {
+        left: 90px;
+        top: 225px; }
+    .chessboard .at-86 {
+      left: 270px;
+      top: 90px; }
+      .chessboard .at-86.reversed {
+        left: 45px;
+        top: 225px; }
+    .chessboard .at-87 {
+      left: 315px;
+      top: 90px; }
+      .chessboard .at-87.reversed {
+        left: 0px;
+        top: 225px; }
+    .chessboard .at-96 {
+      left: 0px;
+      top: 45px; }
+      .chessboard .at-96.reversed {
+        left: 315px;
+        top: 270px; }
+    .chessboard .at-97 {
+      left: 45px;
+      top: 45px; }
+      .chessboard .at-97.reversed {
+        left: 270px;
+        top: 270px; }
+    .chessboard .at-98 {
+      left: 90px;
+      top: 45px; }
+      .chessboard .at-98.reversed {
+        left: 225px;
+        top: 270px; }
+    .chessboard .at-99 {
+      left: 135px;
+      top: 45px; }
+      .chessboard .at-99.reversed {
+        left: 180px;
+        top: 270px; }
+    .chessboard .at-100 {
+      left: 180px;
+      top: 45px; }
+      .chessboard .at-100.reversed {
+        left: 135px;
+        top: 270px; }
+    .chessboard .at-101 {
+      left: 225px;
+      top: 45px; }
+      .chessboard .at-101.reversed {
+        left: 90px;
+        top: 270px; }
+    .chessboard .at-102 {
+      left: 270px;
+      top: 45px; }
+      .chessboard .at-102.reversed {
+        left: 45px;
+        top: 270px; }
+    .chessboard .at-103 {
+      left: 315px;
+      top: 45px; }
+      .chessboard .at-103.reversed {
+        left: 0px;
+        top: 270px; }
+    .chessboard .at-112 {
+      left: 0px;
+      top: 0px; }
+      .chessboard .at-112.reversed {
+        left: 315px;
+        top: 315px; }
+    .chessboard .at-113 {
+      left: 45px;
+      top: 0px; }
+      .chessboard .at-113.reversed {
+        left: 270px;
+        top: 315px; }
+    .chessboard .at-114 {
+      left: 90px;
+      top: 0px; }
+      .chessboard .at-114.reversed {
+        left: 225px;
+        top: 315px; }
+    .chessboard .at-115 {
+      left: 135px;
+      top: 0px; }
+      .chessboard .at-115.reversed {
+        left: 180px;
+        top: 315px; }
+    .chessboard .at-116 {
+      left: 180px;
+      top: 0px; }
+      .chessboard .at-116.reversed {
+        left: 135px;
+        top: 315px; }
+    .chessboard .at-117 {
+      left: 225px;
+      top: 0px; }
+      .chessboard .at-117.reversed {
+        left: 90px;
+        top: 315px; }
+    .chessboard .at-118 {
+      left: 270px;
+      top: 0px; }
+      .chessboard .at-118.reversed {
+        left: 45px;
+        top: 315px; }
+    .chessboard .at-119 {
+      left: 315px;
+      top: 0px; }
+      .chessboard .at-119.reversed {
+        left: 0px;
+        top: 315px; }
+
+  .chessboard .square-outline {
+    left: 0;
+    top: 0;
+    width: 43px;
+    height: 43px;
+    margin: 1px;
+    border-width: 1px; }
+
+  .widget {
+    margin: 10px; }
+    .widget.panel .panel-body {
+      padding: 10px; }
+
+  #movelist-container {
+    width: 250px;
+    height: 360px;
+    max-height: 360px; }
+    #movelist-container .panel-body {
+      max-height: 320px; }
+
+  #console-container {
+    width: 250px;
+    min-height: 200px;
+    max-height: 360px; }
+    #console-container .panel-body {
+      max-height: 320px; }
+
+  .modal-content {
+    margin: 60px auto; }
+    .modal-content.small-modal {
+      width: 36%; }
+    .modal-content.large-modal {
+      width: 48%; }
+    .modal-content .modal-body .tab-content-wrapper {
+      margin-top: -1px; }
+    .modal-content .modal-body .table {
+      margin: 0; }
+      .modal-content .modal-body .table tr td:first-child {
+        padding-left: 15px; }
+      .modal-content .modal-body .table tr td:last-child {
+        padding-right: 15px; }
+    .modal-content .modal-body form {
+      padding: 10px 15px; }
+
+  body.debug .navbar {
+    background: #000; } }
+@media screen and (min-height: 481px) and (max-height: 600px) {
+  .navbar {
+    height: 50px; }
+    .navbar .navbar-brand {
+      width: 54px;
+      margin: 0 8px; }
+    .navbar .nav.navbar-nav {
+      margin-left: 10px; }
+    .navbar .nav.navbar-right {
+      margin-right: 54px; }
+    .navbar li {
+      margin-right: 8px; }
+      .navbar li .btn {
+        height: 34px;
+        margin-top: 8px;
+        margin-bottom: 8px; }
+
+  #nav-status-bar {
+    width: 260px;
+    height: 34px;
+    left: 50%;
+    margin-left: -130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    line-height: 34px; }
+
+  .nav-side {
+    width: 70px;
+    max-width: 70px; }
+    .nav-side .nav-side-content {
+      height: 400px;
+      margin-top: 70px; }
+      .nav-side .nav-side-content .list-group {
+        width: 54px;
+        margin: 0 8px; }
+        .nav-side .nav-side-content .list-group.top {
+          top: 0; }
+          .nav-side .nav-side-content .list-group.top .player-control {
+            margin-top: 25px; }
+        .nav-side .nav-side-content .list-group.bottom {
+          bottom: 0; }
+          .nav-side .nav-side-content .list-group.bottom .player-control {
+            margin-bottom: 25px; }
+        .nav-side .nav-side-content .list-group .list-group-item {
+          width: 54px;
+          height: 54px;
+          margin: 0 0 1px 0;
+          padding: 0; }
+          .nav-side .nav-side-content .list-group .list-group-item .option {
+            line-height: 54px;
+            font-size: 38px; }
+
+  #nav-left {
+    left: 0;
+    top: 0; }
+
+  #nav-right {
+    right: 0;
+    top: 0; }
+
+  #content-container {
+    margin: 10px 72px; }
+
+  #chessboard-container {
+    padding: 0 0 25px 25px; }
+    #chessboard-container .coordinate.file-0 {
+      left: 25px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-0.reversed {
+        left: 375px; }
+    #chessboard-container .coordinate.rank-0 {
+      left: 0;
+      bottom: 25px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-0.reversed {
+        bottom: 375px; }
+    #chessboard-container .coordinate.file-1 {
+      left: 75px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-1.reversed {
+        left: 325px; }
+    #chessboard-container .coordinate.rank-1 {
+      left: 0;
+      bottom: 75px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-1.reversed {
+        bottom: 325px; }
+    #chessboard-container .coordinate.file-2 {
+      left: 125px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-2.reversed {
+        left: 275px; }
+    #chessboard-container .coordinate.rank-2 {
+      left: 0;
+      bottom: 125px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-2.reversed {
+        bottom: 275px; }
+    #chessboard-container .coordinate.file-3 {
+      left: 175px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-3.reversed {
+        left: 225px; }
+    #chessboard-container .coordinate.rank-3 {
+      left: 0;
+      bottom: 175px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-3.reversed {
+        bottom: 225px; }
+    #chessboard-container .coordinate.file-4 {
+      left: 225px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-4.reversed {
+        left: 175px; }
+    #chessboard-container .coordinate.rank-4 {
+      left: 0;
+      bottom: 225px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-4.reversed {
+        bottom: 175px; }
+    #chessboard-container .coordinate.file-5 {
+      left: 275px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-5.reversed {
+        left: 125px; }
+    #chessboard-container .coordinate.rank-5 {
+      left: 0;
+      bottom: 275px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-5.reversed {
+        bottom: 125px; }
+    #chessboard-container .coordinate.file-6 {
+      left: 325px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-6.reversed {
+        left: 75px; }
+    #chessboard-container .coordinate.rank-6 {
+      left: 0;
+      bottom: 325px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-6.reversed {
+        bottom: 75px; }
+    #chessboard-container .coordinate.file-7 {
+      left: 375px;
+      bottom: 0;
+      width: 50px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-7.reversed {
+        left: 25px; }
+    #chessboard-container .coordinate.rank-7 {
+      left: 0;
+      bottom: 375px;
+      width: 25px;
+      height: 50px;
+      line-height: 50px; }
+      #chessboard-container .coordinate.rank-7.reversed {
+        bottom: 25px; }
+
+  .chessboard {
+    width: 400px;
+    height: 400px; }
+    .chessboard .square {
+      width: 50px;
+      height: 50px; }
+      .chessboard .square .square-value {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px; }
+    .chessboard .piece {
+      width: 50px;
+      height: 50px; }
+    .chessboard .at-0 {
+      left: 0px;
+      top: 350px; }
+      .chessboard .at-0.reversed {
+        left: 350px;
+        top: 0px; }
+    .chessboard .at-1 {
+      left: 50px;
+      top: 350px; }
+      .chessboard .at-1.reversed {
+        left: 300px;
+        top: 0px; }
+    .chessboard .at-2 {
+      left: 100px;
+      top: 350px; }
+      .chessboard .at-2.reversed {
+        left: 250px;
+        top: 0px; }
+    .chessboard .at-3 {
+      left: 150px;
+      top: 350px; }
+      .chessboard .at-3.reversed {
+        left: 200px;
+        top: 0px; }
+    .chessboard .at-4 {
+      left: 200px;
+      top: 350px; }
+      .chessboard .at-4.reversed {
+        left: 150px;
+        top: 0px; }
+    .chessboard .at-5 {
+      left: 250px;
+      top: 350px; }
+      .chessboard .at-5.reversed {
+        left: 100px;
+        top: 0px; }
+    .chessboard .at-6 {
+      left: 300px;
+      top: 350px; }
+      .chessboard .at-6.reversed {
+        left: 50px;
+        top: 0px; }
+    .chessboard .at-7 {
+      left: 350px;
+      top: 350px; }
+      .chessboard .at-7.reversed {
+        left: 0px;
+        top: 0px; }
+    .chessboard .at-16 {
+      left: 0px;
+      top: 300px; }
+      .chessboard .at-16.reversed {
+        left: 350px;
+        top: 50px; }
+    .chessboard .at-17 {
+      left: 50px;
+      top: 300px; }
+      .chessboard .at-17.reversed {
+        left: 300px;
+        top: 50px; }
+    .chessboard .at-18 {
+      left: 100px;
+      top: 300px; }
+      .chessboard .at-18.reversed {
+        left: 250px;
+        top: 50px; }
+    .chessboard .at-19 {
+      left: 150px;
+      top: 300px; }
+      .chessboard .at-19.reversed {
+        left: 200px;
+        top: 50px; }
+    .chessboard .at-20 {
+      left: 200px;
+      top: 300px; }
+      .chessboard .at-20.reversed {
+        left: 150px;
+        top: 50px; }
+    .chessboard .at-21 {
+      left: 250px;
+      top: 300px; }
+      .chessboard .at-21.reversed {
+        left: 100px;
+        top: 50px; }
+    .chessboard .at-22 {
+      left: 300px;
+      top: 300px; }
+      .chessboard .at-22.reversed {
+        left: 50px;
+        top: 50px; }
+    .chessboard .at-23 {
+      left: 350px;
+      top: 300px; }
+      .chessboard .at-23.reversed {
+        left: 0px;
+        top: 50px; }
+    .chessboard .at-32 {
+      left: 0px;
+      top: 250px; }
+      .chessboard .at-32.reversed {
+        left: 350px;
+        top: 100px; }
+    .chessboard .at-33 {
+      left: 50px;
+      top: 250px; }
+      .chessboard .at-33.reversed {
+        left: 300px;
+        top: 100px; }
+    .chessboard .at-34 {
+      left: 100px;
+      top: 250px; }
+      .chessboard .at-34.reversed {
+        left: 250px;
+        top: 100px; }
+    .chessboard .at-35 {
+      left: 150px;
+      top: 250px; }
+      .chessboard .at-35.reversed {
+        left: 200px;
+        top: 100px; }
+    .chessboard .at-36 {
+      left: 200px;
+      top: 250px; }
+      .chessboard .at-36.reversed {
+        left: 150px;
+        top: 100px; }
+    .chessboard .at-37 {
+      left: 250px;
+      top: 250px; }
+      .chessboard .at-37.reversed {
+        left: 100px;
+        top: 100px; }
+    .chessboard .at-38 {
+      left: 300px;
+      top: 250px; }
+      .chessboard .at-38.reversed {
+        left: 50px;
+        top: 100px; }
+    .chessboard .at-39 {
+      left: 350px;
+      top: 250px; }
+      .chessboard .at-39.reversed {
+        left: 0px;
+        top: 100px; }
+    .chessboard .at-48 {
+      left: 0px;
+      top: 200px; }
+      .chessboard .at-48.reversed {
+        left: 350px;
+        top: 150px; }
+    .chessboard .at-49 {
+      left: 50px;
+      top: 200px; }
+      .chessboard .at-49.reversed {
+        left: 300px;
+        top: 150px; }
+    .chessboard .at-50 {
+      left: 100px;
+      top: 200px; }
+      .chessboard .at-50.reversed {
+        left: 250px;
+        top: 150px; }
+    .chessboard .at-51 {
+      left: 150px;
+      top: 200px; }
+      .chessboard .at-51.reversed {
+        left: 200px;
+        top: 150px; }
+    .chessboard .at-52 {
+      left: 200px;
+      top: 200px; }
+      .chessboard .at-52.reversed {
+        left: 150px;
+        top: 150px; }
+    .chessboard .at-53 {
+      left: 250px;
+      top: 200px; }
+      .chessboard .at-53.reversed {
+        left: 100px;
+        top: 150px; }
+    .chessboard .at-54 {
+      left: 300px;
+      top: 200px; }
+      .chessboard .at-54.reversed {
+        left: 50px;
+        top: 150px; }
+    .chessboard .at-55 {
+      left: 350px;
+      top: 200px; }
+      .chessboard .at-55.reversed {
+        left: 0px;
+        top: 150px; }
+    .chessboard .at-64 {
+      left: 0px;
+      top: 150px; }
+      .chessboard .at-64.reversed {
+        left: 350px;
+        top: 200px; }
+    .chessboard .at-65 {
+      left: 50px;
+      top: 150px; }
+      .chessboard .at-65.reversed {
+        left: 300px;
+        top: 200px; }
+    .chessboard .at-66 {
+      left: 100px;
+      top: 150px; }
+      .chessboard .at-66.reversed {
+        left: 250px;
+        top: 200px; }
+    .chessboard .at-67 {
+      left: 150px;
+      top: 150px; }
+      .chessboard .at-67.reversed {
+        left: 200px;
+        top: 200px; }
+    .chessboard .at-68 {
+      left: 200px;
+      top: 150px; }
+      .chessboard .at-68.reversed {
+        left: 150px;
+        top: 200px; }
+    .chessboard .at-69 {
+      left: 250px;
+      top: 150px; }
+      .chessboard .at-69.reversed {
+        left: 100px;
+        top: 200px; }
+    .chessboard .at-70 {
+      left: 300px;
+      top: 150px; }
+      .chessboard .at-70.reversed {
+        left: 50px;
+        top: 200px; }
+    .chessboard .at-71 {
+      left: 350px;
+      top: 150px; }
+      .chessboard .at-71.reversed {
+        left: 0px;
+        top: 200px; }
+    .chessboard .at-80 {
+      left: 0px;
+      top: 100px; }
+      .chessboard .at-80.reversed {
+        left: 350px;
+        top: 250px; }
+    .chessboard .at-81 {
+      left: 50px;
+      top: 100px; }
+      .chessboard .at-81.reversed {
+        left: 300px;
+        top: 250px; }
+    .chessboard .at-82 {
+      left: 100px;
+      top: 100px; }
+      .chessboard .at-82.reversed {
+        left: 250px;
+        top: 250px; }
+    .chessboard .at-83 {
+      left: 150px;
+      top: 100px; }
+      .chessboard .at-83.reversed {
+        left: 200px;
+        top: 250px; }
+    .chessboard .at-84 {
+      left: 200px;
+      top: 100px; }
+      .chessboard .at-84.reversed {
+        left: 150px;
+        top: 250px; }
+    .chessboard .at-85 {
+      left: 250px;
+      top: 100px; }
+      .chessboard .at-85.reversed {
+        left: 100px;
+        top: 250px; }
+    .chessboard .at-86 {
+      left: 300px;
+      top: 100px; }
+      .chessboard .at-86.reversed {
+        left: 50px;
+        top: 250px; }
+    .chessboard .at-87 {
+      left: 350px;
+      top: 100px; }
+      .chessboard .at-87.reversed {
+        left: 0px;
+        top: 250px; }
+    .chessboard .at-96 {
+      left: 0px;
+      top: 50px; }
+      .chessboard .at-96.reversed {
+        left: 350px;
+        top: 300px; }
+    .chessboard .at-97 {
+      left: 50px;
+      top: 50px; }
+      .chessboard .at-97.reversed {
+        left: 300px;
+        top: 300px; }
+    .chessboard .at-98 {
+      left: 100px;
+      top: 50px; }
+      .chessboard .at-98.reversed {
+        left: 250px;
+        top: 300px; }
+    .chessboard .at-99 {
+      left: 150px;
+      top: 50px; }
+      .chessboard .at-99.reversed {
+        left: 200px;
+        top: 300px; }
+    .chessboard .at-100 {
+      left: 200px;
+      top: 50px; }
+      .chessboard .at-100.reversed {
+        left: 150px;
+        top: 300px; }
+    .chessboard .at-101 {
+      left: 250px;
+      top: 50px; }
+      .chessboard .at-101.reversed {
+        left: 100px;
+        top: 300px; }
+    .chessboard .at-102 {
+      left: 300px;
+      top: 50px; }
+      .chessboard .at-102.reversed {
+        left: 50px;
+        top: 300px; }
+    .chessboard .at-103 {
+      left: 350px;
+      top: 50px; }
+      .chessboard .at-103.reversed {
+        left: 0px;
+        top: 300px; }
+    .chessboard .at-112 {
+      left: 0px;
+      top: 0px; }
+      .chessboard .at-112.reversed {
+        left: 350px;
+        top: 350px; }
+    .chessboard .at-113 {
+      left: 50px;
+      top: 0px; }
+      .chessboard .at-113.reversed {
+        left: 300px;
+        top: 350px; }
+    .chessboard .at-114 {
+      left: 100px;
+      top: 0px; }
+      .chessboard .at-114.reversed {
+        left: 250px;
+        top: 350px; }
+    .chessboard .at-115 {
+      left: 150px;
+      top: 0px; }
+      .chessboard .at-115.reversed {
+        left: 200px;
+        top: 350px; }
+    .chessboard .at-116 {
+      left: 200px;
+      top: 0px; }
+      .chessboard .at-116.reversed {
+        left: 150px;
+        top: 350px; }
+    .chessboard .at-117 {
+      left: 250px;
+      top: 0px; }
+      .chessboard .at-117.reversed {
+        left: 100px;
+        top: 350px; }
+    .chessboard .at-118 {
+      left: 300px;
+      top: 0px; }
+      .chessboard .at-118.reversed {
+        left: 50px;
+        top: 350px; }
+    .chessboard .at-119 {
+      left: 350px;
+      top: 0px; }
+      .chessboard .at-119.reversed {
+        left: 0px;
+        top: 350px; }
+
+  .chessboard .square-outline {
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+    margin: 1px;
+    border-width: 1px; }
+
+  .widget {
+    margin: 10px; }
+    .widget.panel .panel-body {
+      padding: 10px; }
+
+  #movelist-container {
+    width: 250px;
+    height: 400px;
+    max-height: 400px; }
+    #movelist-container .panel-body {
+      max-height: 360px; }
+
+  #console-container {
+    width: 250px;
+    min-height: 200px;
+    max-height: 400px; }
+    #console-container .panel-body {
+      max-height: 360px; }
+
+  .modal-content {
+    margin: 60px auto; }
+    .modal-content.small-modal {
+      width: 36%; }
+    .modal-content.large-modal {
+      width: 48%; }
+    .modal-content .modal-body .tab-content-wrapper {
+      margin-top: -1px; }
+    .modal-content .modal-body .table {
+      margin: 0; }
+      .modal-content .modal-body .table tr td:first-child {
+        padding-left: 15px; }
+      .modal-content .modal-body .table tr td:last-child {
+        padding-right: 15px; }
+    .modal-content .modal-body form {
+      padding: 10px 15px; }
+
+  body.debug .navbar {
+    background: #444; } }
+@media screen and (min-height: 601px) and (max-height: 720px) {
+  .navbar {
+    height: 50px; }
+    .navbar .navbar-brand {
+      width: 54px;
+      margin: 0 8px; }
+    .navbar .nav.navbar-nav {
+      margin-left: 10px; }
+    .navbar .nav.navbar-right {
+      margin-right: 54px; }
+    .navbar li {
+      margin-right: 8px; }
+      .navbar li .btn {
+        height: 34px;
+        margin-top: 8px;
+        margin-bottom: 8px; }
+
+  #nav-status-bar {
+    width: 260px;
+    height: 34px;
+    left: 50%;
+    margin-left: -130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    line-height: 34px; }
+
+  .nav-side {
+    width: 70px;
+    max-width: 70px; }
+    .nav-side .nav-side-content {
+      height: 440px;
+      margin-top: 70px; }
+      .nav-side .nav-side-content .list-group {
+        width: 54px;
+        margin: 0 8px; }
+        .nav-side .nav-side-content .list-group.top {
+          top: 0; }
+          .nav-side .nav-side-content .list-group.top .player-control {
+            margin-top: 27.5px; }
+        .nav-side .nav-side-content .list-group.bottom {
+          bottom: 0; }
+          .nav-side .nav-side-content .list-group.bottom .player-control {
+            margin-bottom: 27.5px; }
+        .nav-side .nav-side-content .list-group .list-group-item {
+          width: 54px;
+          height: 54px;
+          margin: 0 0 1px 0;
+          padding: 0; }
+          .nav-side .nav-side-content .list-group .list-group-item .option {
+            line-height: 54px;
+            font-size: 38px; }
+
+  #nav-left {
+    left: 0;
+    top: 0; }
+
+  #nav-right {
+    right: 0;
+    top: 0; }
+
+  #content-container {
+    margin: 10px 72px; }
+
+  #chessboard-container {
+    padding: 0 0 25px 25px; }
+    #chessboard-container .coordinate.file-0 {
+      left: 25px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-0.reversed {
+        left: 410px; }
+    #chessboard-container .coordinate.rank-0 {
+      left: 0;
+      bottom: 25px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-0.reversed {
+        bottom: 410px; }
+    #chessboard-container .coordinate.file-1 {
+      left: 80px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-1.reversed {
+        left: 355px; }
+    #chessboard-container .coordinate.rank-1 {
+      left: 0;
+      bottom: 80px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-1.reversed {
+        bottom: 355px; }
+    #chessboard-container .coordinate.file-2 {
+      left: 135px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-2.reversed {
+        left: 300px; }
+    #chessboard-container .coordinate.rank-2 {
+      left: 0;
+      bottom: 135px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-2.reversed {
+        bottom: 300px; }
+    #chessboard-container .coordinate.file-3 {
+      left: 190px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-3.reversed {
+        left: 245px; }
+    #chessboard-container .coordinate.rank-3 {
+      left: 0;
+      bottom: 190px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-3.reversed {
+        bottom: 245px; }
+    #chessboard-container .coordinate.file-4 {
+      left: 245px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-4.reversed {
+        left: 190px; }
+    #chessboard-container .coordinate.rank-4 {
+      left: 0;
+      bottom: 245px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-4.reversed {
+        bottom: 190px; }
+    #chessboard-container .coordinate.file-5 {
+      left: 300px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-5.reversed {
+        left: 135px; }
+    #chessboard-container .coordinate.rank-5 {
+      left: 0;
+      bottom: 300px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-5.reversed {
+        bottom: 135px; }
+    #chessboard-container .coordinate.file-6 {
+      left: 355px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-6.reversed {
+        left: 80px; }
+    #chessboard-container .coordinate.rank-6 {
+      left: 0;
+      bottom: 355px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-6.reversed {
+        bottom: 80px; }
+    #chessboard-container .coordinate.file-7 {
+      left: 410px;
+      bottom: 0;
+      width: 55px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-7.reversed {
+        left: 25px; }
+    #chessboard-container .coordinate.rank-7 {
+      left: 0;
+      bottom: 410px;
+      width: 25px;
+      height: 55px;
+      line-height: 55px; }
+      #chessboard-container .coordinate.rank-7.reversed {
+        bottom: 25px; }
+
+  .chessboard {
+    width: 440px;
+    height: 440px; }
+    .chessboard .square {
+      width: 55px;
+      height: 55px; }
+      .chessboard .square .square-value {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px; }
+    .chessboard .piece {
+      width: 55px;
+      height: 55px; }
+    .chessboard .at-0 {
+      left: 0px;
+      top: 385px; }
+      .chessboard .at-0.reversed {
+        left: 385px;
+        top: 0px; }
+    .chessboard .at-1 {
+      left: 55px;
+      top: 385px; }
+      .chessboard .at-1.reversed {
+        left: 330px;
+        top: 0px; }
+    .chessboard .at-2 {
+      left: 110px;
+      top: 385px; }
+      .chessboard .at-2.reversed {
+        left: 275px;
+        top: 0px; }
+    .chessboard .at-3 {
+      left: 165px;
+      top: 385px; }
+      .chessboard .at-3.reversed {
+        left: 220px;
+        top: 0px; }
+    .chessboard .at-4 {
+      left: 220px;
+      top: 385px; }
+      .chessboard .at-4.reversed {
+        left: 165px;
+        top: 0px; }
+    .chessboard .at-5 {
+      left: 275px;
+      top: 385px; }
+      .chessboard .at-5.reversed {
+        left: 110px;
+        top: 0px; }
+    .chessboard .at-6 {
+      left: 330px;
+      top: 385px; }
+      .chessboard .at-6.reversed {
+        left: 55px;
+        top: 0px; }
+    .chessboard .at-7 {
+      left: 385px;
+      top: 385px; }
+      .chessboard .at-7.reversed {
+        left: 0px;
+        top: 0px; }
+    .chessboard .at-16 {
+      left: 0px;
+      top: 330px; }
+      .chessboard .at-16.reversed {
+        left: 385px;
+        top: 55px; }
+    .chessboard .at-17 {
+      left: 55px;
+      top: 330px; }
+      .chessboard .at-17.reversed {
+        left: 330px;
+        top: 55px; }
+    .chessboard .at-18 {
+      left: 110px;
+      top: 330px; }
+      .chessboard .at-18.reversed {
+        left: 275px;
+        top: 55px; }
+    .chessboard .at-19 {
+      left: 165px;
+      top: 330px; }
+      .chessboard .at-19.reversed {
+        left: 220px;
+        top: 55px; }
+    .chessboard .at-20 {
+      left: 220px;
+      top: 330px; }
+      .chessboard .at-20.reversed {
+        left: 165px;
+        top: 55px; }
+    .chessboard .at-21 {
+      left: 275px;
+      top: 330px; }
+      .chessboard .at-21.reversed {
+        left: 110px;
+        top: 55px; }
+    .chessboard .at-22 {
+      left: 330px;
+      top: 330px; }
+      .chessboard .at-22.reversed {
+        left: 55px;
+        top: 55px; }
+    .chessboard .at-23 {
+      left: 385px;
+      top: 330px; }
+      .chessboard .at-23.reversed {
+        left: 0px;
+        top: 55px; }
+    .chessboard .at-32 {
+      left: 0px;
+      top: 275px; }
+      .chessboard .at-32.reversed {
+        left: 385px;
+        top: 110px; }
+    .chessboard .at-33 {
+      left: 55px;
+      top: 275px; }
+      .chessboard .at-33.reversed {
+        left: 330px;
+        top: 110px; }
+    .chessboard .at-34 {
+      left: 110px;
+      top: 275px; }
+      .chessboard .at-34.reversed {
+        left: 275px;
+        top: 110px; }
+    .chessboard .at-35 {
+      left: 165px;
+      top: 275px; }
+      .chessboard .at-35.reversed {
+        left: 220px;
+        top: 110px; }
+    .chessboard .at-36 {
+      left: 220px;
+      top: 275px; }
+      .chessboard .at-36.reversed {
+        left: 165px;
+        top: 110px; }
+    .chessboard .at-37 {
+      left: 275px;
+      top: 275px; }
+      .chessboard .at-37.reversed {
+        left: 110px;
+        top: 110px; }
+    .chessboard .at-38 {
+      left: 330px;
+      top: 275px; }
+      .chessboard .at-38.reversed {
+        left: 55px;
+        top: 110px; }
+    .chessboard .at-39 {
+      left: 385px;
+      top: 275px; }
+      .chessboard .at-39.reversed {
+        left: 0px;
+        top: 110px; }
+    .chessboard .at-48 {
+      left: 0px;
+      top: 220px; }
+      .chessboard .at-48.reversed {
+        left: 385px;
+        top: 165px; }
+    .chessboard .at-49 {
+      left: 55px;
+      top: 220px; }
+      .chessboard .at-49.reversed {
+        left: 330px;
+        top: 165px; }
+    .chessboard .at-50 {
+      left: 110px;
+      top: 220px; }
+      .chessboard .at-50.reversed {
+        left: 275px;
+        top: 165px; }
+    .chessboard .at-51 {
+      left: 165px;
+      top: 220px; }
+      .chessboard .at-51.reversed {
+        left: 220px;
+        top: 165px; }
+    .chessboard .at-52 {
+      left: 220px;
+      top: 220px; }
+      .chessboard .at-52.reversed {
+        left: 165px;
+        top: 165px; }
+    .chessboard .at-53 {
+      left: 275px;
+      top: 220px; }
+      .chessboard .at-53.reversed {
+        left: 110px;
+        top: 165px; }
+    .chessboard .at-54 {
+      left: 330px;
+      top: 220px; }
+      .chessboard .at-54.reversed {
+        left: 55px;
+        top: 165px; }
+    .chessboard .at-55 {
+      left: 385px;
+      top: 220px; }
+      .chessboard .at-55.reversed {
+        left: 0px;
+        top: 165px; }
+    .chessboard .at-64 {
+      left: 0px;
+      top: 165px; }
+      .chessboard .at-64.reversed {
+        left: 385px;
+        top: 220px; }
+    .chessboard .at-65 {
+      left: 55px;
+      top: 165px; }
+      .chessboard .at-65.reversed {
+        left: 330px;
+        top: 220px; }
+    .chessboard .at-66 {
+      left: 110px;
+      top: 165px; }
+      .chessboard .at-66.reversed {
+        left: 275px;
+        top: 220px; }
+    .chessboard .at-67 {
+      left: 165px;
+      top: 165px; }
+      .chessboard .at-67.reversed {
+        left: 220px;
+        top: 220px; }
+    .chessboard .at-68 {
+      left: 220px;
+      top: 165px; }
+      .chessboard .at-68.reversed {
+        left: 165px;
+        top: 220px; }
+    .chessboard .at-69 {
+      left: 275px;
+      top: 165px; }
+      .chessboard .at-69.reversed {
+        left: 110px;
+        top: 220px; }
+    .chessboard .at-70 {
+      left: 330px;
+      top: 165px; }
+      .chessboard .at-70.reversed {
+        left: 55px;
+        top: 220px; }
+    .chessboard .at-71 {
+      left: 385px;
+      top: 165px; }
+      .chessboard .at-71.reversed {
+        left: 0px;
+        top: 220px; }
+    .chessboard .at-80 {
+      left: 0px;
+      top: 110px; }
+      .chessboard .at-80.reversed {
+        left: 385px;
+        top: 275px; }
+    .chessboard .at-81 {
+      left: 55px;
+      top: 110px; }
+      .chessboard .at-81.reversed {
+        left: 330px;
+        top: 275px; }
+    .chessboard .at-82 {
+      left: 110px;
+      top: 110px; }
+      .chessboard .at-82.reversed {
+        left: 275px;
+        top: 275px; }
+    .chessboard .at-83 {
+      left: 165px;
+      top: 110px; }
+      .chessboard .at-83.reversed {
+        left: 220px;
+        top: 275px; }
+    .chessboard .at-84 {
+      left: 220px;
+      top: 110px; }
+      .chessboard .at-84.reversed {
+        left: 165px;
+        top: 275px; }
+    .chessboard .at-85 {
+      left: 275px;
+      top: 110px; }
+      .chessboard .at-85.reversed {
+        left: 110px;
+        top: 275px; }
+    .chessboard .at-86 {
+      left: 330px;
+      top: 110px; }
+      .chessboard .at-86.reversed {
+        left: 55px;
+        top: 275px; }
+    .chessboard .at-87 {
+      left: 385px;
+      top: 110px; }
+      .chessboard .at-87.reversed {
+        left: 0px;
+        top: 275px; }
+    .chessboard .at-96 {
+      left: 0px;
+      top: 55px; }
+      .chessboard .at-96.reversed {
+        left: 385px;
+        top: 330px; }
+    .chessboard .at-97 {
+      left: 55px;
+      top: 55px; }
+      .chessboard .at-97.reversed {
+        left: 330px;
+        top: 330px; }
+    .chessboard .at-98 {
+      left: 110px;
+      top: 55px; }
+      .chessboard .at-98.reversed {
+        left: 275px;
+        top: 330px; }
+    .chessboard .at-99 {
+      left: 165px;
+      top: 55px; }
+      .chessboard .at-99.reversed {
+        left: 220px;
+        top: 330px; }
+    .chessboard .at-100 {
+      left: 220px;
+      top: 55px; }
+      .chessboard .at-100.reversed {
+        left: 165px;
+        top: 330px; }
+    .chessboard .at-101 {
+      left: 275px;
+      top: 55px; }
+      .chessboard .at-101.reversed {
+        left: 110px;
+        top: 330px; }
+    .chessboard .at-102 {
+      left: 330px;
+      top: 55px; }
+      .chessboard .at-102.reversed {
+        left: 55px;
+        top: 330px; }
+    .chessboard .at-103 {
+      left: 385px;
+      top: 55px; }
+      .chessboard .at-103.reversed {
+        left: 0px;
+        top: 330px; }
+    .chessboard .at-112 {
+      left: 0px;
+      top: 0px; }
+      .chessboard .at-112.reversed {
+        left: 385px;
+        top: 385px; }
+    .chessboard .at-113 {
+      left: 55px;
+      top: 0px; }
+      .chessboard .at-113.reversed {
+        left: 330px;
+        top: 385px; }
+    .chessboard .at-114 {
+      left: 110px;
+      top: 0px; }
+      .chessboard .at-114.reversed {
+        left: 275px;
+        top: 385px; }
+    .chessboard .at-115 {
+      left: 165px;
+      top: 0px; }
+      .chessboard .at-115.reversed {
+        left: 220px;
+        top: 385px; }
+    .chessboard .at-116 {
+      left: 220px;
+      top: 0px; }
+      .chessboard .at-116.reversed {
+        left: 165px;
+        top: 385px; }
+    .chessboard .at-117 {
+      left: 275px;
+      top: 0px; }
+      .chessboard .at-117.reversed {
+        left: 110px;
+        top: 385px; }
+    .chessboard .at-118 {
+      left: 330px;
+      top: 0px; }
+      .chessboard .at-118.reversed {
+        left: 55px;
+        top: 385px; }
+    .chessboard .at-119 {
+      left: 385px;
+      top: 0px; }
+      .chessboard .at-119.reversed {
+        left: 0px;
+        top: 385px; }
+
+  .chessboard .square-outline {
+    left: 0;
+    top: 0;
+    width: 53px;
+    height: 53px;
+    margin: 1px;
+    border-width: 1px; }
+
+  .widget {
+    margin: 10px; }
+    .widget.panel .panel-body {
+      padding: 10px; }
+
+  #movelist-container {
+    width: 250px;
+    height: 440px;
+    max-height: 440px; }
+    #movelist-container .panel-body {
+      max-height: 400px; }
+
+  #console-container {
+    width: 250px;
+    min-height: 200px;
+    max-height: 440px; }
+    #console-container .panel-body {
+      max-height: 400px; }
+
+  .modal-content {
+    margin: 60px auto; }
+    .modal-content.small-modal {
+      width: 36%; }
+    .modal-content.large-modal {
+      width: 48%; }
+    .modal-content .modal-body .tab-content-wrapper {
+      margin-top: -1px; }
+    .modal-content .modal-body .table {
+      margin: 0; }
+      .modal-content .modal-body .table tr td:first-child {
+        padding-left: 15px; }
+      .modal-content .modal-body .table tr td:last-child {
+        padding-right: 15px; }
+    .modal-content .modal-body form {
+      padding: 10px 15px; }
+
+  body.debug .navbar {
+    background: #888; } }
+@media screen and (min-height: 721px) and (max-height: 960px) {
+  .navbar {
+    height: 50px; }
+    .navbar .navbar-brand {
+      width: 54px;
+      margin: 0 8px; }
+    .navbar .nav.navbar-nav {
+      margin-left: 10px; }
+    .navbar .nav.navbar-right {
+      margin-right: 54px; }
+    .navbar li {
+      margin-right: 8px; }
+      .navbar li .btn {
+        height: 34px;
+        margin-top: 8px;
+        margin-bottom: 8px; }
+
+  #nav-status-bar {
+    width: 260px;
+    height: 34px;
+    left: 50%;
+    margin-left: -130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    line-height: 34px; }
+
+  .nav-side {
+    width: 70px;
+    max-width: 70px; }
+    .nav-side .nav-side-content {
+      height: 512px;
+      margin-top: 70px; }
+      .nav-side .nav-side-content .list-group {
+        width: 54px;
+        margin: 0 8px; }
+        .nav-side .nav-side-content .list-group.top {
+          top: 0; }
+          .nav-side .nav-side-content .list-group.top .player-control {
+            margin-top: 32px; }
+        .nav-side .nav-side-content .list-group.bottom {
+          bottom: 0; }
+          .nav-side .nav-side-content .list-group.bottom .player-control {
+            margin-bottom: 32px; }
+        .nav-side .nav-side-content .list-group .list-group-item {
+          width: 54px;
+          height: 54px;
+          margin: 0 0 1px 0;
+          padding: 0; }
+          .nav-side .nav-side-content .list-group .list-group-item .option {
+            line-height: 54px;
+            font-size: 38px; }
+
+  #nav-left {
+    left: 0;
+    top: 0; }
+
+  #nav-right {
+    right: 0;
+    top: 0; }
+
+  #content-container {
+    margin: 10px 72px; }
+
+  #chessboard-container {
+    padding: 0 0 25px 25px; }
+    #chessboard-container .coordinate.file-0 {
+      left: 25px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-0.reversed {
+        left: 473px; }
+    #chessboard-container .coordinate.rank-0 {
+      left: 0;
+      bottom: 25px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-0.reversed {
+        bottom: 473px; }
+    #chessboard-container .coordinate.file-1 {
+      left: 89px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-1.reversed {
+        left: 409px; }
+    #chessboard-container .coordinate.rank-1 {
+      left: 0;
+      bottom: 89px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-1.reversed {
+        bottom: 409px; }
+    #chessboard-container .coordinate.file-2 {
+      left: 153px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-2.reversed {
+        left: 345px; }
+    #chessboard-container .coordinate.rank-2 {
+      left: 0;
+      bottom: 153px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-2.reversed {
+        bottom: 345px; }
+    #chessboard-container .coordinate.file-3 {
+      left: 217px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-3.reversed {
+        left: 281px; }
+    #chessboard-container .coordinate.rank-3 {
+      left: 0;
+      bottom: 217px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-3.reversed {
+        bottom: 281px; }
+    #chessboard-container .coordinate.file-4 {
+      left: 281px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-4.reversed {
+        left: 217px; }
+    #chessboard-container .coordinate.rank-4 {
+      left: 0;
+      bottom: 281px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-4.reversed {
+        bottom: 217px; }
+    #chessboard-container .coordinate.file-5 {
+      left: 345px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-5.reversed {
+        left: 153px; }
+    #chessboard-container .coordinate.rank-5 {
+      left: 0;
+      bottom: 345px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-5.reversed {
+        bottom: 153px; }
+    #chessboard-container .coordinate.file-6 {
+      left: 409px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-6.reversed {
+        left: 89px; }
+    #chessboard-container .coordinate.rank-6 {
+      left: 0;
+      bottom: 409px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-6.reversed {
+        bottom: 89px; }
+    #chessboard-container .coordinate.file-7 {
+      left: 473px;
+      bottom: 0;
+      width: 64px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-7.reversed {
+        left: 25px; }
+    #chessboard-container .coordinate.rank-7 {
+      left: 0;
+      bottom: 473px;
+      width: 25px;
+      height: 64px;
+      line-height: 64px; }
+      #chessboard-container .coordinate.rank-7.reversed {
+        bottom: 25px; }
+
+  .chessboard {
+    width: 512px;
+    height: 512px; }
+    .chessboard .square {
+      width: 64px;
+      height: 64px; }
+      .chessboard .square .square-value {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px; }
+    .chessboard .piece {
+      width: 64px;
+      height: 64px; }
+    .chessboard .at-0 {
+      left: 0px;
+      top: 448px; }
+      .chessboard .at-0.reversed {
+        left: 448px;
+        top: 0px; }
+    .chessboard .at-1 {
+      left: 64px;
+      top: 448px; }
+      .chessboard .at-1.reversed {
+        left: 384px;
+        top: 0px; }
+    .chessboard .at-2 {
+      left: 128px;
+      top: 448px; }
+      .chessboard .at-2.reversed {
+        left: 320px;
+        top: 0px; }
+    .chessboard .at-3 {
+      left: 192px;
+      top: 448px; }
+      .chessboard .at-3.reversed {
+        left: 256px;
+        top: 0px; }
+    .chessboard .at-4 {
+      left: 256px;
+      top: 448px; }
+      .chessboard .at-4.reversed {
+        left: 192px;
+        top: 0px; }
+    .chessboard .at-5 {
+      left: 320px;
+      top: 448px; }
+      .chessboard .at-5.reversed {
+        left: 128px;
+        top: 0px; }
+    .chessboard .at-6 {
+      left: 384px;
+      top: 448px; }
+      .chessboard .at-6.reversed {
+        left: 64px;
+        top: 0px; }
+    .chessboard .at-7 {
+      left: 448px;
+      top: 448px; }
+      .chessboard .at-7.reversed {
+        left: 0px;
+        top: 0px; }
+    .chessboard .at-16 {
+      left: 0px;
+      top: 384px; }
+      .chessboard .at-16.reversed {
+        left: 448px;
+        top: 64px; }
+    .chessboard .at-17 {
+      left: 64px;
+      top: 384px; }
+      .chessboard .at-17.reversed {
+        left: 384px;
+        top: 64px; }
+    .chessboard .at-18 {
+      left: 128px;
+      top: 384px; }
+      .chessboard .at-18.reversed {
+        left: 320px;
+        top: 64px; }
+    .chessboard .at-19 {
+      left: 192px;
+      top: 384px; }
+      .chessboard .at-19.reversed {
+        left: 256px;
+        top: 64px; }
+    .chessboard .at-20 {
+      left: 256px;
+      top: 384px; }
+      .chessboard .at-20.reversed {
+        left: 192px;
+        top: 64px; }
+    .chessboard .at-21 {
+      left: 320px;
+      top: 384px; }
+      .chessboard .at-21.reversed {
+        left: 128px;
+        top: 64px; }
+    .chessboard .at-22 {
+      left: 384px;
+      top: 384px; }
+      .chessboard .at-22.reversed {
+        left: 64px;
+        top: 64px; }
+    .chessboard .at-23 {
+      left: 448px;
+      top: 384px; }
+      .chessboard .at-23.reversed {
+        left: 0px;
+        top: 64px; }
+    .chessboard .at-32 {
+      left: 0px;
+      top: 320px; }
+      .chessboard .at-32.reversed {
+        left: 448px;
+        top: 128px; }
+    .chessboard .at-33 {
+      left: 64px;
+      top: 320px; }
+      .chessboard .at-33.reversed {
+        left: 384px;
+        top: 128px; }
+    .chessboard .at-34 {
+      left: 128px;
+      top: 320px; }
+      .chessboard .at-34.reversed {
+        left: 320px;
+        top: 128px; }
+    .chessboard .at-35 {
+      left: 192px;
+      top: 320px; }
+      .chessboard .at-35.reversed {
+        left: 256px;
+        top: 128px; }
+    .chessboard .at-36 {
+      left: 256px;
+      top: 320px; }
+      .chessboard .at-36.reversed {
+        left: 192px;
+        top: 128px; }
+    .chessboard .at-37 {
+      left: 320px;
+      top: 320px; }
+      .chessboard .at-37.reversed {
+        left: 128px;
+        top: 128px; }
+    .chessboard .at-38 {
+      left: 384px;
+      top: 320px; }
+      .chessboard .at-38.reversed {
+        left: 64px;
+        top: 128px; }
+    .chessboard .at-39 {
+      left: 448px;
+      top: 320px; }
+      .chessboard .at-39.reversed {
+        left: 0px;
+        top: 128px; }
+    .chessboard .at-48 {
+      left: 0px;
+      top: 256px; }
+      .chessboard .at-48.reversed {
+        left: 448px;
+        top: 192px; }
+    .chessboard .at-49 {
+      left: 64px;
+      top: 256px; }
+      .chessboard .at-49.reversed {
+        left: 384px;
+        top: 192px; }
+    .chessboard .at-50 {
+      left: 128px;
+      top: 256px; }
+      .chessboard .at-50.reversed {
+        left: 320px;
+        top: 192px; }
+    .chessboard .at-51 {
+      left: 192px;
+      top: 256px; }
+      .chessboard .at-51.reversed {
+        left: 256px;
+        top: 192px; }
+    .chessboard .at-52 {
+      left: 256px;
+      top: 256px; }
+      .chessboard .at-52.reversed {
+        left: 192px;
+        top: 192px; }
+    .chessboard .at-53 {
+      left: 320px;
+      top: 256px; }
+      .chessboard .at-53.reversed {
+        left: 128px;
+        top: 192px; }
+    .chessboard .at-54 {
+      left: 384px;
+      top: 256px; }
+      .chessboard .at-54.reversed {
+        left: 64px;
+        top: 192px; }
+    .chessboard .at-55 {
+      left: 448px;
+      top: 256px; }
+      .chessboard .at-55.reversed {
+        left: 0px;
+        top: 192px; }
+    .chessboard .at-64 {
+      left: 0px;
+      top: 192px; }
+      .chessboard .at-64.reversed {
+        left: 448px;
+        top: 256px; }
+    .chessboard .at-65 {
+      left: 64px;
+      top: 192px; }
+      .chessboard .at-65.reversed {
+        left: 384px;
+        top: 256px; }
+    .chessboard .at-66 {
+      left: 128px;
+      top: 192px; }
+      .chessboard .at-66.reversed {
+        left: 320px;
+        top: 256px; }
+    .chessboard .at-67 {
+      left: 192px;
+      top: 192px; }
+      .chessboard .at-67.reversed {
+        left: 256px;
+        top: 256px; }
+    .chessboard .at-68 {
+      left: 256px;
+      top: 192px; }
+      .chessboard .at-68.reversed {
+        left: 192px;
+        top: 256px; }
+    .chessboard .at-69 {
+      left: 320px;
+      top: 192px; }
+      .chessboard .at-69.reversed {
+        left: 128px;
+        top: 256px; }
+    .chessboard .at-70 {
+      left: 384px;
+      top: 192px; }
+      .chessboard .at-70.reversed {
+        left: 64px;
+        top: 256px; }
+    .chessboard .at-71 {
+      left: 448px;
+      top: 192px; }
+      .chessboard .at-71.reversed {
+        left: 0px;
+        top: 256px; }
+    .chessboard .at-80 {
+      left: 0px;
+      top: 128px; }
+      .chessboard .at-80.reversed {
+        left: 448px;
+        top: 320px; }
+    .chessboard .at-81 {
+      left: 64px;
+      top: 128px; }
+      .chessboard .at-81.reversed {
+        left: 384px;
+        top: 320px; }
+    .chessboard .at-82 {
+      left: 128px;
+      top: 128px; }
+      .chessboard .at-82.reversed {
+        left: 320px;
+        top: 320px; }
+    .chessboard .at-83 {
+      left: 192px;
+      top: 128px; }
+      .chessboard .at-83.reversed {
+        left: 256px;
+        top: 320px; }
+    .chessboard .at-84 {
+      left: 256px;
+      top: 128px; }
+      .chessboard .at-84.reversed {
+        left: 192px;
+        top: 320px; }
+    .chessboard .at-85 {
+      left: 320px;
+      top: 128px; }
+      .chessboard .at-85.reversed {
+        left: 128px;
+        top: 320px; }
+    .chessboard .at-86 {
+      left: 384px;
+      top: 128px; }
+      .chessboard .at-86.reversed {
+        left: 64px;
+        top: 320px; }
+    .chessboard .at-87 {
+      left: 448px;
+      top: 128px; }
+      .chessboard .at-87.reversed {
+        left: 0px;
+        top: 320px; }
+    .chessboard .at-96 {
+      left: 0px;
+      top: 64px; }
+      .chessboard .at-96.reversed {
+        left: 448px;
+        top: 384px; }
+    .chessboard .at-97 {
+      left: 64px;
+      top: 64px; }
+      .chessboard .at-97.reversed {
+        left: 384px;
+        top: 384px; }
+    .chessboard .at-98 {
+      left: 128px;
+      top: 64px; }
+      .chessboard .at-98.reversed {
+        left: 320px;
+        top: 384px; }
+    .chessboard .at-99 {
+      left: 192px;
+      top: 64px; }
+      .chessboard .at-99.reversed {
+        left: 256px;
+        top: 384px; }
+    .chessboard .at-100 {
+      left: 256px;
+      top: 64px; }
+      .chessboard .at-100.reversed {
+        left: 192px;
+        top: 384px; }
+    .chessboard .at-101 {
+      left: 320px;
+      top: 64px; }
+      .chessboard .at-101.reversed {
+        left: 128px;
+        top: 384px; }
+    .chessboard .at-102 {
+      left: 384px;
+      top: 64px; }
+      .chessboard .at-102.reversed {
+        left: 64px;
+        top: 384px; }
+    .chessboard .at-103 {
+      left: 448px;
+      top: 64px; }
+      .chessboard .at-103.reversed {
+        left: 0px;
+        top: 384px; }
+    .chessboard .at-112 {
+      left: 0px;
+      top: 0px; }
+      .chessboard .at-112.reversed {
+        left: 448px;
+        top: 448px; }
+    .chessboard .at-113 {
+      left: 64px;
+      top: 0px; }
+      .chessboard .at-113.reversed {
+        left: 384px;
+        top: 448px; }
+    .chessboard .at-114 {
+      left: 128px;
+      top: 0px; }
+      .chessboard .at-114.reversed {
+        left: 320px;
+        top: 448px; }
+    .chessboard .at-115 {
+      left: 192px;
+      top: 0px; }
+      .chessboard .at-115.reversed {
+        left: 256px;
+        top: 448px; }
+    .chessboard .at-116 {
+      left: 256px;
+      top: 0px; }
+      .chessboard .at-116.reversed {
+        left: 192px;
+        top: 448px; }
+    .chessboard .at-117 {
+      left: 320px;
+      top: 0px; }
+      .chessboard .at-117.reversed {
+        left: 128px;
+        top: 448px; }
+    .chessboard .at-118 {
+      left: 384px;
+      top: 0px; }
+      .chessboard .at-118.reversed {
+        left: 64px;
+        top: 448px; }
+    .chessboard .at-119 {
+      left: 448px;
+      top: 0px; }
+      .chessboard .at-119.reversed {
+        left: 0px;
+        top: 448px; }
+
+  .chessboard .square-outline {
+    left: 0;
+    top: 0;
+    width: 62px;
+    height: 62px;
+    margin: 1px;
+    border-width: 1px; }
+
+  .widget {
+    margin: 10px; }
+    .widget.panel .panel-body {
+      padding: 10px; }
+
+  #movelist-container {
+    width: 250px;
+    height: 512px;
+    max-height: 512px; }
+    #movelist-container .panel-body {
+      max-height: 472px; }
+
+  #console-container {
+    width: 250px;
+    min-height: 200px;
+    max-height: 512px; }
+    #console-container .panel-body {
+      max-height: 472px; }
+
+  .modal-content {
+    margin: 60px auto; }
+    .modal-content.small-modal {
+      width: 36%; }
+    .modal-content.large-modal {
+      width: 48%; }
+    .modal-content .modal-body .tab-content-wrapper {
+      margin-top: -1px; }
+    .modal-content .modal-body .table {
+      margin: 0; }
+      .modal-content .modal-body .table tr td:first-child {
+        padding-left: 15px; }
+      .modal-content .modal-body .table tr td:last-child {
+        padding-right: 15px; }
+    .modal-content .modal-body form {
+      padding: 10px 15px; }
+
+  body.debug .navbar {
+    background: #bbb; } }
+@media screen and (min-height: 961px) and (max-height: 1200px) {
+  .navbar {
+    height: 50px; }
+    .navbar .navbar-brand {
+      width: 54px;
+      margin: 0 8px; }
+    .navbar .nav.navbar-nav {
+      margin-left: 10px; }
+    .navbar .nav.navbar-right {
+      margin-right: 54px; }
+    .navbar li {
+      margin-right: 8px; }
+      .navbar li .btn {
+        height: 34px;
+        margin-top: 8px;
+        margin-bottom: 8px; }
+
+  #nav-status-bar {
+    width: 260px;
+    height: 34px;
+    left: 50%;
+    margin-left: -130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    line-height: 34px; }
+
+  .nav-side {
+    width: 70px;
+    max-width: 70px; }
+    .nav-side .nav-side-content {
+      height: 576px;
+      margin-top: 70px; }
+      .nav-side .nav-side-content .list-group {
+        width: 54px;
+        margin: 0 8px; }
+        .nav-side .nav-side-content .list-group.top {
+          top: 0; }
+          .nav-side .nav-side-content .list-group.top .player-control {
+            margin-top: 36px; }
+        .nav-side .nav-side-content .list-group.bottom {
+          bottom: 0; }
+          .nav-side .nav-side-content .list-group.bottom .player-control {
+            margin-bottom: 36px; }
+        .nav-side .nav-side-content .list-group .list-group-item {
+          width: 54px;
+          height: 54px;
+          margin: 0 0 1px 0;
+          padding: 0; }
+          .nav-side .nav-side-content .list-group .list-group-item .option {
+            line-height: 54px;
+            font-size: 38px; }
+
+  #nav-left {
+    left: 0;
+    top: 0; }
+
+  #nav-right {
+    right: 0;
+    top: 0; }
+
+  #content-container {
+    margin: 10px 72px; }
+
+  #chessboard-container {
+    padding: 0 0 25px 25px; }
+    #chessboard-container .coordinate.file-0 {
+      left: 25px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-0.reversed {
+        left: 529px; }
+    #chessboard-container .coordinate.rank-0 {
+      left: 0;
+      bottom: 25px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-0.reversed {
+        bottom: 529px; }
+    #chessboard-container .coordinate.file-1 {
+      left: 97px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-1.reversed {
+        left: 457px; }
+    #chessboard-container .coordinate.rank-1 {
+      left: 0;
+      bottom: 97px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-1.reversed {
+        bottom: 457px; }
+    #chessboard-container .coordinate.file-2 {
+      left: 169px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-2.reversed {
+        left: 385px; }
+    #chessboard-container .coordinate.rank-2 {
+      left: 0;
+      bottom: 169px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-2.reversed {
+        bottom: 385px; }
+    #chessboard-container .coordinate.file-3 {
+      left: 241px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-3.reversed {
+        left: 313px; }
+    #chessboard-container .coordinate.rank-3 {
+      left: 0;
+      bottom: 241px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-3.reversed {
+        bottom: 313px; }
+    #chessboard-container .coordinate.file-4 {
+      left: 313px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-4.reversed {
+        left: 241px; }
+    #chessboard-container .coordinate.rank-4 {
+      left: 0;
+      bottom: 313px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-4.reversed {
+        bottom: 241px; }
+    #chessboard-container .coordinate.file-5 {
+      left: 385px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-5.reversed {
+        left: 169px; }
+    #chessboard-container .coordinate.rank-5 {
+      left: 0;
+      bottom: 385px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-5.reversed {
+        bottom: 169px; }
+    #chessboard-container .coordinate.file-6 {
+      left: 457px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-6.reversed {
+        left: 97px; }
+    #chessboard-container .coordinate.rank-6 {
+      left: 0;
+      bottom: 457px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-6.reversed {
+        bottom: 97px; }
+    #chessboard-container .coordinate.file-7 {
+      left: 529px;
+      bottom: 0;
+      width: 72px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-7.reversed {
+        left: 25px; }
+    #chessboard-container .coordinate.rank-7 {
+      left: 0;
+      bottom: 529px;
+      width: 25px;
+      height: 72px;
+      line-height: 72px; }
+      #chessboard-container .coordinate.rank-7.reversed {
+        bottom: 25px; }
+
+  .chessboard {
+    width: 576px;
+    height: 576px; }
+    .chessboard .square {
+      width: 72px;
+      height: 72px; }
+      .chessboard .square .square-value {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px; }
+    .chessboard .piece {
+      width: 72px;
+      height: 72px; }
+    .chessboard .at-0 {
+      left: 0px;
+      top: 504px; }
+      .chessboard .at-0.reversed {
+        left: 504px;
+        top: 0px; }
+    .chessboard .at-1 {
+      left: 72px;
+      top: 504px; }
+      .chessboard .at-1.reversed {
+        left: 432px;
+        top: 0px; }
+    .chessboard .at-2 {
+      left: 144px;
+      top: 504px; }
+      .chessboard .at-2.reversed {
+        left: 360px;
+        top: 0px; }
+    .chessboard .at-3 {
+      left: 216px;
+      top: 504px; }
+      .chessboard .at-3.reversed {
+        left: 288px;
+        top: 0px; }
+    .chessboard .at-4 {
+      left: 288px;
+      top: 504px; }
+      .chessboard .at-4.reversed {
+        left: 216px;
+        top: 0px; }
+    .chessboard .at-5 {
+      left: 360px;
+      top: 504px; }
+      .chessboard .at-5.reversed {
+        left: 144px;
+        top: 0px; }
+    .chessboard .at-6 {
+      left: 432px;
+      top: 504px; }
+      .chessboard .at-6.reversed {
+        left: 72px;
+        top: 0px; }
+    .chessboard .at-7 {
+      left: 504px;
+      top: 504px; }
+      .chessboard .at-7.reversed {
+        left: 0px;
+        top: 0px; }
+    .chessboard .at-16 {
+      left: 0px;
+      top: 432px; }
+      .chessboard .at-16.reversed {
+        left: 504px;
+        top: 72px; }
+    .chessboard .at-17 {
+      left: 72px;
+      top: 432px; }
+      .chessboard .at-17.reversed {
+        left: 432px;
+        top: 72px; }
+    .chessboard .at-18 {
+      left: 144px;
+      top: 432px; }
+      .chessboard .at-18.reversed {
+        left: 360px;
+        top: 72px; }
+    .chessboard .at-19 {
+      left: 216px;
+      top: 432px; }
+      .chessboard .at-19.reversed {
+        left: 288px;
+        top: 72px; }
+    .chessboard .at-20 {
+      left: 288px;
+      top: 432px; }
+      .chessboard .at-20.reversed {
+        left: 216px;
+        top: 72px; }
+    .chessboard .at-21 {
+      left: 360px;
+      top: 432px; }
+      .chessboard .at-21.reversed {
+        left: 144px;
+        top: 72px; }
+    .chessboard .at-22 {
+      left: 432px;
+      top: 432px; }
+      .chessboard .at-22.reversed {
+        left: 72px;
+        top: 72px; }
+    .chessboard .at-23 {
+      left: 504px;
+      top: 432px; }
+      .chessboard .at-23.reversed {
+        left: 0px;
+        top: 72px; }
+    .chessboard .at-32 {
+      left: 0px;
+      top: 360px; }
+      .chessboard .at-32.reversed {
+        left: 504px;
+        top: 144px; }
+    .chessboard .at-33 {
+      left: 72px;
+      top: 360px; }
+      .chessboard .at-33.reversed {
+        left: 432px;
+        top: 144px; }
+    .chessboard .at-34 {
+      left: 144px;
+      top: 360px; }
+      .chessboard .at-34.reversed {
+        left: 360px;
+        top: 144px; }
+    .chessboard .at-35 {
+      left: 216px;
+      top: 360px; }
+      .chessboard .at-35.reversed {
+        left: 288px;
+        top: 144px; }
+    .chessboard .at-36 {
+      left: 288px;
+      top: 360px; }
+      .chessboard .at-36.reversed {
+        left: 216px;
+        top: 144px; }
+    .chessboard .at-37 {
+      left: 360px;
+      top: 360px; }
+      .chessboard .at-37.reversed {
+        left: 144px;
+        top: 144px; }
+    .chessboard .at-38 {
+      left: 432px;
+      top: 360px; }
+      .chessboard .at-38.reversed {
+        left: 72px;
+        top: 144px; }
+    .chessboard .at-39 {
+      left: 504px;
+      top: 360px; }
+      .chessboard .at-39.reversed {
+        left: 0px;
+        top: 144px; }
+    .chessboard .at-48 {
+      left: 0px;
+      top: 288px; }
+      .chessboard .at-48.reversed {
+        left: 504px;
+        top: 216px; }
+    .chessboard .at-49 {
+      left: 72px;
+      top: 288px; }
+      .chessboard .at-49.reversed {
+        left: 432px;
+        top: 216px; }
+    .chessboard .at-50 {
+      left: 144px;
+      top: 288px; }
+      .chessboard .at-50.reversed {
+        left: 360px;
+        top: 216px; }
+    .chessboard .at-51 {
+      left: 216px;
+      top: 288px; }
+      .chessboard .at-51.reversed {
+        left: 288px;
+        top: 216px; }
+    .chessboard .at-52 {
+      left: 288px;
+      top: 288px; }
+      .chessboard .at-52.reversed {
+        left: 216px;
+        top: 216px; }
+    .chessboard .at-53 {
+      left: 360px;
+      top: 288px; }
+      .chessboard .at-53.reversed {
+        left: 144px;
+        top: 216px; }
+    .chessboard .at-54 {
+      left: 432px;
+      top: 288px; }
+      .chessboard .at-54.reversed {
+        left: 72px;
+        top: 216px; }
+    .chessboard .at-55 {
+      left: 504px;
+      top: 288px; }
+      .chessboard .at-55.reversed {
+        left: 0px;
+        top: 216px; }
+    .chessboard .at-64 {
+      left: 0px;
+      top: 216px; }
+      .chessboard .at-64.reversed {
+        left: 504px;
+        top: 288px; }
+    .chessboard .at-65 {
+      left: 72px;
+      top: 216px; }
+      .chessboard .at-65.reversed {
+        left: 432px;
+        top: 288px; }
+    .chessboard .at-66 {
+      left: 144px;
+      top: 216px; }
+      .chessboard .at-66.reversed {
+        left: 360px;
+        top: 288px; }
+    .chessboard .at-67 {
+      left: 216px;
+      top: 216px; }
+      .chessboard .at-67.reversed {
+        left: 288px;
+        top: 288px; }
+    .chessboard .at-68 {
+      left: 288px;
+      top: 216px; }
+      .chessboard .at-68.reversed {
+        left: 216px;
+        top: 288px; }
+    .chessboard .at-69 {
+      left: 360px;
+      top: 216px; }
+      .chessboard .at-69.reversed {
+        left: 144px;
+        top: 288px; }
+    .chessboard .at-70 {
+      left: 432px;
+      top: 216px; }
+      .chessboard .at-70.reversed {
+        left: 72px;
+        top: 288px; }
+    .chessboard .at-71 {
+      left: 504px;
+      top: 216px; }
+      .chessboard .at-71.reversed {
+        left: 0px;
+        top: 288px; }
+    .chessboard .at-80 {
+      left: 0px;
+      top: 144px; }
+      .chessboard .at-80.reversed {
+        left: 504px;
+        top: 360px; }
+    .chessboard .at-81 {
+      left: 72px;
+      top: 144px; }
+      .chessboard .at-81.reversed {
+        left: 432px;
+        top: 360px; }
+    .chessboard .at-82 {
+      left: 144px;
+      top: 144px; }
+      .chessboard .at-82.reversed {
+        left: 360px;
+        top: 360px; }
+    .chessboard .at-83 {
+      left: 216px;
+      top: 144px; }
+      .chessboard .at-83.reversed {
+        left: 288px;
+        top: 360px; }
+    .chessboard .at-84 {
+      left: 288px;
+      top: 144px; }
+      .chessboard .at-84.reversed {
+        left: 216px;
+        top: 360px; }
+    .chessboard .at-85 {
+      left: 360px;
+      top: 144px; }
+      .chessboard .at-85.reversed {
+        left: 144px;
+        top: 360px; }
+    .chessboard .at-86 {
+      left: 432px;
+      top: 144px; }
+      .chessboard .at-86.reversed {
+        left: 72px;
+        top: 360px; }
+    .chessboard .at-87 {
+      left: 504px;
+      top: 144px; }
+      .chessboard .at-87.reversed {
+        left: 0px;
+        top: 360px; }
+    .chessboard .at-96 {
+      left: 0px;
+      top: 72px; }
+      .chessboard .at-96.reversed {
+        left: 504px;
+        top: 432px; }
+    .chessboard .at-97 {
+      left: 72px;
+      top: 72px; }
+      .chessboard .at-97.reversed {
+        left: 432px;
+        top: 432px; }
+    .chessboard .at-98 {
+      left: 144px;
+      top: 72px; }
+      .chessboard .at-98.reversed {
+        left: 360px;
+        top: 432px; }
+    .chessboard .at-99 {
+      left: 216px;
+      top: 72px; }
+      .chessboard .at-99.reversed {
+        left: 288px;
+        top: 432px; }
+    .chessboard .at-100 {
+      left: 288px;
+      top: 72px; }
+      .chessboard .at-100.reversed {
+        left: 216px;
+        top: 432px; }
+    .chessboard .at-101 {
+      left: 360px;
+      top: 72px; }
+      .chessboard .at-101.reversed {
+        left: 144px;
+        top: 432px; }
+    .chessboard .at-102 {
+      left: 432px;
+      top: 72px; }
+      .chessboard .at-102.reversed {
+        left: 72px;
+        top: 432px; }
+    .chessboard .at-103 {
+      left: 504px;
+      top: 72px; }
+      .chessboard .at-103.reversed {
+        left: 0px;
+        top: 432px; }
+    .chessboard .at-112 {
+      left: 0px;
+      top: 0px; }
+      .chessboard .at-112.reversed {
+        left: 504px;
+        top: 504px; }
+    .chessboard .at-113 {
+      left: 72px;
+      top: 0px; }
+      .chessboard .at-113.reversed {
+        left: 432px;
+        top: 504px; }
+    .chessboard .at-114 {
+      left: 144px;
+      top: 0px; }
+      .chessboard .at-114.reversed {
+        left: 360px;
+        top: 504px; }
+    .chessboard .at-115 {
+      left: 216px;
+      top: 0px; }
+      .chessboard .at-115.reversed {
+        left: 288px;
+        top: 504px; }
+    .chessboard .at-116 {
+      left: 288px;
+      top: 0px; }
+      .chessboard .at-116.reversed {
+        left: 216px;
+        top: 504px; }
+    .chessboard .at-117 {
+      left: 360px;
+      top: 0px; }
+      .chessboard .at-117.reversed {
+        left: 144px;
+        top: 504px; }
+    .chessboard .at-118 {
+      left: 432px;
+      top: 0px; }
+      .chessboard .at-118.reversed {
+        left: 72px;
+        top: 504px; }
+    .chessboard .at-119 {
+      left: 504px;
+      top: 0px; }
+      .chessboard .at-119.reversed {
+        left: 0px;
+        top: 504px; }
+
+  .chessboard .square-outline {
+    left: 0;
+    top: 0;
+    width: 70px;
+    height: 70px;
+    margin: 1px;
+    border-width: 1px; }
+
+  .widget {
+    margin: 10px; }
+    .widget.panel .panel-body {
+      padding: 10px; }
+
+  #movelist-container {
+    width: 250px;
+    height: 576px;
+    max-height: 576px; }
+    #movelist-container .panel-body {
+      max-height: 536px; }
+
+  #console-container {
+    width: 250px;
+    min-height: 200px;
+    max-height: 576px; }
+    #console-container .panel-body {
+      max-height: 536px; }
+
+  .modal-content {
+    margin: 60px auto; }
+    .modal-content.small-modal {
+      width: 36%; }
+    .modal-content.large-modal {
+      width: 48%; }
+    .modal-content .modal-body .tab-content-wrapper {
+      margin-top: -1px; }
+    .modal-content .modal-body .table {
+      margin: 0; }
+      .modal-content .modal-body .table tr td:first-child {
+        padding-left: 15px; }
+      .modal-content .modal-body .table tr td:last-child {
+        padding-right: 15px; }
+    .modal-content .modal-body form {
+      padding: 10px 15px; }
+
+  body.debug .navbar {
+    background: #fff; } }
+@media screen and (min-height: 1201px) {
+  .navbar {
+    height: 50px; }
+    .navbar .navbar-brand {
+      width: 54px;
+      margin: 0 8px; }
+    .navbar .nav.navbar-nav {
+      margin-left: 10px; }
+    .navbar .nav.navbar-right {
+      margin-right: 54px; }
+    .navbar li {
+      margin-right: 8px; }
+      .navbar li .btn {
+        height: 34px;
+        margin-top: 8px;
+        margin-bottom: 8px; }
+
+  #nav-status-bar {
+    width: 260px;
+    height: 34px;
+    left: 50%;
+    margin-left: -130px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    line-height: 34px; }
+
+  .nav-side {
+    width: 70px;
+    max-width: 70px; }
+    .nav-side .nav-side-content {
+      height: 680px;
+      margin-top: 70px; }
+      .nav-side .nav-side-content .list-group {
+        width: 54px;
+        margin: 0 8px; }
+        .nav-side .nav-side-content .list-group.top {
+          top: 0; }
+          .nav-side .nav-side-content .list-group.top .player-control {
+            margin-top: 42.5px; }
+        .nav-side .nav-side-content .list-group.bottom {
+          bottom: 0; }
+          .nav-side .nav-side-content .list-group.bottom .player-control {
+            margin-bottom: 42.5px; }
+        .nav-side .nav-side-content .list-group .list-group-item {
+          width: 54px;
+          height: 54px;
+          margin: 0 0 1px 0;
+          padding: 0; }
+          .nav-side .nav-side-content .list-group .list-group-item .option {
+            line-height: 54px;
+            font-size: 38px; }
+
+  #nav-left {
+    left: 0;
+    top: 0; }
+
+  #nav-right {
+    right: 0;
+    top: 0; }
+
+  #content-container {
+    margin: 10px 72px; }
+
+  #chessboard-container {
+    padding: 0 0 25px 25px; }
+    #chessboard-container .coordinate.file-0 {
+      left: 25px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-0.reversed {
+        left: 620px; }
+    #chessboard-container .coordinate.rank-0 {
+      left: 0;
+      bottom: 25px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-0.reversed {
+        bottom: 620px; }
+    #chessboard-container .coordinate.file-1 {
+      left: 110px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-1.reversed {
+        left: 535px; }
+    #chessboard-container .coordinate.rank-1 {
+      left: 0;
+      bottom: 110px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-1.reversed {
+        bottom: 535px; }
+    #chessboard-container .coordinate.file-2 {
+      left: 195px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-2.reversed {
+        left: 450px; }
+    #chessboard-container .coordinate.rank-2 {
+      left: 0;
+      bottom: 195px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-2.reversed {
+        bottom: 450px; }
+    #chessboard-container .coordinate.file-3 {
+      left: 280px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-3.reversed {
+        left: 365px; }
+    #chessboard-container .coordinate.rank-3 {
+      left: 0;
+      bottom: 280px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-3.reversed {
+        bottom: 365px; }
+    #chessboard-container .coordinate.file-4 {
+      left: 365px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-4.reversed {
+        left: 280px; }
+    #chessboard-container .coordinate.rank-4 {
+      left: 0;
+      bottom: 365px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-4.reversed {
+        bottom: 280px; }
+    #chessboard-container .coordinate.file-5 {
+      left: 450px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-5.reversed {
+        left: 195px; }
+    #chessboard-container .coordinate.rank-5 {
+      left: 0;
+      bottom: 450px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-5.reversed {
+        bottom: 195px; }
+    #chessboard-container .coordinate.file-6 {
+      left: 535px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-6.reversed {
+        left: 110px; }
+    #chessboard-container .coordinate.rank-6 {
+      left: 0;
+      bottom: 535px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-6.reversed {
+        bottom: 110px; }
+    #chessboard-container .coordinate.file-7 {
+      left: 620px;
+      bottom: 0;
+      width: 85px;
+      height: 25px;
+      line-height: 25px; }
+      #chessboard-container .coordinate.file-7.reversed {
+        left: 25px; }
+    #chessboard-container .coordinate.rank-7 {
+      left: 0;
+      bottom: 620px;
+      width: 25px;
+      height: 85px;
+      line-height: 85px; }
+      #chessboard-container .coordinate.rank-7.reversed {
+        bottom: 25px; }
+
+  .chessboard {
+    width: 680px;
+    height: 680px; }
+    .chessboard .square {
+      width: 85px;
+      height: 85px; }
+      .chessboard .square .square-value {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        line-height: 16px; }
+    .chessboard .piece {
+      width: 85px;
+      height: 85px; }
+    .chessboard .at-0 {
+      left: 0px;
+      top: 595px; }
+      .chessboard .at-0.reversed {
+        left: 595px;
+        top: 0px; }
+    .chessboard .at-1 {
+      left: 85px;
+      top: 595px; }
+      .chessboard .at-1.reversed {
+        left: 510px;
+        top: 0px; }
+    .chessboard .at-2 {
+      left: 170px;
+      top: 595px; }
+      .chessboard .at-2.reversed {
+        left: 425px;
+        top: 0px; }
+    .chessboard .at-3 {
+      left: 255px;
+      top: 595px; }
+      .chessboard .at-3.reversed {
+        left: 340px;
+        top: 0px; }
+    .chessboard .at-4 {
+      left: 340px;
+      top: 595px; }
+      .chessboard .at-4.reversed {
+        left: 255px;
+        top: 0px; }
+    .chessboard .at-5 {
+      left: 425px;
+      top: 595px; }
+      .chessboard .at-5.reversed {
+        left: 170px;
+        top: 0px; }
+    .chessboard .at-6 {
+      left: 510px;
+      top: 595px; }
+      .chessboard .at-6.reversed {
+        left: 85px;
+        top: 0px; }
+    .chessboard .at-7 {
+      left: 595px;
+      top: 595px; }
+      .chessboard .at-7.reversed {
+        left: 0px;
+        top: 0px; }
+    .chessboard .at-16 {
+      left: 0px;
+      top: 510px; }
+      .chessboard .at-16.reversed {
+        left: 595px;
+        top: 85px; }
+    .chessboard .at-17 {
+      left: 85px;
+      top: 510px; }
+      .chessboard .at-17.reversed {
+        left: 510px;
+        top: 85px; }
+    .chessboard .at-18 {
+      left: 170px;
+      top: 510px; }
+      .chessboard .at-18.reversed {
+        left: 425px;
+        top: 85px; }
+    .chessboard .at-19 {
+      left: 255px;
+      top: 510px; }
+      .chessboard .at-19.reversed {
+        left: 340px;
+        top: 85px; }
+    .chessboard .at-20 {
+      left: 340px;
+      top: 510px; }
+      .chessboard .at-20.reversed {
+        left: 255px;
+        top: 85px; }
+    .chessboard .at-21 {
+      left: 425px;
+      top: 510px; }
+      .chessboard .at-21.reversed {
+        left: 170px;
+        top: 85px; }
+    .chessboard .at-22 {
+      left: 510px;
+      top: 510px; }
+      .chessboard .at-22.reversed {
+        left: 85px;
+        top: 85px; }
+    .chessboard .at-23 {
+      left: 595px;
+      top: 510px; }
+      .chessboard .at-23.reversed {
+        left: 0px;
+        top: 85px; }
+    .chessboard .at-32 {
+      left: 0px;
+      top: 425px; }
+      .chessboard .at-32.reversed {
+        left: 595px;
+        top: 170px; }
+    .chessboard .at-33 {
+      left: 85px;
+      top: 425px; }
+      .chessboard .at-33.reversed {
+        left: 510px;
+        top: 170px; }
+    .chessboard .at-34 {
+      left: 170px;
+      top: 425px; }
+      .chessboard .at-34.reversed {
+        left: 425px;
+        top: 170px; }
+    .chessboard .at-35 {
+      left: 255px;
+      top: 425px; }
+      .chessboard .at-35.reversed {
+        left: 340px;
+        top: 170px; }
+    .chessboard .at-36 {
+      left: 340px;
+      top: 425px; }
+      .chessboard .at-36.reversed {
+        left: 255px;
+        top: 170px; }
+    .chessboard .at-37 {
+      left: 425px;
+      top: 425px; }
+      .chessboard .at-37.reversed {
+        left: 170px;
+        top: 170px; }
+    .chessboard .at-38 {
+      left: 510px;
+      top: 425px; }
+      .chessboard .at-38.reversed {
+        left: 85px;
+        top: 170px; }
+    .chessboard .at-39 {
+      left: 595px;
+      top: 425px; }
+      .chessboard .at-39.reversed {
+        left: 0px;
+        top: 170px; }
+    .chessboard .at-48 {
+      left: 0px;
+      top: 340px; }
+      .chessboard .at-48.reversed {
+        left: 595px;
+        top: 255px; }
+    .chessboard .at-49 {
+      left: 85px;
+      top: 340px; }
+      .chessboard .at-49.reversed {
+        left: 510px;
+        top: 255px; }
+    .chessboard .at-50 {
+      left: 170px;
+      top: 340px; }
+      .chessboard .at-50.reversed {
+        left: 425px;
+        top: 255px; }
+    .chessboard .at-51 {
+      left: 255px;
+      top: 340px; }
+      .chessboard .at-51.reversed {
+        left: 340px;
+        top: 255px; }
+    .chessboard .at-52 {
+      left: 340px;
+      top: 340px; }
+      .chessboard .at-52.reversed {
+        left: 255px;
+        top: 255px; }
+    .chessboard .at-53 {
+      left: 425px;
+      top: 340px; }
+      .chessboard .at-53.reversed {
+        left: 170px;
+        top: 255px; }
+    .chessboard .at-54 {
+      left: 510px;
+      top: 340px; }
+      .chessboard .at-54.reversed {
+        left: 85px;
+        top: 255px; }
+    .chessboard .at-55 {
+      left: 595px;
+      top: 340px; }
+      .chessboard .at-55.reversed {
+        left: 0px;
+        top: 255px; }
+    .chessboard .at-64 {
+      left: 0px;
+      top: 255px; }
+      .chessboard .at-64.reversed {
+        left: 595px;
+        top: 340px; }
+    .chessboard .at-65 {
+      left: 85px;
+      top: 255px; }
+      .chessboard .at-65.reversed {
+        left: 510px;
+        top: 340px; }
+    .chessboard .at-66 {
+      left: 170px;
+      top: 255px; }
+      .chessboard .at-66.reversed {
+        left: 425px;
+        top: 340px; }
+    .chessboard .at-67 {
+      left: 255px;
+      top: 255px; }
+      .chessboard .at-67.reversed {
+        left: 340px;
+        top: 340px; }
+    .chessboard .at-68 {
+      left: 340px;
+      top: 255px; }
+      .chessboard .at-68.reversed {
+        left: 255px;
+        top: 340px; }
+    .chessboard .at-69 {
+      left: 425px;
+      top: 255px; }
+      .chessboard .at-69.reversed {
+        left: 170px;
+        top: 340px; }
+    .chessboard .at-70 {
+      left: 510px;
+      top: 255px; }
+      .chessboard .at-70.reversed {
+        left: 85px;
+        top: 340px; }
+    .chessboard .at-71 {
+      left: 595px;
+      top: 255px; }
+      .chessboard .at-71.reversed {
+        left: 0px;
+        top: 340px; }
+    .chessboard .at-80 {
+      left: 0px;
+      top: 170px; }
+      .chessboard .at-80.reversed {
+        left: 595px;
+        top: 425px; }
+    .chessboard .at-81 {
+      left: 85px;
+      top: 170px; }
+      .chessboard .at-81.reversed {
+        left: 510px;
+        top: 425px; }
+    .chessboard .at-82 {
+      left: 170px;
+      top: 170px; }
+      .chessboard .at-82.reversed {
+        left: 425px;
+        top: 425px; }
+    .chessboard .at-83 {
+      left: 255px;
+      top: 170px; }
+      .chessboard .at-83.reversed {
+        left: 340px;
+        top: 425px; }
+    .chessboard .at-84 {
+      left: 340px;
+      top: 170px; }
+      .chessboard .at-84.reversed {
+        left: 255px;
+        top: 425px; }
+    .chessboard .at-85 {
+      left: 425px;
+      top: 170px; }
+      .chessboard .at-85.reversed {
+        left: 170px;
+        top: 425px; }
+    .chessboard .at-86 {
+      left: 510px;
+      top: 170px; }
+      .chessboard .at-86.reversed {
+        left: 85px;
+        top: 425px; }
+    .chessboard .at-87 {
+      left: 595px;
+      top: 170px; }
+      .chessboard .at-87.reversed {
+        left: 0px;
+        top: 425px; }
+    .chessboard .at-96 {
+      left: 0px;
+      top: 85px; }
+      .chessboard .at-96.reversed {
+        left: 595px;
+        top: 510px; }
+    .chessboard .at-97 {
+      left: 85px;
+      top: 85px; }
+      .chessboard .at-97.reversed {
+        left: 510px;
+        top: 510px; }
+    .chessboard .at-98 {
+      left: 170px;
+      top: 85px; }
+      .chessboard .at-98.reversed {
+        left: 425px;
+        top: 510px; }
+    .chessboard .at-99 {
+      left: 255px;
+      top: 85px; }
+      .chessboard .at-99.reversed {
+        left: 340px;
+        top: 510px; }
+    .chessboard .at-100 {
+      left: 340px;
+      top: 85px; }
+      .chessboard .at-100.reversed {
+        left: 255px;
+        top: 510px; }
+    .chessboard .at-101 {
+      left: 425px;
+      top: 85px; }
+      .chessboard .at-101.reversed {
+        left: 170px;
+        top: 510px; }
+    .chessboard .at-102 {
+      left: 510px;
+      top: 85px; }
+      .chessboard .at-102.reversed {
+        left: 85px;
+        top: 510px; }
+    .chessboard .at-103 {
+      left: 595px;
+      top: 85px; }
+      .chessboard .at-103.reversed {
+        left: 0px;
+        top: 510px; }
+    .chessboard .at-112 {
+      left: 0px;
+      top: 0px; }
+      .chessboard .at-112.reversed {
+        left: 595px;
+        top: 595px; }
+    .chessboard .at-113 {
+      left: 85px;
+      top: 0px; }
+      .chessboard .at-113.reversed {
+        left: 510px;
+        top: 595px; }
+    .chessboard .at-114 {
+      left: 170px;
+      top: 0px; }
+      .chessboard .at-114.reversed {
+        left: 425px;
+        top: 595px; }
+    .chessboard .at-115 {
+      left: 255px;
+      top: 0px; }
+      .chessboard .at-115.reversed {
+        left: 340px;
+        top: 595px; }
+    .chessboard .at-116 {
+      left: 340px;
+      top: 0px; }
+      .chessboard .at-116.reversed {
+        left: 255px;
+        top: 595px; }
+    .chessboard .at-117 {
+      left: 425px;
+      top: 0px; }
+      .chessboard .at-117.reversed {
+        left: 170px;
+        top: 595px; }
+    .chessboard .at-118 {
+      left: 510px;
+      top: 0px; }
+      .chessboard .at-118.reversed {
+        left: 85px;
+        top: 595px; }
+    .chessboard .at-119 {
+      left: 595px;
+      top: 0px; }
+      .chessboard .at-119.reversed {
+        left: 0px;
+        top: 595px; }
+
+  .chessboard .square-outline {
+    left: 0;
+    top: 0;
+    width: 83px;
+    height: 83px;
+    margin: 1px;
+    border-width: 1px; }
+
+  .widget {
+    margin: 10px; }
+    .widget.panel .panel-body {
+      padding: 10px; }
+
+  #movelist-container {
+    width: 250px;
+    height: 680px;
+    max-height: 680px; }
+    #movelist-container .panel-body {
+      max-height: 640px; }
+
+  #console-container {
+    width: 250px;
+    min-height: 200px;
+    max-height: 680px; }
+    #console-container .panel-body {
+      max-height: 640px; }
+
+  .modal-content {
+    margin: 60px auto; }
+    .modal-content.small-modal {
+      width: 36%; }
+    .modal-content.large-modal {
+      width: 48%; }
+    .modal-content .modal-body .tab-content-wrapper {
+      margin-top: -1px; }
+    .modal-content .modal-body .table {
+      margin: 0; }
+      .modal-content .modal-body .table tr td:first-child {
+        padding-left: 15px; }
+      .modal-content .modal-body .table tr td:last-child {
+        padding-right: 15px; }
+    .modal-content .modal-body form {
+      padding: 10px 15px; }
+
+  body.debug .navbar {
+    background: #ccf; } }
